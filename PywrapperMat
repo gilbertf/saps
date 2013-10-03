@@ -1,0 +1,61 @@
+#!/usr/bin/python
+def ReadFunctionSignature(FilenameMat):
+	f = open(FilenameMat)
+	l = ""
+	while not l.startswith("function "):
+		l = f.readline()
+		if not f:
+			print "function nicht gefunden"
+			exit()
+	Sig = l.replace("(","*").replace(")","*").split("*")[1].replace(" ","")
+	return [Sig, Sig.split(",")]
+
+def ExtractArgs(Args):
+	VecArgs = list()
+	for a in Args:
+		VecArgs.append(a.split("=")[0])
+	return VecArgs
+		
+import sys, os
+
+verbose = 0
+#MatApp = "octave -q --eval \"pkg load statistics;"
+MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
+
+Args = sys.argv
+VecArgs = ExtractArgs(Args[1:])
+FilenameMat = Args[0] + ".m"
+[CommasepSig, VecSig] = ReadFunctionSignature(FilenameMat)
+
+VecArgs.append("FilenameResults")
+if not sorted(VecSig) == sorted(VecArgs):
+	print "Signatures do not match"
+	print "We require: " + " ".join(sorted(VecSig[:len(VecSig)-1]))
+	print "You specified: " + " ".join(sorted(VecArgs[:len(VecArgs)-1]))
+	exit()
+
+DirResults = os.path.expanduser("~/Dissertation/results")
+Filename = Args[0].split("/")
+Filename = Filename[len(Filename)-1]
+Basename = os.path.dirname(__file__)
+
+UnderscoreArgs = "_".join(Args[1:])
+FilenameResults = DirResults + "/" + Filename + "/" + UnderscoreArgs
+Args.append("FilenameResults='" + FilenameResults + "'")
+
+Variables = ";".join(Args[1:])
+
+Cmd = "cd " + Basename + ";" + MatApp + "addpath('" + os.path.expanduser("~/Dissertation/libgjm") + "');" + Variables + ";" + Filename + "(" + CommasepSig + ");exit\""
+if verbose:
+	print "Cmd: " + Cmd
+
+P = FilenameResults[0:FilenameResults.rfind("/")]
+print(P)
+if not os.path.exists(P):
+	os.makedirs(P)
+if not os.path.exists(FilenameResults):
+	open(FilenameResults, 'w').close() 
+	os.system(Cmd)
+else:
+	if verbose:
+		print "Resultfile was create before"

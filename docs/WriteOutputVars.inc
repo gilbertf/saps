@@ -1,0 +1,1 @@
+../../libgjm/WriteOutputVars.inc

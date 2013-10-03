@@ -1,0 +1,32 @@
+# This is a template for gauss showing all accepted input and output parameters. Furthermore some example plot options are shown. Have fun:)
+
+Program: ~/Dissertation/saps/docs/gauss
+
+# Gnuplot options
+PlotSet: grid
+#PlotSet: size square
+#PlotSet: xtics 0.2
+#PlotSet: ytics 0.2
+#PlotSet: xrange [0:1]
+#PlotSet: yrange [0:1]
+
+# Input variables
+x: -5..5
+Variance: 0.5|1|2
+
+Figure Gaussian probability density function :
+  PlotOpt: w lp
+  Set Var=%Variance% Expect=0:
+    Expectation: 0
+    Analyse: integrate.py, pdf, x
+    Axis: x, pdf
+  Set Var=%Variance% Expect=2.5:
+    Expectation: 2.5
+    Analyse: integrate.py, pdf, x
+    Axis: x, pdf
+
+Figure Gaussian cumulative distribution function :
+  PlotOpt: w l
+  Set Var=%!Variance% Expect=%Expectation%:
+    Axis: x, cdf
+    Expectation: 0|2.5
