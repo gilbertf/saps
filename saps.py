@@ -71,7 +71,7 @@ def ParseFloatRange(s):
 
 
 class Options():
-    Desciptionfile = None
+    Descriptionfile = None
     #Actions
     Simulate = False
     Collect = False

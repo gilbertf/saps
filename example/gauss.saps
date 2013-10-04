@@ -1,6 +1,6 @@
 # This is a template for gauss showing all accepted input and output parameters. Furthermore some example plot options are shown. Have fun:)
 
-Program: ~/Dissertation/saps/docs/gauss
+Program: ~/Dissertation/saps/example/gauss
 
 # Gnuplot options
 PlotSet: grid
