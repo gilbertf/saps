@@ -253,7 +253,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             ExpandedValues = ExtractValues(VarValue, DoExtract)
             
             for ExpandedValue in ExpandedValues:
-                TmpNameSet = NameSet[:a] + ExpandedValue + NameSet[a+b+2:]
+                TmpNameSet = NameSet[:a] + str(ExpandedValue) + NameSet[a+b+2:]
                 TmpTree = Tree.copy()
                 TmpTree[VarName] = ExpandedValue
                 ExpandValue(TmpTree, NameFigure, TmpNameSet, PlotList)
@@ -335,8 +335,6 @@ def ParseArgs():
         Error(0, "Please specify at least one action.")
 
 
-
-ProcessTree(Tree)
 if __name__ == "__main__":
     ParseArgs()
     Config = ReadYaml("saps.conf", True) 
@@ -346,7 +344,7 @@ if __name__ == "__main__":
     except:
         Error(1, "Saps -> DirSet has to be defined in config file.")
         
-    Tree = ReadYaml(ptions.Descriptionfile, False)
+    Tree = ReadYaml(Options.Descriptionfile, False)
     Tree = RestructureTree(Tree, False)
 
     try:
