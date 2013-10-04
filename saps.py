@@ -16,7 +16,7 @@ def ConstructFullPath(NameFile, DirSaps):
     return CompleteNameFile
 
 def ReadYaml(NameFile, DirSaps):        
-    CompleteNameFile = ConstructFullPath(NameFile, DirSaps)
+    CompleteNameFile = os.path.expanduser(ConstructFullPath(NameFile, DirSaps))
     try:
         CompleteFile = open(CompleteNameFile, 'r')
         data = CompleteFile.read()
@@ -25,13 +25,6 @@ def ReadYaml(NameFile, DirSaps):
         return(Tree)
     except:
         Error(0, "Unable to read yaml file " + CompleteNameFile)
-
-Config = ReadYaml("saps.conf", True) 
-Descriptionfile = None
-try:
-    SetDir = os.path.expanduser(Config["Saps"]["DirSet"])
-except:
-    Error(1, "Saps -> DirSet has to be defined in config file.")
 
     
 def RunFileCode(NameFile, DirSaps, Env):
@@ -78,6 +71,7 @@ def ParseFloatRange(s):
 
 
 class Options():
+    Desciptionfile = None
     #Actions
     Simulate = False
     Collect = False
@@ -340,13 +334,24 @@ def ParseArgs():
         ShowSyntax()
         Error(0, "Please specify at least one action.")
 
-ParseArgs()
-Tree = ReadYaml(Options.Descriptionfile, False)
-Tree = RestructureTree(Tree, False)
 
-try:
-    os.makedirs(Options.SetDir)
-except:
-    None
 
 ProcessTree(Tree)
+if __name__ == "__main__":
+    ParseArgs()
+    Config = ReadYaml("saps.conf", True) 
+    
+    try:
+        SetDir = os.path.expanduser(Config["Saps"]["DirSet"])
+    except:
+        Error(1, "Saps -> DirSet has to be defined in config file.")
+        
+    Tree = ReadYaml(ptions.Descriptionfile, False)
+    Tree = RestructureTree(Tree, False)
+
+    try:
+        os.makedirs(Options.SetDir)
+    except:
+        None
+    
+    ProcessTree(Tree)
