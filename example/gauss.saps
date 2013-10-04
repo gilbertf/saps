@@ -12,7 +12,7 @@ PlotSet: grid
 
 # Input variables
 x: -5..5
-Variance: 0.5|1|2
+Variance: 0.5|1|2|3
 
 Figure Gaussian probability density function :
   Analyse: Integrate.py, pdf, x

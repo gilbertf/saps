@@ -231,7 +231,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             except:
                 Msg.Error(1,"Simulate interface is not defined in configfile")
             Env = dict(ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg)
-            RunFileCode(os.path.join("Simulate", Simulate), True, Env)
+            RunFileCode(os.path.join("simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
             NameSetFile = Options.SetDir + "/" + NameFigure + "/" + NameSet
@@ -242,7 +242,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             except:
                 Msg.Error(1,"Collect interface is not defined in configfile")
             Env = dict(ListArgs=ListArgs, NameSetFile=NameSetFile, Axis = Axis, NumAxis=NumAxis, Program=Program, Options=Options, Msg=Msg)
-            RunFileCode(os.path.join("Collect", Collect), True, Env)
+            RunFileCode(os.path.join("collect", Collect), True, Env)
             try:
                 Values = Env["Values"]
                 Axis = Env["Axis"]
@@ -262,7 +262,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                         In.append(Values[Idx])
                         AxisIn.append(Axis[Idx])
                 Env = dict(Values=In, Axis=AxisIn, CntAxis=len(AxisIn), Options = Options, Msg=Msg)
-                RunFileCode(os.path.join("Analyse", Analyse[0]), True, Env)
+                RunFileCode(os.path.join("analyse", Analyse[0]), True, Env)
                 try:
                     Values = Env["Out"]
                 except:
