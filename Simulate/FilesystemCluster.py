@@ -29,4 +29,4 @@ for Args in ListArgs:
     Cmd = " ".join([Program] + Args)
     NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameJob)
     
-print(Indent, "Simulating:", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobfiles created.")
+print(Options.Indent, "Simulating:", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobfiles created.")

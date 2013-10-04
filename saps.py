@@ -191,6 +191,8 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             
         ### ParseSet ###
         global Options
+        if Set is None:
+            Msg.Error(2, "Empy sets are not allowed.")
         for s in Set: #escaping of @ is necessary for malab scripts
             if type(Set[s]) is str:
                 Set[s] = Set[s].replace("\\","")
