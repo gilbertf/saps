@@ -13,8 +13,6 @@
 using namespace std;
 using namespace itpp;
 
-#define RAW_RESULTS_DIR "~/Dissertation/results/"
-
 string construct_result_it_filename(int,char**);
 bool file_exists(string);
 string get_exepath();

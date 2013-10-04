@@ -56,6 +56,7 @@ if (!file_exists(fnexample.c_str())) {
 #define X(a,b) a b = parser.get_##a(#b); inputvarcnt++;
 	int inputvarcnt = 0;
 	INPUTVARS
+	X(string, DirResults)
 #undef X
 
 #ifdef OPTINPUTVARS
@@ -67,6 +68,7 @@ if (!file_exists(fnexample.c_str())) {
 #define X(a,b) if (strncmp(argv[i], #b, strlen( #b )) == 0) continue;
 	for (int i=1; i<argc;i++) {
 		INPUTVARS
+		X(string, DirResults)
 		#ifdef OPTINPUTVARS
 			OPTINPUTVARS
 		#endif
@@ -115,7 +117,7 @@ Duration = -1;
 
 
 /**Initializing results file **/
-string outfilename = construct_result_it_filename(argc,argv);
+string outfilename = construct_result_it_filename(argc, argv, DirResults);
 check_path(outfilename);
 check_file(outfilename, Version);
 

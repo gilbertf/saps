@@ -95,7 +95,7 @@ bool mkpath( std::string path ) {
     return bSuccess;
 }
 
-string construct_result_it_filename(int argc, char** argv) {
+string construct_result_it_filename(int argc, char** argv, string DirResults) {
 	string bn = argv[0];
 	int spos = bn.find_last_of("/");
 	if (spos != -1) {
@@ -103,8 +103,8 @@ string construct_result_it_filename(int argc, char** argv) {
 		bn = bn.substr(spos+1,slen-spos);
 	}
 	stringstream filename_it;
-	filename_it << replace_tilde_by_home(RAW_RESULTS_DIR) << bn << "/";
-	for (int i=1;i<argc;i++) {
+	filename_it << replace_tilde_by_home(DirResults) << bn << "/";
+	for (int i=2;i<argc;i++) {
 		filename_it << argv[i];
 		if (i < argc-1) filename_it << "_";
 	}

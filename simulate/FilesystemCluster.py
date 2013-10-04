@@ -1,16 +1,22 @@
 import os
 import random
 
-def WriteJobfile(Cmd, DirJob, NameJob):
-    fn_jobfile = os.path.join(os.path.expanduser(DirJob), NameJob)
-    if os.path.isfile(fn_jobfile):
+try:
+    DirResults = Options.Config["FilesystemITPP"]["DirResults"]
+except:
+    Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
+DirResults = os.path.expanduser(DirResults)
+
+def WriteJobfile(Cmd, DirJob, NameFileJob):
+    NameFileJob = os.path.join(os.path.expanduser(DirJob), NameFileJob)
+    if os.path.isfile(NameFileJob):
         return(0)
     try:
-        jobfile = open(fn_jobfile, 'w')
-        jobfile.write(Cmd)
-        jobfile.close()
+        FileJob = open(NameFileJob, 'w')
+        FileJob.write(Cmd)
+        FileJob.close()
     except:
-        Msg.Error(2, "Could not write jobfile", fn_jobfile)
+        Msg.Error(2, "Could not write jobfile", NameFileJob)
     return(1)
 
 try:
@@ -25,8 +31,8 @@ except:
     
 NumCreated = 0
 for Args in ListArgs:
-    NameJob = " ".join(Args)
-    Cmd = " ".join([Program] + Args)
-    NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameJob)
+    DirResults = DirResults + "/" + (Program.split("/")).pop()
+    Cmd = " ".join([Program] + ["DirResults=" + DirResults] + Args)
+    NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameFileJob)
     
 print(Options.Indent, "Simulating:", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobfiles created.")

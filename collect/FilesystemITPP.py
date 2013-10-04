@@ -6,7 +6,6 @@ try:
     DirResults = Options.Config["FilesystemITPP"]["DirResults"]
 except:
     Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
-    
 DirResults = os.path.expanduser(DirResults)
 
 try:
@@ -22,12 +21,12 @@ val = []
 for i in range(NumAxis):
     val.append([])
 for Args in ListArgs:
-    FileJob = "_".join(Args)
-    FileJob = DirResults + "/" + (Program.split("/")).pop() + "/" + FileJob
-    r = itload(FileJob)
+    NameFileResult = "_".join(Args)
+    NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + NameFileResult
+    r = itload(NameFileResult)
     if r == "" or r == "defekt":
         NumDefectResultsFiles = NumDefectResultsFiles + 1
-        Warning(2, "Defect results file " + FileJob)
+        Warning(2, "Defect results file " + NameFileResult)
         continue
     try:
         Complete = r["Complete"]
