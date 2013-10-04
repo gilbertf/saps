@@ -6,6 +6,7 @@ try:
     DirResults = Options.Config["FilesystemITPP"]["DirResults"]
 except:
     Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
+    
 DirResults = os.path.expanduser(DirResults)
 
 try:
@@ -39,8 +40,9 @@ for Args in ListArgs:
         NumCompleteResultsFiles = NumCompleteResultsFiles + 1
     for i, a in enumerate(Axis):
         x = r[a]
-        isScalar = numpy.issctype(type(x))
-        if isScalar:
+        import numbers
+        isNumber = isinstance(x, numbers.Number)
+        if isNumber:
             val[i].append(float(x))
         else:
             if len(x) == 0: #For example if calculation is still running
