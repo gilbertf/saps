@@ -1,10 +1,9 @@
-print("ListJobs: ", ListJobs)
+print("ListArgs: ", ListArgs)
 print("NameSetFile:", NameSetFile)
 print("Axis:", Axis)
 print("NumAxis: ", NumAxis)
 print("Program:", Program)
-print("Config:", Config)
-print("Indent:", Indent)
+print("Options:", Options)
 
 Axis = ["x","y"]
 Values = [[1,2,3],[4,5,6]]

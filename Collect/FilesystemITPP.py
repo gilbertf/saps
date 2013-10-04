@@ -1,17 +1,15 @@
 from itpp import itload
-import Helper
 import numpy
 import os
-from Helper import *
 
 try:
-    DirResults = Config["FilesystemITPP"]["DirResults"]
+    DirResults = Options.Config["FilesystemITPP"]["DirResults"]
 except:
     Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
 DirResults = os.path.expanduser(DirResults)
 
 try:
-    StopOnDefectSetFiles = Config["FilesystemITPP"]["StopOnDefectSetFiles"]
+    StopOnDefectSetFiles = Options.Config["FilesystemITPP"]["StopOnDefectSetFiles"]
 except:
     StopOnDefectSetFiles = False
     
@@ -37,7 +35,7 @@ for Args in ListArgs:
         continue
     if Complete == -1:
         Notice(2, "The Complete variable is not updated by your program")
-    if round(Complete, Helper.RoundDigits) == 1:
+    if round(Complete, Options.RoundDigits) == 1:
         NumCompleteResultsFiles = NumCompleteResultsFiles + 1
     for i, a in enumerate(Axis):
         x = r[a]
@@ -50,7 +48,7 @@ for Args in ListArgs:
             for v in x:
                 val[i].append(float(v))
 
-Msg(2, "Complete:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " Defect: " + str(NumDefectResultsFiles))
+Msg.Msg(2, "Complete:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " Defect: " + str(NumDefectResultsFiles))
 if NumDefectResultsFiles > 0:
     if StopOnDefectSetFiles is True:
         Error(2, "Not all set files could be read.")

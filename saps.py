@@ -5,19 +5,67 @@ import os
 import sys
 import random
 import math
-import Helper
-from Helper import *
 
-class Options():
+class options():
+    global Msg
+            
+    Collect = False
+    
+    RoundDigits = 13
+    ShowWarning = True
+    ShowNotice = True
+    
     Descriptionfile = None
     Config = None
+    Indent = "   "
     
     #Actions
     Simulate = False
-    Collect = False
     View = False
     Plot = False
     ydict = dict
+    
+    def ReadFileConfig(self, NameFileConfig):
+        self.Config = ReadYaml(NameFileConfig, True)
+        try:
+            self.ShowNotice = self.Config["Saps"]["ShowNotice"]
+        except:
+            None
+    
+        try:
+            self.ShowWarning = self.Config["Saps"]["ShowWarning"]
+        except:
+            None
+        
+        try:
+            self.RoundDigits = int(self.Config["Saps"]["RoundDigits"])
+        except:
+            None
+            
+        try:
+            self.SetDir = os.path.expanduser(self.Config["Saps"]["DirSet"])
+        except:
+            Msg.Error(1, "Saps -> DirSet has to be defined in configfile.")
+            
+        self.ydict = OrderedYaml.SetOrderedYaml()
+
+    
+class msg():
+    global Options
+    def Msg(self, i, notifier, m):
+        print(Options.Indent*i + notifier + " " + m)
+    
+    def Notice(self, i, m):
+        if Options.ShowNotice:
+            self.Msg(i, "Notice:", m)
+    
+    def Warning(self, i, m):
+        if Options.ShowWarning:
+            self.Msg(i, "Warning:", m)
+    
+    def Error(self, i, m):
+        self.Msg(i, "Error:", m)
+        exit()
 
 def ConstructFullPath(NameFile, DirSaps):
     if DirSaps:
@@ -26,7 +74,8 @@ def ConstructFullPath(NameFile, DirSaps):
         CompleteNameFile = NameFile
     return CompleteNameFile
 
-def ReadYaml(NameFile, DirSaps):        
+def ReadYaml(NameFile, DirSaps):
+    global Msg     
     CompleteNameFile = os.path.expanduser(ConstructFullPath(NameFile, DirSaps))
     try:
         CompleteFile = open(CompleteNameFile, 'r')
@@ -35,7 +84,7 @@ def ReadYaml(NameFile, DirSaps):
         Tree = yaml.load(data)
         return(Tree)
     except:
-        Error(0, "Unable to read yaml file " + CompleteNameFile)
+        Msg.Error(0, "Unable to read yaml file " + CompleteNameFile)
 
     
 def RunFileCode(NameFile, DirSaps, Env):
@@ -45,12 +94,12 @@ def RunFileCode(NameFile, DirSaps, Env):
         Code = File.read()
         File.close()
     except:
-        Error(0, "Unable to read python file " + CompleteNameFile)
+        Msg.Error(0, "Unable to read python file " + CompleteNameFile)
     exec(Code, Env)
     
 def Num2Str(i):
     try:
-        i = round(float(i), Helper.RoundDigits)
+        i = round(float(i), Options.RoundDigits)
     except:
         None
     return(i)
@@ -77,10 +126,11 @@ def ParseFloatRange(s):
         elif len(u) == 3:
             l = l + FloatRange(float(u[0]),float(u[2]),float(u[1]))
         else:
-            Error(2,"Syntax error in " + t)
+            Msg.Error(2,"Syntax error in " + t)
     return l 
 
 def RestructureTree(Tree, inFigure):
+    global Options
     Properties = Options.ydict()
     FiguresSets = Options.ydict()
     if type(Tree) == Options.ydict:
@@ -103,7 +153,7 @@ def RestructureTree(Tree, inFigure):
                         if not p in FiguresSets[fs]:
                             FiguresSets[fs][p] = Properties[p]
                         else:
-                            Warning(0, "More specific value " + str(FiguresSets[fs][p]) + " for " + p + " overwrites " + str(Properties[p]) + ".")
+                            Msg.Warning(0, "More specific value " + str(FiguresSets[fs][p]) + " for " + p + " overwrites " + str(Properties[p]) + ".")
                     if "Figure " in fs:
                         inFigure = True
                     else:
@@ -124,6 +174,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             return([Num2Str(s)])
             
     def ParseSet(Set, NameFigure, NameSet, PlotList):
+        global Options
         def ExpandSet(Set, ListArgs, cmd = []):
             if len(Set) > 0:
                 s = Set[0]
@@ -139,6 +190,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             return s.replace(", ",",").split(",")
             
         ### ParseSet ###
+        global Options
         for s in Set: #escaping of @ is necessary for malab scripts
             if type(Set[s]) is str:
                 Set[s] = Set[s].replace("\\","")
@@ -146,13 +198,13 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
         try:
             Program = os.path.expanduser(Set.pop("Program"))
         except:
-            Error(2, "Program property is missing")
+            Msg.Error(2, "Program property is missing")
 
         try:
             Axis = SplitComma(Set.pop("Axis"))
             NumAxis = len(Axis)
         except:
-            Error(2, "Axis property is missing")
+            Msg.Error(2, "Axis property is missing")
 
         try:
             PlotOpt = Set.pop("PlotOpt")
@@ -175,8 +227,8 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             try:
                 Simulate = Options.Config["Simulate"]
             except:
-                Error(1,"Simulate interface is not defined in configfile")
-            Env = dict(ListArgs=ListArgs, Program=Program, Config=Options.Config, Indent=Helper.Indent)
+                Msg.Error(1,"Simulate interface is not defined in configfile")
+            Env = dict(ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg)
             RunFileCode(os.path.join("Simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
@@ -186,14 +238,14 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             try:
                 Collect = Options.Config["Collect"]
             except:
-                Error(1,"Collect interface is not defined in configfile")
-            Env = dict(ListArgs=ListArgs, NameSetFile=NameSetFile, Axis = Axis, NumAxis=NumAxis, Program=Program, Config=Options.Config, Indent=Helper.Indent)
+                Msg.Error(1,"Collect interface is not defined in configfile")
+            Env = dict(ListArgs=ListArgs, NameSetFile=NameSetFile, Axis = Axis, NumAxis=NumAxis, Program=Program, Options=Options, Msg=Msg)
             RunFileCode(os.path.join("Collect", Collect), True, Env)
             try:
                 Values = Env["Values"]
                 Axis = Env["Axis"]
             except:
-                Notice(2, "The collect module did not return a Values and Axis")
+                Msg.Notice(2, "The collect module did not return a Values and Axis")
             
             if Analyse is not None:
                 In = []
@@ -204,15 +256,15 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                         try:
                             Idx = Axis.index(NameParam)
                         except:
-                            Error(2, "The Analyse parameter " + NameParam + " is invalid.")
+                            Msg.Error(2, "The Analyse parameter " + NameParam + " is invalid.")
                         In.append(Values[Idx])
                         AxisIn.append(Axis[Idx])
-                Env = dict(Values=In, Axis=AxisIn, CntAxis=len(AxisIn), Indent=Helper.Indent*3)
+                Env = dict(Values=In, Axis=AxisIn, CntAxis=len(AxisIn), Options = Options, Msg=Msg)
                 RunFileCode(os.path.join("Analyse", Analyse[0]), True, Env)
                 try:
                     Values = Env["Out"]
                 except:
-                    Notice(2, "The analyse module did not return a value")
+                    Msg.Notice(2, "The analyse module did not return a value")
                 
             Values = Values.swapaxes(0,1)
             
@@ -227,7 +279,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             view = SetFile.read()
             SetFile.close()
             for v in view.split("\n"):
-                print(Helper.Indent*2, v)
+                print(Options.Indent*2, v)
 
         if Options.Plot:
             s = "\\\"" + NameSetFile + "\\\"" + " title " + "\\\"" + NameSet + "\\\" "
@@ -236,6 +288,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             PlotList.append(s)
 
     def ExpandValue(Tree, NameFigure, NameSet, PlotList):
+        global Msg
         if "%" in NameSet:
             a = NameSet.find("%")
             b = NameSet[a+1:].find("%")
@@ -250,7 +303,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             try:
                 VarValue = Tree[VarName]
             except:
-                Error(2, "The variable " + VarName + " could not be found.")
+                Msg.Error(2, "The variable " + VarName + " could not be found.")
                 
             ExpandedValues = ExtractValues(VarValue, DoExtract)
             
@@ -260,7 +313,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 TmpTree[VarName] = ExpandedValue
                 ExpandValue(TmpTree, NameFigure, TmpNameSet, PlotList)
         else:
-            print(Helper.Indent, "Set", NameSet)
+            print(Options.Indent, "Set", NameSet)
             ParseSet(Tree, NameFigure, NameSet, PlotList)
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
@@ -270,7 +323,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             elif "Set " in t:
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
-                    Error("Beginning and end of each variable has to be marked with \'%\'")
+                    Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
                 ExpandValue(Tree[t], NameFigure, NameSet, PlotList)
             elif "Figure " in t:
                 NameFigure = t.split("Figure ")[1]
@@ -284,7 +337,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 PlotList = []
                 ProcessTree(Tree[t], NameFigure, PlotList, GnuplotOptions)
                 if Options.Plot:
-                    Notice(1, "Plotting")
+                    Msg.Notice(1, "Plotting")
                     PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in GnuplotOptions]) + "plot " + ", ".join(PlotList) + "\""
                     os.system(PlotCmd)
 
@@ -299,6 +352,7 @@ def ShowSyntax():
     print("\t-p\tPlot")
 
 def ParseArgs():
+    global Options
     for a in sys.argv[1:]:
         if a[0:1] == "--":
             for e in a[2:]:
@@ -311,7 +365,7 @@ def ParseArgs():
                 elif e == "view":
                     Options.View = True
                 else:
-                    Error(0, "Invalid command line option: ", e)
+                    Msg.Error(0, "Invalid command line option: ", e)
                     
         elif a[0] == "-":
             for e in a[1:]:
@@ -324,31 +378,28 @@ def ParseArgs():
                 elif e == "v":
                     Options.View = True
                 else:
-                    Error(0, "Invalid command line option: ", e)
+                    Msg.Error(0, "Invalid command line option: ", e)
         else:
             if Options.Descriptionfile is None:
                 Options.Descriptionfile = a
             else:
-                Error(0, "You are only allowed to specify one configuration file. I do not understand " + a)
+                Msg.Error(0, "You are only allowed to specify one configuration file. I do not understand " + a)
 
     if Options.Descriptionfile is None:
         ShowSyntax()
-        Error(0, "Please specifiy a saps configuration file")
+        Msg.Error(0, "Please specifiy a saps configuration file")
 
     if (Options.Simulate + Options.Collect + Options.Plot + Options.View) == False:
         ShowSyntax()
-        Error(0, "Please specify at least one action.")
+        Msg.Error(0, "Please specify at least one action.")
     
 def main():
-    Options.ydict = OrderedYaml.SetOrderedYaml()
-    ParseArgs()
-    Options.Config = ReadYaml("saps.conf", True) 
+    global Options, Msg
     
-    try:
-        Options.SetDir = os.path.expanduser(Options.Config["Saps"]["DirSet"])
-    except:
-        Error(1, "Saps -> DirSet has to be defined in configfile.")
-        
+    Options = options()
+    Msg = msg()
+    Options.ReadFileConfig("saps.conf")
+    ParseArgs()
     Tree = ReadYaml(Options.Descriptionfile, False)
     Tree = RestructureTree(Tree, False)
 

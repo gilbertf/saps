@@ -10,13 +10,13 @@ def WriteJobfile(Cmd, DirJob, NameJob):
         jobfile.write(Cmd)
         jobfile.close()
     except:
-        Error(2, "Could not write jobfile", fn_jobfile)
+        Msg.Error(2, "Could not write jobfile", fn_jobfile)
     return(1)
 
 try:
-    DirJob = Config["FilesystemCluster"]["DirJob"]
+    DirJob = Options.Config["FilesystemCluster"]["DirJob"]
 except:
-    Error(1, "FilesystemCluster -> DirJob has to be defined in config file.")
+    Msg.Error(1, "FilesystemCluster -> DirJob has to be defined in configfile.")
 
 try:
     os.makedirs(DirJob)
