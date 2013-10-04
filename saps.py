@@ -300,33 +300,36 @@ def ShowSyntax():
 
 def ParseArgs():
     for a in sys.argv[1:]:
-        if a == "-scp":
-            Options.Simulate = True
-            Options.Collect = True
-            Options.Plot = True
-        elif a == "-sc":
-            Options.Simulate = True
-            Options.Collect = True
-        elif a == "-cp":
-            Options.Collect = True
-            Options.Plot = True
-        elif a == "-cvp":
-            Options.Collect = True
-            Options.View = True
-            Options.Plot = True
-        elif a == "-cv":
-            Options.Collect = True
-            Options.View = True
-        elif a == "--simulate" or a == "-s":
-            Options.Simulate = True
-        elif a == "--collect" or a == "-c":
-            Options.Collect = True
-        elif a == "--view" or a == "-v":
-            Options.View = True
-        elif a == "--plot" or a == "-p":
-            Options.Plot = True
+        if a[0:1] == "--":
+            for e in a[2:]:
+                if e == "simulate":
+                    Options.Simulate = True
+                elif e == "collect":
+                    Options.Collect = True
+                elif e == "plot":
+                    Options.Plot = True
+                elif e == "view":
+                    Options.View = True
+                else:
+                    Error(0, "Invalid command line option: ", e)
+                    
+        elif a[0] == "-":
+            for e in a[1:]:
+                if e == "s":
+                    Options.Simulate = True
+                elif e == "c":
+                    Options.Collect = True
+                elif e == "p":
+                    Options.Plot = True
+                elif e == "v":
+                    Options.View = True
+                else:
+                    Error(0, "Invalid command line option: ", e)
         else:
-            Options.Descriptionfile = a
+            if Options.Descriptionfile is None:
+                Options.Descriptionfile = a
+            else:
+                Error(0, "You are only allowed to specify one configuration file. I do not understand " + a)
 
     if Options.Descriptionfile is None:
         ShowSyntax()
