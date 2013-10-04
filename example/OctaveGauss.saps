@@ -1,6 +1,4 @@
-# This is a template for gauss showing all accepted input and output parameters. Furthermore some example plot options are shown. Have fun:)
-
-Program: ~/saps/example/gauss
+Program: ~/saps/example/OctaveGauss
 
 # Gnuplot options
 PlotSet: grid
@@ -12,7 +10,7 @@ PlotSet: grid
 
 # Input variables
 x: -5..5
-Variance: 0.5|1|2|3
+Variance: 0.5|1|2
 
 Figure Gaussian probability density function :
   Analyse: Integrate.py, pdf, x

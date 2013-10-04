@@ -234,14 +234,14 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             RunFileCode(os.path.join("simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
-            NameSetFile = Options.SetDir + "/" + NameFigure + "/" + NameSet
+            NameFileSet = "/".join([Options.SetDir, Options.Descriptionfile, NameFigure, NameSet])
 
         if Options.Collect:
             try:
                 Collect = Options.Config["Collect"]
             except:
                 Msg.Error(1,"Collect interface is not defined in configfile")
-            Env = dict(ListArgs=ListArgs, NameSetFile=NameSetFile, Axis = Axis, NumAxis=NumAxis, Program=Program, Options=Options, Msg=Msg)
+            Env = dict(ListArgs=ListArgs, Axis = Axis, NumAxis=NumAxis, Program=Program, Options=Options, Msg=Msg)
             RunFileCode(os.path.join("collect", Collect), True, Env)
             try:
                 Values = Env["Values"]
@@ -271,21 +271,21 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             #Values = Values.swapaxes(0,1)
             Values = zip(*Values[::1])
 
-            SetFile = open(NameSetFile, 'w')
+            SetFile = open(NameFileSet, 'w')
             SetFile.write("#" + "\t".join([str(x) for x in Axis])+"\n")
             for v in Values:
                 SetFile.write("\t".join([str(x) for x in v])+"\n")
             SetFile.close()
 
         if Options.View:
-            SetFile = open(NameSetFile, 'r')
+            SetFile = open(NameFileSet, 'r')
             view = SetFile.read()
             SetFile.close()
             for v in view.split("\n"):
                 print(Options.Indent*2, v)
 
         if Options.Plot:
-            s = "\\\"" + NameSetFile + "\\\"" + " title " + "\\\"" + NameSet + "\\\" "
+            s = "\\\"" + NameFileSet + "\\\"" + " title " + "\\\"" + NameSet + "\\\" "
             if PlotOpt is not None:
                 s = s + PlotOpt
             PlotList.append(s)
@@ -333,8 +333,10 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 print("Figure", NameFigure)
 
                 if Options.Collect:
-                    if not os.path.exists(Options.SetDir + "/" + NameFigure):
-                        os.makedirs(Options.SetDir + "/" + NameFigure)
+                    try:
+                        os.makedirs("/".join([Options.SetDir, Options.Descriptionfile, NameFigure]))
+                    except:
+                        None
 
                 GnuplotOptions = []
                 PlotList = []

@@ -19,8 +19,8 @@ def ExtractArgs(Args):
 import sys, os
 
 verbose = 0
-#MatApp = "octave -q --eval \"pkg load statistics;"
-MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
+MatApp = "octave -q --eval \""
+#MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
 
 Args = sys.argv
 VecArgs = ExtractArgs(Args[2:])
