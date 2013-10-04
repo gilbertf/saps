@@ -268,8 +268,9 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 except:
                     Msg.Notice(2, "The analyse module did not return a value")
                 
-            Values = Values.swapaxes(0,1)
-            
+            #Values = Values.swapaxes(0,1)
+            Values = zip(*Values[::1])
+
             SetFile = open(NameSetFile, 'w')
             SetFile.write("#" + "\t".join([str(x) for x in Axis])+"\n")
             for v in Values:
