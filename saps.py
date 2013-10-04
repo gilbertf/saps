@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#Notizen: Reihenfolge, identisch zu .saps sicherstellen
+import OrderedYaml
 import yaml
 import os
 import sys
@@ -7,6 +7,17 @@ import random
 import math
 import Helper
 from Helper import *
+
+class Options():
+    Descriptionfile = None
+    Config = None
+    
+    #Actions
+    Simulate = False
+    Collect = False
+    View = False
+    Plot = False
+    ydict = dict
 
 def ConstructFullPath(NameFile, DirSaps):
     if DirSaps:
@@ -69,19 +80,10 @@ def ParseFloatRange(s):
             Error(2,"Syntax error in " + t)
     return l 
 
-
-class Options():
-    Descriptionfile = None
-    #Actions
-    Simulate = False
-    Collect = False
-    View = False
-    Plot = False
-
 def RestructureTree(Tree, inFigure):
-    Properties = dict()
-    FiguresSets = dict()
-    if type(Tree) == dict:
+    Properties = Options.ydict()
+    FiguresSets = Options.ydict()
+    if type(Tree) == Options.ydict:
         #Seperate in two Groups: FigureSets and Properties. Move PlotSet into the Figures but not the Sets
         for t in Tree:
             if "Figure " in t or "Set " in t:
@@ -96,7 +98,7 @@ def RestructureTree(Tree, inFigure):
         #Append all properties to all FigureSets
         for fs in FiguresSets:
             if "Figure " in fs or "Set " in fs:
-                if type(FiguresSets[fs]) == dict:
+                if type(FiguresSets[fs]) == Options.ydict:
                     for p in Properties:
                         if not p in FiguresSets[fs]:
                             FiguresSets[fs][p] = Properties[p]
@@ -171,21 +173,21 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
 
         if Options.Simulate:
             try:
-                Simulate = Config["Simulate"]
+                Simulate = Options.Config["Simulate"]
             except:
                 Error(1,"Simulate interface is not defined in configfile")
-            Env = dict(ListArgs=ListArgs, Program=Program, Config=Config, Indent=Helper.Indent)
+            Env = dict(ListArgs=ListArgs, Program=Program, Config=Options.Config, Indent=Helper.Indent)
             RunFileCode(os.path.join("Simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
-            NameSetFile = SetDir + "/" + NameFigure + "/" + NameSet
+            NameSetFile = Options.SetDir + "/" + NameFigure + "/" + NameSet
 
         if Options.Collect:
             try:
-                Collect = Config["Collect"]
+                Collect = Options.Config["Collect"]
             except:
                 Error(1,"Collect interface is not defined in configfile")
-            Env = dict(ListArgs=ListArgs, NameSetFile=NameSetFile, Axis = Axis, NumAxis=NumAxis, Program=Program, Config=Config, Indent=Helper.Indent)
+            Env = dict(ListArgs=ListArgs, NameSetFile=NameSetFile, Axis = Axis, NumAxis=NumAxis, Program=Program, Config=Options.Config, Indent=Helper.Indent)
             RunFileCode(os.path.join("Collect", Collect), True, Env)
             try:
                 Values = Env["Values"]
@@ -261,7 +263,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             print(Helper.Indent, "Set", NameSet)
             ParseSet(Tree, NameFigure, NameSet, PlotList)
     ### ProcessTree ###
-    if type(Tree) == dict:
+    if type(Tree) == Options.ydict:
         for t in Tree:
             if t == "PlotSet":
                 GnuplotOptions.append(Tree[t])
@@ -275,8 +277,8 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 print("Figure", NameFigure)
 
                 if Options.Collect:
-                    if not os.path.exists(SetDir + "/" + NameFigure):
-                        os.makedirs(SetDir + "/" + NameFigure)
+                    if not os.path.exists(Options.SetDir + "/" + NameFigure):
+                        os.makedirs(Options.SetDir + "/" + NameFigure)
 
                 GnuplotOptions = []
                 PlotList = []
@@ -333,16 +335,16 @@ def ParseArgs():
     if (Options.Simulate + Options.Collect + Options.Plot + Options.View) == False:
         ShowSyntax()
         Error(0, "Please specify at least one action.")
-
-
-if __name__ == "__main__":
+    
+def main():
+    Options.ydict = OrderedYaml.SetOrderedYaml()
     ParseArgs()
-    Config = ReadYaml("saps.conf", True) 
+    Options.Config = ReadYaml("saps.conf", True) 
     
     try:
-        SetDir = os.path.expanduser(Config["Saps"]["DirSet"])
+        Options.SetDir = os.path.expanduser(Options.Config["Saps"]["DirSet"])
     except:
-        Error(1, "Saps -> DirSet has to be defined in config file.")
+        Error(1, "Saps -> DirSet has to be defined in configfile.")
         
     Tree = ReadYaml(Options.Descriptionfile, False)
     Tree = RestructureTree(Tree, False)
@@ -353,3 +355,6 @@ if __name__ == "__main__":
         None
     
     ProcessTree(Tree)
+    
+if __name__ == "__main__":
+    main()
