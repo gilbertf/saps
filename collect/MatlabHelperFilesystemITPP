@@ -24,7 +24,12 @@ MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
 
 Args = sys.argv
 VecArgs = ExtractArgs(Args[2:])
-DirResults = Args[1].split("=")[1]
+
+try:
+    DirResults = Args[1].split("DirResults=")[1]
+except:
+    print "Error: The first parameter has to be DirResults"
+    exit()
 
 FilenameMat = Args[0] + ".m"
 [CommasepSig, VecSig] = ReadFunctionSignature(FilenameMat)

@@ -248,7 +248,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 Axis = Env["Axis"]
             except:
                 Msg.Notice(2, "The collect module did not return a Values and Axis")
-            
+
             if Analyse is not None:
                 In = []
                 AxisIn = []
@@ -267,7 +267,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                     Values = Env["Out"]
                 except:
                     Msg.Notice(2, "The analyse module did not return a value")
-                
+            
             #Values = Values.swapaxes(0,1)
             Values = zip(*Values[::1])
 

@@ -28,11 +28,11 @@ try:
     os.makedirs(DirJob)
 except:
     None
-    
+
 NumCreated = 0
+DirResults = DirResults + "/" + (Program.split("/")).pop()
 for Args in ListArgs:
     NameFileJob = "_".join(Args)
-    DirResults = DirResults + "/" + (Program.split("/")).pop()
     Cmd = " ".join([Program] + ["DirResults=" + DirResults] + Args)
     NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameFileJob)
     
