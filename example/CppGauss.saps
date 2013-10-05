@@ -16,10 +16,8 @@ Figure Gaussian probability density function :
   Analyse: Integrate.py, pdf, x
   PlotOpt: w lp
   Axis: x, pdf
-  Set Var=%Variance% Expect=0:
-    Expectation: 0
-  Set Var=%Variance% Expect=2.5:
-    Expectation: 2.5
+  Set Var=%Variance% Expect=%Expectation%:
+    Expectation: 0|2.5
 
 Figure Gaussian cumulative distribution function :
   PlotOpt: w l
