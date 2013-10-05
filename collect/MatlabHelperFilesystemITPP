@@ -46,7 +46,7 @@ Filename = Filename[len(Filename)-1]
 Basename = os.path.dirname(__file__)
 
 UnderscoreArgs = "_".join(Args[2:])
-FilenameResults = DirResults + "/" + Filename + "/" + UnderscoreArgs
+FilenameResults = DirResults + "/" + UnderscoreArgs
 Args.append("FilenameResults='" + FilenameResults + "'")
 
 Variables = ";".join(Args[2:])

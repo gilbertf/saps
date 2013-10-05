@@ -83,7 +83,15 @@ def ReadYaml(NameFile, DirSaps):
         CompleteFile.close()
         Tree = yaml.load(data)
         return(Tree)
+    except FileNotFoundError:
+        Msg.Error(0, "The description file " + CompleteNameFile + " does not exist.")
+    except yaml.scanner.ScannerError as e:
+        if hasattr(e, 'problem_mark'):
+            mark = e.problem_mark
+            print("Error position: (%s:%s)" % (mark.line+1, mark.column+1))
+        Msg.Error("Syntax error in description file: " + e)
     except:
+        raise
         Msg.Error(0, "Unable to read yaml file " + CompleteNameFile)
 
     

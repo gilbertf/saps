@@ -3,53 +3,51 @@ Parser parser;
 parser.init(argc, argv);
 parser.set_silentmode();
 char cwdstr[500];
-string appname = "bin";
-string fullpath = get_exepath();
+string Program = "bin";
+string NamePathProgram = get_exepath();
 
-appname = fullpath.substr(fullpath.rfind("/")+1,-1);
-string fnexample = fullpath + ".saps.template";
+Program = NamePathProgram.substr(NamePathProgram.rfind("/")+1,-1);
+string NameFileTemplate = NamePathProgram + "Template.saps";
 
-if (!file_exists(fnexample.c_str())) {
-	ofstream example(fnexample.c_str());
+if (!file_exists(NameFileTemplate.c_str())) {
+	ofstream FileTemplate(NameFileTemplate.c_str());
 
-	/**Show .saps example **/
-	example << "# This is a template for " << appname << " showing all accepted input and output parameters. Furthermore some example plot options are shown. Have fun:)" << endl << endl;
-	example << "Program: " << replace_home_by_tilde(fullpath) << endl << endl;
+	FileTemplate << "# This is a template for " << Program << " showing all accepted input and output parameters. Furthermore some FileTemplate plot options are shown. Have fun:)" << endl << endl;
+	FileTemplate << "Program: " << replace_home_by_tilde(NamePathProgram) << endl << endl;
 
-	example << "# Gnuplot options" << endl;
-	example << "PlotSet: grid" << endl;
-	example << "PlotSet: size square" << endl;
-	example << "PlotSet: xtics 0.2" << endl;
-	example << "PlotSet: ytics 0.2" << endl;
-	example << "PlotSet: xrange [0:1]" << endl;
-	example << "PlotSet: yrange [0:1]" << endl << endl;
+	FileTemplate << "# Gnuplot options" << endl;
+	FileTemplate << "PlotSet: grid" << endl;
+	FileTemplate << "#PlotSet: size square" << endl;
+	FileTemplate << "#PlotSet: xtics 0.2" << endl;
+	FileTemplate << "#PlotSet: ytics 0.2" << endl;
+	FileTemplate << "#PlotSet: xrange [0:1]" << endl;
+	FileTemplate << "#PlotSet: yrange [0:1]" << endl << endl;
 
-	example << "# Input variables" << endl;
-	#define X(a,b) example << #b << ": " << endl;
+	FileTemplate << "# Input variables" << endl;
+	#define X(a,b) FileTemplate << #b << ": " << endl;
 		INPUTVARS
 	#undef X
 	
 	#ifdef OPTINPUTVARS
-		example << endl << "# Optional input variables" << endl;
-	#define X(a,b) example << "#" << #b << ": " << endl;
+		FileTemplate << endl << "# Optional input variables" << endl;
+	#define X(a,b) FileTemplate << "#" << #b << ": " << endl;
 		OPTINPUTVARS
 	#undef X
 	#endif
 	
-	example << endl;
-	example << "Figure Example application:" << endl;
-	example << "  Set First parameter set:" << endl;
-	example << "    PlotOpt: w lines" << endl;
-	example << "    Analyse: integrate.py, y" << endl;
-	example << "    # Output variables that can be used for Axis: ";
-	#define X(a,b) example << #b << ", ";
+	FileTemplate << endl;
+	FileTemplate << "Figure Example application:" << endl;
+	FileTemplate << "  Set First parameter set:" << endl;
+	FileTemplate << "    PlotOpt: w lines" << endl;
+	FileTemplate << "    #Analyse: integrate.py, y" << endl;
+	FileTemplate << "    #Output variables that can be used for Axis: ";
+	#define X(a,b) FileTemplate << #b << ", ";
 		OUTPUTVARS
-		X(double, Duration)
-		X(double, Complete)
 	#undef X
-	example << endl << "    Axis: x, y" << endl;
-	example.close();
-	cout << "Created template file: " << fnexample << " for your joy" << endl;
+	FileTemplate << "Duration" << endl;
+	FileTemplate << "    Axis: , " << endl;
+	FileTemplate.close();
+	cout << "Created template file: " << NameFileTemplate << " for your joy" << endl;
 }
 
 /** Parse input variables **/
@@ -87,6 +85,7 @@ if (!file_exists(fnexample.c_str())) {
 	X(double, Duration)
 	X(double, Complete)
 #undef X
+
 int Version = VERSION;
 Complete = -1; //Default value -1 to detect if complete is not updated by program
 Duration = -1;
@@ -117,16 +116,16 @@ Duration = -1;
 
 
 /**Initializing results file **/
-string outfilename = construct_result_it_filename(argc, argv, DirResults);
-check_path(outfilename);
-check_file(outfilename, Version);
+string NameFileItppResults = construct_result_it_filename(argc, argv, DirResults);
+check_path(NameFileItppResults);
+check_file(NameFileItppResults, Version);
 
 #ifdef debug
-	cout << "Saving results to: " << outfilename << endl;
+	cout << "Saving results to: " << NameFileItppResults << endl;
 #endif
 
-it_file it;
-ofstream it_plaintxt;
+it_file FileItppResults;
+ofstream FilePlainResults;
 
 Real_Timer timer;
 timer.start();

@@ -24,7 +24,6 @@ for Args in ListArgs:
     NameFileResult = "_".join(Args)
     NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + NameFileResult
     r = itload(NameFileResult)
-    print(NameFileResult)
     import numbers
     if r == "" or r == "defekt":
         NumDefectResultsFiles = NumDefectResultsFiles + 1
