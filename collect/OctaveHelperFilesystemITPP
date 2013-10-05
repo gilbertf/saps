@@ -18,7 +18,7 @@ def ExtractArgs(Args):
 		
 import sys, os
 
-verbose = 0
+verbose = False
 MatApp = "octave -q --eval \""
 #MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
 
@@ -44,8 +44,7 @@ UnderscoreArgs = "_".join(Args[2:])
 FilenameResults = DirResults + "/" + Filename + "/" + UnderscoreArgs
 Args.append("FilenameResults='" + FilenameResults + "'")
 
-Variables = ";".join(Args[2:]+["Complete = -1"])
-
+Variables = ";".join(Args[2:])
 Cmd = "cd " + Basename + ";" + MatApp + "addpath('" + os.path.expanduser("~/Dissertation/libgjm") + "');" + Variables + ";" + Filename + "(" + CommasepSig + ");exit\""
 if verbose:
 	print "Cmd: " + Cmd
