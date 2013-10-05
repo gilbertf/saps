@@ -24,6 +24,7 @@ for Args in ListArgs:
     NameFileResult = "_".join(Args)
     NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + NameFileResult
     r = itload(NameFileResult)
+    import numbers
     if r == "" or r == "defekt":
         NumDefectResultsFiles = NumDefectResultsFiles + 1
         Warning(2, "Defect results file " + NameFileResult)
@@ -33,15 +34,15 @@ for Args in ListArgs:
     except:
         Warning(2, "The Complete variable can not be found in the results file")
         continue
+    if not isinstance(Complete, numbers.Number):
+        Complete = float(Complete)
     if Complete == -1:
-        Notice(2, "The Complete variable is not updated by your program")
+        Msg.Notice(2, "The Complete variable is not updated by your program")
     if round(Complete, Options.RoundDigits) == 1:
         NumCompleteResultsFiles = NumCompleteResultsFiles + 1
     for i, a in enumerate(Axis):
         x = r[a]
-        import numbers
-        isNumber = isinstance(x, numbers.Number)
-        if isNumber:
+        if isinstance(x, numbers.Number):
             val[i].append(float(x))
         else:
             if len(x) == 0: #For example if calculation is still running

@@ -44,7 +44,7 @@ UnderscoreArgs = "_".join(Args[2:])
 FilenameResults = DirResults + "/" + Filename + "/" + UnderscoreArgs
 Args.append("FilenameResults='" + FilenameResults + "'")
 
-Variables = ";".join(Args[2:])
+Variables = ";".join(Args[2:]+["Complete = -1"])
 
 Cmd = "cd " + Basename + ";" + MatApp + "addpath('" + os.path.expanduser("~/Dissertation/libgjm") + "');" + Variables + ";" + Filename + "(" + CommasepSig + ");exit\""
 if verbose:
