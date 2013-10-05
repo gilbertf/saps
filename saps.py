@@ -383,7 +383,7 @@ def ParseArgs():
                 elif e == "v":
                     Options.View = True
                 else:
-                    Msg.Error(0, "Invalid command line option: ", e)
+                    Msg.Error(0, "Invalid command line option: " + e)
         else:
             if Options.Descriptionfile is None:
                 Options.Descriptionfile = a
