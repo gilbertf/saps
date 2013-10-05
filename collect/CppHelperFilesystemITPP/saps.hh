@@ -13,7 +13,7 @@
 using namespace std;
 using namespace itpp;
 
-string construct_result_it_filename(int,char**);
+string construct_result_it_filename(int, char**, string);
 bool file_exists(string);
 string get_exepath();
 string replace_tilde_by_home(string);

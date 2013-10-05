@@ -31,6 +31,7 @@ except:
     
 NumCreated = 0
 for Args in ListArgs:
+    NameFileJob = "_".join(Args)
     DirResults = DirResults + "/" + (Program.split("/")).pop()
     Cmd = " ".join([Program] + ["DirResults=" + DirResults] + Args)
     NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameFileJob)
