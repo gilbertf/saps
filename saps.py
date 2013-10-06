@@ -88,8 +88,15 @@ def ReadYaml(NameFile, DirSaps):
     except yaml.scanner.ScannerError as e:
         if hasattr(e, 'problem_mark'):
             mark = e.problem_mark
-            print("Error position: (%s:%s)" % (mark.line+1, mark.column+1))
-        Msg.Error("Syntax error in description file: " + e)
+            Msg.Error(0, "Scaner error at position %s:%s: \"%s\"" % (mark.line+1, mark.column+1, data.split("\n")[mark.line]))
+        else:
+            Msg.Error(0, "Scanner error.")
+    except yaml.parser.ParserError as e:
+        if hasattr(e, 'problem_mark'):
+            mark = e.problem_mark
+            Msg.Error(0, "Parser error at position %s:%s: \"%s\"" % (mark.line+1, mark.column+1, data.split("\n")[mark.line]))
+        else:
+            Msg.Error(0, "Parser error.")
     except:
         raise
         Msg.Error(0, "Unable to read yaml file " + CompleteNameFile)
@@ -137,15 +144,23 @@ def ParseFloatRange(s):
             Msg.Error(2,"Syntax error in " + t)
     return l 
 
-def RestructureTree(Tree, inFigure):
+def RestructureTree(Tree, inFigure, inRoot):
     global Options
+    hasFigure = False
+    hasSet = False
     Properties = Options.ydict()
     FiguresSets = Options.ydict()
     if type(Tree) == Options.ydict:
         #Seperate in two Groups: FigureSets and Properties. Move PlotSet into the Figures but not the Sets
         for t in Tree:
             if "Figure " in t or "Set " in t:
+                if type(Tree[t]) is not Options.ydict:
+                    Msg.Error(0, "\"" + t + "\" does not have any properties defined,")
                 FiguresSets[t] = Tree[t]
+                if "Figure " in t:
+                    hasFigure = True
+                elif "Set " in t:
+                    hasSet = True
             elif t == "PlotSet":
                 if inFigure:
                     FiguresSets[t] = Tree[t]
@@ -153,6 +168,11 @@ def RestructureTree(Tree, inFigure):
                     Properties[t] = Tree[t]
             else:
                 Properties[t] = Tree[t]
+        #Check for correct structure
+        if inFigure and not hasSet:
+            Msg.Error(0, "A figure has to contain at least one \"Set <name>:\" definition.")
+        if inRoot and not hasFigure:
+            Msg.Error(0, "You have to specify at least one \"Figure <name>:\" block.")
         #Append all properties to all FigureSets
         for fs in FiguresSets:
             if "Figure " in fs or "Set " in fs:
@@ -162,11 +182,10 @@ def RestructureTree(Tree, inFigure):
                             FiguresSets[fs][p] = Properties[p]
                         else:
                             Msg.Warning(0, "More specific value " + str(FiguresSets[fs][p]) + " for " + p + " overwrites " + str(Properties[p]) + ".")
+                    inFigure = False
                     if "Figure " in fs:
                         inFigure = True
-                    else:
-                        inFigure = False
-                    FiguresSets[fs] = RestructureTree(FiguresSets[fs], inFigure)
+                    FiguresSets[fs] = RestructureTree(FiguresSets[fs], inFigure, False)
         if len(FiguresSets) == 0:
             return(Properties) # In der tiefsten Ebene gibt es nur noch properties
         else:
@@ -414,7 +433,7 @@ def main():
     Options.ReadFileConfig("saps.conf")
     ParseArgs()
     Tree = ReadYaml(Options.Descriptionfile, False)
-    Tree = RestructureTree(Tree, False)
+    Tree = RestructureTree(Tree, False, True)
 
     try:
         os.makedirs(Options.SetDir)
