@@ -22,6 +22,9 @@ class options():
     
     DebugAnalyse = False
     
+    Plot2Pdf = False
+    Plot2X = False
+    
     #Actions
     Simulate = False
     View = False
@@ -44,6 +47,27 @@ class options():
             self.RoundDigits = int(self.Config["Saps"]["RoundDigits"])
         except:
             None
+            
+        try:
+            self.RoundDigits = int(self.Config["Saps"]["RoundDigits"])
+        except:
+            None
+            
+        try:
+            self.Plot2Pdf = int(self.Config["Saps"]["Plot2Pdf"])
+        except:
+            None
+            
+        try:
+            self.Plot2X = int(self.Config["Saps"]["Plot2X"])
+        except:
+            None
+            
+        if self.Plot2Pdf:
+            try:
+                self.DirPlot = os.path.expanduser(self.Config["Saps"]["DirPlot"])
+            except:
+                Msg.Error(1, "Saps -> DirPlot has to be defined in configfile, because Plot2Pdf is set.")
             
         try:
             self.SetDir = os.path.expanduser(self.Config["Saps"]["DirSet"])
@@ -393,6 +417,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
         else:
             Msg.Msg(1, "Set", NameSet)
             ParseSet(Tree, NameFigure, NameSet, PlotList)
+            
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
         for t in Tree:
@@ -417,9 +442,22 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 PlotList = []
                 ProcessTree(Tree[t], NameFigure, PlotList, GnuplotOptions)
                 if Options.Plot:
-                    Msg.Notice(1, "Plotting")
-                    PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in GnuplotOptions]) + "plot " + ", ".join(PlotList) + "\""
-                    os.system(PlotCmd)
+                    if Options.Plot2X:
+                        print(Options.Indent + "Plotting to X11 using Gnuplot")
+                        PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in GnuplotOptions]) + "plot " + ", ".join(PlotList) + "\""
+                        os.system(PlotCmd)
+                        
+                    if Options.Plot2Pdf:
+                        DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, NameFigure.replace(" ","_"))
+                        os.makedirs(DirPlot)
+                        NameFilePdfFigure = os.path.join(DirPlot, NameFigure.replace(" ","_"))
+                        GnuplotOptions = ["terminal postscript eps enhanced color solid size 7,7","output \\\"" + NameFilePdfFigure + ".eps\\\""] + GnuplotOptions
+                        print(Options.Indent + "Plotting to pdfs using Gnuplot")
+                        PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in GnuplotOptions]) + "plot " + ", ".join(PlotList) + "\""
+                        os.system(PlotCmd)
+                        os.system("ps2pdf " + NameFilePdfFigure + ".eps " + NameFilePdfFigure + ".pdf")
+                        os.system("rm " + NameFilePdfFigure + ".eps")
+                        os.system("acroread " + NameFilePdfFigure + ".pdf")
 
 
 def ShowSyntax():

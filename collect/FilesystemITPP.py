@@ -50,7 +50,7 @@ for Args in ListArgs:
             for v in x:
                 val[i].append(float(v))
 
-Msg.Msg(2, "Complete:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " Defect: " + str(NumDefectResultsFiles))
+Msg.Msg(2, "Collect:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " complete, " + str(NumDefectResultsFiles) + " defect")
 if NumDefectResultsFiles > 0:
     if StopOnDefectSetFiles is True:
         Error(2, "Not all set files could be read.")
