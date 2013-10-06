@@ -5,7 +5,7 @@ import os
 try:
     DirResults = Options.Config["FilesystemITPP"]["DirResults"]
 except:
-    Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
+    Msg.Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
 DirResults = os.path.expanduser(DirResults)
 
 try:
@@ -53,6 +53,6 @@ for Args in ListArgs:
 Msg.Msg(2, "Complete:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " Defect: " + str(NumDefectResultsFiles))
 if NumDefectResultsFiles > 0:
     if StopOnDefectSetFiles is True:
-        Error(2, "Not all set files could be read.")
+        Msg.Error(2, "Not all set files could be read.")
 
 Values = val
