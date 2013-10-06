@@ -18,7 +18,7 @@ class options():
     
     Descriptionfile = None
     Config = None
-    Indent = " " * 3
+    Indent = " " * 2
     
     DebugAnalyse = False
     
