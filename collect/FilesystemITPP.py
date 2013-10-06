@@ -55,4 +55,4 @@ if NumDefectResultsFiles > 0:
     if StopOnDefectSetFiles is True:
         Error(2, "Not all set files could be read.")
 
-Values = numpy.asarray(val)
+Values = val

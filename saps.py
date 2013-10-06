@@ -18,7 +18,9 @@ class options():
     
     Descriptionfile = None
     Config = None
-    Indent = "   "
+    Indent = " " * 3
+    
+    DebugAnalyse = False
     
     #Actions
     Simulate = False
@@ -172,11 +174,13 @@ def RestructureTree(Tree, inFigure, inRoot):
                     Properties[t] = Tree[t]
             else:
                 Properties[t] = Tree[t]
+                
         #Check for correct structure
         if inFigure and not hasSet:
             Msg.Error(0, "A figure has to contain at least one \"Set <name>:\" definition.")
         if inRoot and not hasFigure:
             Msg.Error(0, "You have to specify at least one \"Figure <name>:\" block.")
+            
         #Append all properties to all FigureSets
         for fs in FiguresSets:
             if "Figure " in fs or "Set " in fs:
@@ -190,6 +194,7 @@ def RestructureTree(Tree, inFigure, inRoot):
                     if "Figure " in fs:
                         inFigure = True
                     FiguresSets[fs] = RestructureTree(FiguresSets[fs], inFigure, False)
+
         if len(FiguresSets) == 0:
             return(Properties) # In der tiefsten Ebene gibt es nur noch properties
         else:
@@ -243,16 +248,20 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             PlotOpt = Set.pop("PlotOpt")
         except:
             PlotOpt = None
-            
-        try:
-            Analyse = Set.pop("Analyse")
-            Analyse = SplitComma(Analyse)
-        except:
-            Analyse = None
 
+        DictAnalyse = Options.ydict()
+        for s in Set:
+            if "Analyse " in s:
+                DictAnalyse[s] = Set.pop(s)
+
+        #Check that parameters do not contain "forbidden" stuff
+        for s in Set:
+            if " " in s:
+                Msg.Error(2, "The space character is not allowed for parameter names. Please modify: " + str(s))
+                
+        #Puting the parameters in a list                
         Set = list(Set.items())
         Set.sort()
-
         ListArgs = []
         ExpandSet(Set, ListArgs)
 
@@ -278,30 +287,66 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 Values = Env["Values"]
                 Axis = Env["Axis"]
             except:
-                Msg.Notice(2, "The collect module did not return a Values and Axis")
-
-            if Analyse is not None:
-                In = []
-                AxisIn = []
-                if len(Analyse) > 1:
-                    ParamsPP = Analyse[1:]
-                    for NameParam in ParamsPP:
-                        try:
-                            Idx = Axis.index(NameParam)
-                        except:
-                            Msg.Error(2, "The Analyse parameter " + NameParam + " is invalid.")
-                        In.append(Values[Idx])
-                        AxisIn.append(Axis[Idx])
-                Env = dict(Values=In, Axis=AxisIn, CntAxis=len(AxisIn), Options = Options, Msg=Msg)
-                RunFileCode(os.path.join("analyse", Analyse[0]), True, Env)
-                try:
-                    Values = Env["Out"]
-                except:
-                    Msg.Notice(2, "The analyse module did not return a value")
+                Msg.Notice(2, "The collect module did not return Values and Axis")
             
-            #Values = Values.swapaxes(0,1)
-            Values = zip(*Values[::1])
+            for Analyse in DictAnalyse:                  
+                NameAnalyse = Analyse[Analyse.find(" ")+1:]
+                Analyse =  DictAnalyse[Analyse]
+                Msg.Msg(2, "Analyse:", NameAnalyse)
+                try:
+                    FunctionAnalyse = Analyse.pop("Function")
+                except:
+                    Msg.Error(3, "Analyse " + NameAnalyse + " is missing Function definition")
+                    
+                try:
+                    AxisInAnalyse = SplitComma(Analyse.pop("AxisIn"))
+                except:
+                    Msg.Error(3, "Analyse " + NameAnalyse + " is missing AxisIn definition")
+                try:
+                    AxisOutAnalyse = SplitComma(Analyse.pop("AxisOut"))
+                except:
+                    Msg.Error(3, "Analyse " + NameAnalyse + " is missing AxisOut definition")
 
+                AxisIn = list()
+                ValuesIn = list()
+                
+                for axis in AxisInAnalyse:
+                    if axis not in Axis:
+                        Msg.Error(3, "Analyse AxisIn definition " + str(axis) + " is invalid. Available are: " + str(Axis))
+                    idx = Axis.index(axis)
+                    AxisIn.append(Axis.pop(idx))
+                    ValuesIn.append(Values.pop(idx))
+                    
+                if Options.DebugAnalyse:
+                    print(Options.Indent*3 + "AxisIn: " + str(AxisIn) + "\n" + Options.Indent*3 + "ValuesIn: " + str(ValuesIn))
+
+                Env = dict(ValuesIn=ValuesIn, AxisIn=AxisIn, AxisOut=AxisOutAnalyse, Options=Options, Msg=Msg, Analyse=Analyse)
+                RunFileCode(os.path.join("analyse", FunctionAnalyse + ".py"), True, Env)
+                
+                #Put analyse results back to file
+                try:
+                    ValuesOut = Env["ValuesOut"]
+                    AxisOut = Env["AxisOut"]
+                    for axis in AxisOut:
+                        Axis.append(AxisOut.pop())
+                        Values.append(ValuesOut.pop())
+                except:
+                    Msg.Notice(2, "The analyse module did not return the values correctly.")                
+                    
+                if Options.DebugAnalyse:
+                    print(Options.Indent*3 + "AxisOut: " + str(Axis) + "\n" + Options.Indent*3 + "ValuesOut: " + str(Values))
+
+            ##Check if all axis contain the same number of Elements
+            Start = None
+            for v in Values:
+                if Start is None:
+                    Start = len(v)
+                else:
+                    if Start != len(v):
+                        Msg.Error(2, "Number of elements per axis does not match")
+            
+            #Save results to Setfiles
+            Values = zip(*Values[::1])
             SetFile = open(NameFileSet, 'w')
             SetFile.write("#" + "\t".join([str(x) for x in Axis])+"\n")
             for v in Values:
@@ -313,7 +358,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             view = SetFile.read()
             SetFile.close()
             for v in view.split("\n"):
-                print(Options.Indent*2, v)
+                Msg.Msg(2, "", v)
 
         if Options.Plot:
             s = "\\\"" + NameFileSet + "\\\"" + " title " + "\\\"" + NameSet + "\\\" "
@@ -327,7 +372,6 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
             a = NameSet.find("%")
             b = NameSet[a+1:].find("%")
             VarName = NameSet[a+1:a+b+1]
-            
             
             DoExtract = False
             if len(VarName) > 1 and VarName[0] == "!" :
@@ -347,7 +391,7 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 TmpTree[VarName] = ExpandedValue
                 ExpandValue(TmpTree, NameFigure, TmpNameSet, PlotList)
         else:
-            print(Options.Indent, "Set", NameSet)
+            Msg.Msg(1, "Set", NameSet)
             ParseSet(Tree, NameFigure, NameSet, PlotList)
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
