@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import OrderedYaml
+#import DuplicateYaml
 import yaml
 import os
 import sys
@@ -81,7 +82,10 @@ def ReadYaml(NameFile, DirSaps):
         CompleteFile = open(CompleteNameFile, 'r')
         data = CompleteFile.read()
         CompleteFile.close()
-        Tree = yaml.load(data)
+        try:
+            Tree = yaml.load(data)
+        except OrderedYaml.DuplicateKeyError as e:
+            Msg.Error(0, "Duplicate enty. Please remove one of \"" + e.key + "\"")
         return(Tree)
     except FileNotFoundError:
         Msg.Error(0, "The description file " + CompleteNameFile + " does not exist.")

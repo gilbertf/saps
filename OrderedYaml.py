@@ -1,6 +1,12 @@
 import yaml
 import collections
 
+class DuplicateKeyError(Exception):
+    def __init__(self, key):
+        self.key = key
+    def __str__(self):
+        return repr(self.key)
+        
 def construct_ordered_mapping(self, node, deep=False):
     if not isinstance(node, yaml.MappingNode):
         raise ConstructorError(None, None,
@@ -13,6 +19,8 @@ def construct_ordered_mapping(self, node, deep=False):
             raise ConstructorError("while constructing a mapping", node.start_mark,
                     "found unhashable key", key_node.start_mark)
         value = self.construct_object(value_node, deep=deep)
+        if key in mapping:
+            raise(DuplicateKeyError(str(key)))
         mapping[key] = value
     return mapping
 
