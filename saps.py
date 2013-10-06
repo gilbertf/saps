@@ -351,6 +351,8 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 try:
                     ValuesOut = Env["ValuesOut"]
                     AxisOut = Env["AxisOut"]
+                    if Options.DebugAnalyse:
+                        print(Options.Indent*3 + "AxisOut: " + str(AxisOut) + "\n" + Options.Indent*3 + "ValuesOut: " + str(ValuesOut))
                     for axis in AxisOut:
                         Axis.append(AxisOut.pop())
                         Values.append(ValuesOut.pop())
@@ -358,16 +360,16 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                     Msg.Notice(2, "The analyse module did not return the values correctly.")                
                     
                 if Options.DebugAnalyse:
-                    print(Options.Indent*3 + "AxisOut: " + str(Axis) + "\n" + Options.Indent*3 + "ValuesOut: " + str(Values))
+                    print(Options.Indent*3 + "Axis: " + str(Axis) + "\n" + Options.Indent*3 + "Values: " + str(Values))
 
             ##Check if all axis contain the same number of Elements
             Start = None
-            for v in Values:
+            for idx, v in enumerate(Values):
                 if Start is None:
                     Start = len(v)
                 else:
                     if Start != len(v):
-                        Msg.Error(2, "Number of elements per axis does not match")
+                        Msg.Error(2, "Number of elements per axis does not match. " + Axis[0] + " has " + str(Start) + " while " + Axis[idx] + " has " + str(len(v)) + " elements.")
             
             #Save results to Setfiles
             Values = zip(*Values[::1])
