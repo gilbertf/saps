@@ -17,12 +17,16 @@ NumDefectResultsFiles = 0
 NumCompleteResultsFiles = 0
 NumResultsFiles = len(ListArgs)
 
+DebugCollect = False
+
 val = []
 for i in range(NumAxis):
     val.append([])
 for Args in ListArgs:
     NameFileResult = "_".join(Args)
     NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + NameFileResult
+    if DebugCollect:
+        print("NameFileResult: " + NameFileResult)
     r = itload(NameFileResult)
     import numbers
     if r == "" or r == "defekt":
