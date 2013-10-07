@@ -317,13 +317,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             
             for Analyse in DictAnalyse:                  
                 NameAnalyse = Analyse[Analyse.find(" ")+1:]
-                Analyse =  DictAnalyse[Analyse]
+                Analyse =  DictAnalyse[Analyse].copy() #Restructure may put references in the Tree, we only want to modify a copy+
                 Msg.Msg(2, "Analyse:", NameAnalyse)
                 try:
                     FunctionAnalyse = Analyse.pop("Function")
                 except:
                     Msg.Error(3, "Analyse " + NameAnalyse + " is missing Function definition")
-                    
                 try:
                     AxisInAnalyse = SplitComma(Analyse.pop("AxisIn"))
                 except:
@@ -335,7 +334,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
 
                 AxisIn = list()
                 ValuesIn = list()
-                
                 for axis in AxisInAnalyse:
                     if axis not in Axis:
                         Msg.Error(3, "Analyse AxisIn definition " + str(axis) + " is invalid. Available are: " + str(Axis))
