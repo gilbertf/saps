@@ -21,7 +21,8 @@ class options():
     Indent = " " * 2
     
     DebugAnalyse = False
-    DebugRestructure = True
+    DebugRestructure = False
+    DebugPlot = False
 
     Plot2Pdf = False
     Plot2X = False
@@ -227,14 +228,14 @@ def RestructureTree(Tree, inFigure, inRoot):
             
 
     
-def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
+def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
     def ExtractValues(s, DoExtract): #Always returns list of strs to make handling easier
         if type(s) == str and DoExtract:
             return(ParseFloatRange(s))
         else:
             return([Num2Str(s)])
             
-    def ParseSet(Set, NameFigure, NameSet, PlotList):
+    def ParseSet(Set, NameFigure, NameSet, ListPlotOpt):
         global Options
         def ExpandSet(Set, ListArgs, cmd = []):
             if len(Set) > 0:
@@ -393,9 +394,9 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 if type(PlotOpt) is list:
                     PlotOpt = " ".join(PlotOpt)
                 s = s + PlotOpt
-            PlotList.append(s)
+            ListPlotOpt.append(s)
 
-    def ExpandValue(Tree, NameFigure, NameSet, PlotList):
+    def ExpandValue(Tree, NameFigure, NameSet, ListPlotOpt):
         global Msg
         if "%" in NameSet:
             a = NameSet.find("%")
@@ -418,25 +419,24 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                 TmpNameSet = NameSet[:a] + str(ExpandedValue) + NameSet[a+b+2:]
                 TmpTree = Tree.copy()
                 TmpTree[VarName] = ExpandedValue
-                ExpandValue(TmpTree, NameFigure, TmpNameSet, PlotList)
+                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlotOpt)
         else:
             Msg.Msg(1, "Set", NameSet)
-            ParseSet(Tree, NameFigure, NameSet, PlotList)
+            ParseSet(Tree, NameFigure, NameSet, ListPlotOpt)
             
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
         for t in Tree:
             if t == "PlotSet":
-                PlotSet = Tree[t]
-                if type(PlotSet) is list:
-                    GnuplotOptions = GnuplotOptions + PlotSet
+                if type(Tree[t]) is  list:
+                    ListPlotSet.extend(Tree[t])
                 else:
-                    GnuplotOptions.append(Tree[t])
+                    ListPlotSet.append(Tree[t])
             elif "Set " in t:
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
                     Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
-                ExpandValue(Tree[t], NameFigure, NameSet, PlotList)
+                ExpandValue(Tree[t], NameFigure, NameSet, ListPlotOpt)
             elif "Figure " in t:
                 NameFigure = t.split("Figure ")[1]
                 print("Figure", NameFigure)
@@ -447,13 +447,13 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                     except:
                         None
 
-                GnuplotOptions = []
-                PlotList = []
-                ProcessTree(Tree[t], NameFigure, PlotList, GnuplotOptions)
+                ListPlotSet = []
+                ListPlotOpt = []
+                ProcessTree(Tree[t], NameFigure, ListPlotOpt, ListPlotSet)
                 if Options.Plot:
                     if Options.Plot2X:
                         print(Options.Indent + "Plotting to X11 using Gnuplot")
-                        PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in GnuplotOptions]) + "plot " + ", ".join(PlotList) + "\""
+                        PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
                         os.system(PlotCmd)
                         
                     if Options.Plot2Pdf:
@@ -463,13 +463,16 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                         except:
                             None
                         NameFilePdfFigure = os.path.join(DirPlot, NameFigure.replace(" ","_"))
-                        GnuplotOptions = ["terminal postscript eps enhanced color solid size 7,7","output \\\"" + NameFilePdfFigure + ".eps\\\""] + GnuplotOptions
+                        ListPlotSet = ["terminal postscript eps enhanced color solid size 7,7","output \\\"" + NameFilePdfFigure + ".eps\\\""] + ListPlotSet
                         print(Options.Indent + "Plotting to pdfs using Gnuplot")
-                        PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in GnuplotOptions]) + "plot " + ", ".join(PlotList) + "\""
+                        PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
                         os.system(PlotCmd)
                         os.system("ps2pdf " + NameFilePdfFigure + ".eps " + NameFilePdfFigure + ".pdf")
                         os.system("rm " + NameFilePdfFigure + ".eps")
                         os.system("acroread " + NameFilePdfFigure + ".pdf")
+                    if Options.DebugPlot:
+                        print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))
+                        print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
 
 
 def ShowSyntax():
@@ -533,7 +536,7 @@ def main():
     Tree = ReadYaml(Options.Descriptionfile, False)
     Tree = RestructureTree(Tree, False, True)
     if Options.DebugRestructure:
-        print(Options.Indent + yaml.dump(Tree, default_flow_style=False))
+        print(yaml.dump(Tree, default_flow_style=False))
     try:
         os.makedirs(Options.SetDir)
     except:
