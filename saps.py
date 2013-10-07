@@ -21,7 +21,8 @@ class options():
     Indent = " " * 2
     
     DebugAnalyse = False
-    
+    DebugRestructure = True
+
     Plot2Pdf = False
     Plot2X = False
     
@@ -389,6 +390,8 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
         if Options.Plot:
             s = "\\\"" + NameFileSet + "\\\"" + " title " + "\\\"" + NameSet + "\\\" "
             if PlotOpt is not None:
+                if type(PlotOpt) is list:
+                    PlotOpt = " ".join(PlotOpt)
                 s = s + PlotOpt
             PlotList.append(s)
 
@@ -424,7 +427,11 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
     if type(Tree) == Options.ydict:
         for t in Tree:
             if t == "PlotSet":
-                GnuplotOptions.append(Tree[t])
+                PlotSet = Tree[t]
+                if type(PlotSet) is list:
+                    GnuplotOptions = GnuplotOptions + PlotSet
+                else:
+                    GnuplotOptions.append(Tree[t])
             elif "Set " in t:
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
@@ -451,7 +458,10 @@ def ProcessTree(Tree, NameFigure = "", PlotList = [], GnuplotOptions = []):
                         
                     if Options.Plot2Pdf:
                         DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, NameFigure.replace(" ","_"))
-                        os.makedirs(DirPlot)
+                        try:
+                            os.makedirs(DirPlot)
+                        except:
+                            None
                         NameFilePdfFigure = os.path.join(DirPlot, NameFigure.replace(" ","_"))
                         GnuplotOptions = ["terminal postscript eps enhanced color solid size 7,7","output \\\"" + NameFilePdfFigure + ".eps\\\""] + GnuplotOptions
                         print(Options.Indent + "Plotting to pdfs using Gnuplot")
@@ -522,7 +532,8 @@ def main():
     ParseArgs()
     Tree = ReadYaml(Options.Descriptionfile, False)
     Tree = RestructureTree(Tree, False, True)
-
+    if Options.DebugRestructure:
+        print(Options.Indent + yaml.dump(Tree, default_flow_style=False))
     try:
         os.makedirs(Options.SetDir)
     except:
