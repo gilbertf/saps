@@ -9,15 +9,21 @@ except:
 DirResults = os.path.expanduser(DirResults)
 
 try:
-    StopOnDefectSetFiles = Options.Config["FilesystemITPP"]["StopOnDefectSetFiles"]
+    StopOnDefectResultFiles = Options.Config["FilesystemITPP"]["StopOnDefectResultFiles"]
 except:
-    StopOnDefectSetFiles = False
+    StopOnDefectResultFiles = True
+    
+try:
+    StopOnIncompleteResultFiles = Options.Config["FilesystemITPP"]["StopOnIncompleteResultFiles"]
+except:
+    StopOnIncompleteResultFiles = True
+    
     
 NumDefectResultsFiles = 0
 NumCompleteResultsFiles = 0
 NumResultsFiles = len(ListArgs)
 
-DebugCollect = False
+DebugCollect = Options.DebugCollect
 
 val = []
 for i in range(NumAxis):
@@ -31,7 +37,6 @@ for Args in ListArgs:
     import numbers
     if r == "" or r == "defekt":
         NumDefectResultsFiles = NumDefectResultsFiles + 1
-        Warning(2, "Defect results file " + NameFileResult)
         continue
     try:
         Complete = r["Complete"]
@@ -40,23 +45,27 @@ for Args in ListArgs:
         continue
     if not isinstance(Complete, numbers.Number):
         Complete = float(Complete)
-    if Complete == -1:
-        Msg.Notice(2, "The Complete variable is not updated by your program")
     if round(Complete, Options.RoundDigits) == 1:
         NumCompleteResultsFiles = NumCompleteResultsFiles + 1
-    for i, a in enumerate(Axis):
-        x = r[a]
-        if isinstance(x, numbers.Number):
-            val[i].append(float(x))
+        for i, a in enumerate(Axis):
+            x = r[a]
+            if isinstance(x, numbers.Number):
+                val[i].append(float(x))
+            else:
+                if len(x) == 0: #For example if calculation is still running
+                    x = [-1]
+                for v in x:
+                    val[i].append(float(v))
+    else:
+        if StopOnIncompleteResultFiles:
+            Msg.Error(2, "Incomplete result file " + NameFileResult)
         else:
-            if len(x) == 0: #For example if calculation is still running
-                x = [-1]
-            for v in x:
-                val[i].append(float(v))
+            Msg.Warning(2, "Incomplete result file " + NameFileResult)
 
 Msg.Msg(2, "Collect:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " complete, " + str(NumDefectResultsFiles) + " defect")
 if NumDefectResultsFiles > 0:
-    if StopOnDefectSetFiles is True:
+    if StopOnDefectResultFiles:
         Msg.Error(2, "Not all set files could be read.")
-
+    else:
+        Msg.Warning(2, "Not all set files could be read.")
 Values = val

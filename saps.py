@@ -21,6 +21,7 @@ class options():
     Indent = " " * 2
     
     DebugAnalyse = False
+    DebugCollect = False
     DebugRestructure = False
     DebugPlot = False
 
@@ -35,6 +36,26 @@ class options():
     
     def ReadFileConfig(self, NameFileConfig):
         self.Config = ReadYaml(NameFileConfig, True)
+        
+        #Debug Parameters
+        try:
+            self.DebugAnalyse = self.Config["Saps"]["DebugAnalyse"]
+        except:
+            None
+        try:
+            self.DebugCollect = self.Config["Saps"]["DebugCollect"]
+        except:
+            None
+        try:
+            self.DebugRestructure = self.Config["Saps"]["DebugRestructure"]
+        except:
+            None
+        try:
+            self.DebugPlot = self.Config["Saps"]["DebugPlot"]
+        except:
+            None
+            
+        #Msg Parameters
         try:
             self.ShowNotice = self.Config["Saps"]["ShowNotice"]
         except:
@@ -55,6 +76,7 @@ class options():
         except:
             None
             
+        #Plot configuration
         try:
             self.Plot2Pdf = int(self.Config["Saps"]["Plot2Pdf"])
         except:
@@ -70,7 +92,8 @@ class options():
                 self.DirPlot = os.path.expanduser(self.Config["Saps"]["DirPlot"])
             except:
                 Msg.Error(1, "Saps -> DirPlot has to be defined in configfile, because Plot2Pdf is set.")
-            
+        
+        #Collect configuration
         try:
             self.SetDir = os.path.expanduser(self.Config["Saps"]["DirSet"])
         except:
@@ -277,7 +300,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
 
         DictAnalyse = Options.ydict()
         for s in Set:
-            if "Analyse " in s:
+            if "Analyse" in s: #Akzeptiere auch Analysen ohne Eigenname, deshalb kein Leerzeichen
                 DictAnalyse[s] = Set.pop(s)
 
         #Check that parameters do not contain "forbidden" stuff
@@ -317,6 +340,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             
             for Analyse in DictAnalyse:                  
                 NameAnalyse = Analyse[Analyse.find(" ")+1:]
+                if type(DictAnalyse[Analyse]) is not Options.ydict:
+                    Msg.Error(2, "We expect the Analyse option to be a list of parameters.")
                 Analyse =  DictAnalyse[Analyse].copy() #Restructure may put references in the Tree, we only want to modify a copy+
                 Msg.Msg(2, "Analyse:", NameAnalyse)
                 try:
