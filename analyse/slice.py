@@ -6,7 +6,7 @@ if len(AxisOut) != 1:
 for RowValues in ValuesIn:
     NewRow = list()
     for Idx in range(Analyse["First"], len(RowValues), Analyse["Repeat"]):
-        for j in range(Analyse["Last"]+1):
+        for j in range(Analyse["Last"]-Analyse["First"]+1):
             p = Idx+j
             #print(p)
             NewRow.append(RowValues[p])
