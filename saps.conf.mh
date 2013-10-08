@@ -26,8 +26,12 @@ Collect: FilesystemITPP.py
 #Module configuration
 FilesystemITPP:
   DirResults: ~/Dissertation/results
-  StopOnDefectResultFiles: False
+  StopOnDefectResultFiles: True
   StopOnIncompleteResultFiles: False
 
 FilesystemCluster:
   DirJob: ~/Dissertation/cluster/jobs/waiting
+
+PbsCluster:
+  DirJob: ~/Dissertation/cluster/jobs/waiting
+  DirLog: ~/Dissertation/cluster/logs
