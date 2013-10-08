@@ -29,8 +29,7 @@ val = []
 for i in range(NumAxis):
     val.append([])
 for Args in ListArgs:
-    NameFileResult = "_".join(Args)
-    NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + NameFileResult
+    NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + "_".join(Args)
     if DebugCollect:
         print("NameFileResult: " + NameFileResult)
     r = itload(NameFileResult)

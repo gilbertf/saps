@@ -4,7 +4,7 @@ import random
 try:
     DirResults = Options.Config["FilesystemITPP"]["DirResults"]
 except:
-    Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
+    Msg.Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
 DirResults = os.path.expanduser(DirResults)
 
 def WriteJobfile(Cmd, DirJob, NameFileJob):
@@ -32,8 +32,12 @@ except:
 NumCreated = 0
 DirResults = DirResults + "/" + (Program.split("/")).pop()
 for Args in ListArgs:
+    NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + "_".join(Args)
+    if os.path.isfile(NameFileResult):
+        Msg.Notice(1, "Result file exists already, skipping job.")
+        continue
     NameFileJob = "_".join(Args)
     Cmd = " ".join([Program] + ["DirResults=" + DirResults] + Args)
     NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameFileJob)
     
-print(Options.Indent, "Simulating:", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobfiles created.")
+Msg.Msg(1, "Simulating", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobfiles created.")

@@ -1,6 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import OrderedYaml
-#import DuplicateYaml
 import yaml
 import os
 import sys

@@ -1,0 +1,37 @@
+#Main programs options
+Saps:
+  #Collect
+  DirSet: ~/Dissertation/sets
+
+  #Plot configuration
+  DirPlot: ~/Dissertation/plots
+  Plot2Pdf: False
+  Plot2X: True
+
+  #Debug
+  DebugAnalyse: False
+  DebugCollect: False
+  DebugRestructure: False
+  DebugPlot: False
+
+  #Msg configuration
+  ShowNotice: True
+  ShowWarning: True
+  RoundDigits: 13
+
+#Module selection
+Simulate: PbsCluster.py
+Collect: FilesystemITPP.py
+
+#Module configuration
+FilesystemITPP:
+  DirResults: ~/Dissertation/results
+  StopOnDefectResultFiles: True
+  StopOnIncompleteResultFiles: False
+
+FilesystemCluster:
+  DirJob: ~/Dissertation/cluster/jobs/waiting
+
+PbsCluster:
+  DirJob: ~/Dissertation/cluster/jobs/waiting
+  DirLog: ~/Dissertation/cluster/logs
