@@ -41,7 +41,7 @@ def Cluster(Cmd, DirJob, NameFileJob):
 NumCreated = 0
 DirResults = DirResults + "/" + (Program.split("/")).pop()
 for Args in ListArgs:
-    NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + "_".join(Args)
+    NameFileResult = DirResults + "/" + "_".join(Args)
     if os.path.isfile(NameFileResult):
         Msg.Notice(1, "Result file exists already, skipping job.")
         continue

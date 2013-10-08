@@ -10,6 +10,7 @@ DirResults = os.path.expanduser(DirResults)
 def WriteJobfile(Cmd, DirJob, NameFileJob):
     NameFileJob = os.path.join(os.path.expanduser(DirJob), NameFileJob)
     if os.path.isfile(NameFileJob):
+        Msg.Notice(2, "Job file was created before, skipping.")
         return(0)
     try:
         FileJob = open(NameFileJob, 'w')
@@ -32,9 +33,9 @@ except:
 NumCreated = 0
 DirResults = DirResults + "/" + (Program.split("/")).pop()
 for Args in ListArgs:
-    NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + "_".join(Args)
+    NameFileResult = DirResults + "/" + "_".join(Args)
     if os.path.isfile(NameFileResult):
-        Msg.Notice(1, "Result file exists already, skipping job.")
+        Msg.Notice(2, "Result file exists already, skipping job.")
         continue
     NameFileJob = "_".join(Args)
     Cmd = " ".join([Program] + ["DirResults=" + DirResults] + Args)
