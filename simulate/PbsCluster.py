@@ -19,6 +19,22 @@ except:
     Msg.Error(1, "PbsCluster -> DirJob has to be defined in configfile.")
 DirJob = os.path.expanduser(DirJob)
 
+
+try:
+    Walltime = Options.Config["PbsCluster"]["Walltime"]
+except:
+    Walltime = None
+    
+try:
+    Queue = Options.Config["PbsCluster"]["Queue"]
+except:
+    Queue = None
+    
+try:
+    Resources = Options.Config["PbsCluster"]["Resources"]
+except:
+    Resources = None
+
 try:
     os.makedirs(DirJob)
 except:
@@ -32,9 +48,22 @@ except:
 
 
 def Cluster(Cmd, DirJob, NameFileJob):
-    ClusterCmd = "echo \"" + Cmd + "\" | qsub -o " + os.path.join(DirLog, "out", NameFileJob) + " -e " + os.path.join(DirLog, "err", NameFileJob) + " -l select=1:ncpus=1"
+    Options = list()
+    Options.append("-o " + os.path.join(DirLog, "out", NameFileJob))
+    Options.append("-e " + os.path.join(DirLog, "err", NameFileJob))
+    if Resources:
+        Options.append("-l " + ":".join(Resources))
+    if Queue:
+        Options.append("-q " + Queue)
+    if Walltime:
+        if type(Walltime) is not str:
+            Msg.Error(1, "Walltime has to be given as string")
+        Options.append("-l walltime=" + Walltime)
+    ClusterCmd = "echo \"" + Cmd + "\" | qsub " + " ".join(Options)
     #Msg.Msg(2, "Cluster", ClusterCmd)
-    os.system(ClusterCmd)
+    ret = os.system(ClusterCmd)
+    if ret != 0:
+        Msg.Error(1, "qsub execution failed.")
     return(1)
 
 
