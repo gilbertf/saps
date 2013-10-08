@@ -39,14 +39,13 @@ def Cluster(Cmd, DirJob, NameFileJob):
 
 
 NumCreated = 0
-DirResults = DirResults + "/" + (Program.split("/")).pop()
 for Args in ListArgs:
-    NameFileResult = DirResults + "/" + "_".join(Args)
+    NameFileResult = os.path.join(DirResults, Program.split("/").pop(), "_".join(Args))
     if os.path.isfile(NameFileResult):
         Msg.Notice(1, "Result file exists already, skipping job.")
         continue
     NameFileJob = "_".join(Args)
-    Cmd = " ".join([Program] + ["DirResults=" + DirResults] + Args)
+    Cmd = " ".join([Program] + ["NameFileResult=" + NameFileResult] + Args)
     NumCreated = NumCreated + Cluster(Cmd, DirJob, NameFileJob)
     
 Msg.Msg(1, "Simulating", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobs send to pbs.")
