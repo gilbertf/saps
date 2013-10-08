@@ -33,7 +33,7 @@ except:
 
 def Cluster(Cmd, DirJob, NameFileJob):
     ClusterCmd = "echo \"" + Cmd + "\" | qsub -o " + os.path.join(DirLog, "out", NameFileJob) + " -e " + os.path.join(DirLog, "err", NameFileJob) + " -l select=1:ncpus=1"
-    Msg.Msg(2, "Cluster", ClusterCmd)
+    #Msg.Msg(2, "Cluster", ClusterCmd)
     os.system(ClusterCmd)
     return(1)
 

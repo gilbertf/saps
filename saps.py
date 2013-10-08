@@ -314,9 +314,22 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
         ListArgs = []
         ExpandSet(Set, ListArgs)
 
-	if Options.Delete:
-            NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + "_".join(Args)
-            Msg.Notice(1, "Deleting result file " + NameFileResult))
+        if Options.Delete:
+            try:
+                DirResults = Options.Config["FilesystemITPP"]["DirResults"]
+            except:
+                Msg.Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
+            DirResults = os.path.expanduser(DirResults)
+
+            for Args in ListArgs:
+                NameFileResult = os.path.join(DirResults, (Program.split("/")).pop(), "_".join(Args))
+                if os.path.isfile(NameFileResult):
+                        os.remove(NameFileResult)
+                        Msg.Notice(1, "Deleting result file " + NameFileResult)
+                NameFileResult = NameFileResult + ".plaintxt"
+                if os.path.isfile(NameFileResult):
+                        os.remove(NameFileResult)
+                        Msg.Notice(1, "Deleting result file " + NameFileResult)
            
         if Options.Simulate:
             try:
@@ -521,20 +534,20 @@ def ShowSyntax():
 def ParseArgs():
     global Options
     for a in sys.argv[1:]:
-        if a[0:1] == "--":
-            for e in a[2:]:
-                if e == "simulate":
-                    Options.Simulate = True
-                elif e == "collect":
-                    Options.Collect = True
-                elif e == "plot":
-                    Options.Plot = True
-                elif e == "view":
-                    Options.View = True
-                elif e == "delete":
-                    Options.Delete = True
-                else:
-                    Msg.Error(0, "Invalid command line option: ", e)
+        if a[0:2] == "--":
+            e = a[2:]
+            if e == "simulate":
+                Options.Simulate = True
+            elif e == "collect":
+                Options.Collect = True
+            elif e == "plot":
+                Options.Plot = True
+            elif e == "view":
+                Options.View = True
+            elif e == "delete":
+                Options.Delete = True
+            else:
+                Msg.Error(0, "Invalid command line option: " + e)
                     
         elif a[0] == "-":
             for e in a[1:]:
@@ -558,7 +571,7 @@ def ParseArgs():
         ShowSyntax()
         Msg.Error(0, "Please specifiy a saps configuration file")
 
-    if (Options.Simulate + Options.Collect + Options.Plot + Options.View) == False:
+    if (Options.Simulate + Options.Collect + Options.Plot + Options.View + Options.Delete) == False:
         ShowSyntax()
         Msg.Error(0, "Please specify at least one action.")
     
