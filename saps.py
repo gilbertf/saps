@@ -143,13 +143,13 @@ def ReadYaml(NameFile, DirSaps):
     except yaml.scanner.ScannerError as e:
         if hasattr(e, 'problem_mark'):
             mark = e.problem_mark
-            Msg.Error(0, "Scaner error at position %s:%s: \"%s\"" % (mark.line+1, mark.column+1, data.split("\n")[mark.line]))
+            Msg.Error(0, "Scaner error at  line %s pos %s: \"%s\"" % (mark.line+1, mark.column+1, data.split("\n")[mark.line]))
         else:
             Msg.Error(0, "Scanner error.")
     except yaml.parser.ParserError as e:
         if hasattr(e, 'problem_mark'):
             mark = e.problem_mark
-            Msg.Error(0, "Parser error at position %s:%s: \"%s\"" % (mark.line+1, mark.column+1, data.split("\n")[mark.line]))
+            Msg.Error(0, "Parser error at line %s pos %s: \"%s\"" % (mark.line+1, mark.column+1, data.split("\n")[mark.line]))
         else:
             Msg.Error(0, "Parser error.")
     except:
