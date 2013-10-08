@@ -9,8 +9,6 @@ import math
 class options():
     global Msg
             
-    Collect = False
-    
     RoundDigits = 13
     ShowWarning = True
     ShowNotice = True
@@ -31,6 +29,9 @@ class options():
     Simulate = False
     View = False
     Plot = False
+    Collect = False
+    Delete = False
+
     ydict = dict
     
     def ReadFileConfig(self, NameFileConfig):
@@ -313,6 +314,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
         ListArgs = []
         ExpandSet(Set, ListArgs)
 
+	if Options.Delete:
+            NameFileResult = DirResults + "/" + (Program.split("/")).pop() + "/" + "_".join(Args)
+            Msg.Notice(1, "Deleting result file " + NameFileResult))
+           
         if Options.Simulate:
             try:
                 Simulate = Options.Config["Simulate"]
@@ -322,7 +327,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             RunFileCode(os.path.join("simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
-            NameFileSet = "/".join([Options.SetDir, Options.Descriptionfile, NameFigure, NameSet])
+            NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, NameSet)
 
         if Options.Collect:
             try:
@@ -403,11 +408,17 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 SetFile.write("\t".join([str(x) for x in v])+"\n")
             SetFile.close()
 
-        if Options.View:
+
+        if Options.View or Options.Plot:
             SetFile = open(NameFileSet, 'r')
-            view = SetFile.read()
+            data = SetFile.read().split("\n")
             SetFile.close()
-            for v in view.split("\n"):
+            if len(data) < 3:
+                Msg.Warning(2, "Empty set file, skipping.")
+                return
+
+        if Options.View:
+            for v in data:
                 Msg.Msg(2, "", v)
 
         if Options.Plot:
@@ -475,7 +486,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 if Options.Plot:
                     if Options.Plot2X:
                         print(Options.Indent + "Plotting to X11 using Gnuplot")
-                        PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
                         os.system(PlotCmd)
                         
                     if Options.Plot2Pdf:
@@ -487,7 +498,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                         NameFilePdfFigure = os.path.join(DirPlot, NameFigure.replace(" ","_"))
                         ListPlotSet = ["terminal postscript eps enhanced color solid size 7,7","output \\\"" + NameFilePdfFigure + ".eps\\\""] + ListPlotSet
                         print(Options.Indent + "Plotting to pdfs using Gnuplot")
-                        PlotCmd = "gnuplot -p -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
                         os.system(PlotCmd)
                         os.system("ps2pdf " + NameFilePdfFigure + ".eps " + NameFilePdfFigure + ".pdf")
                         os.system("rm " + NameFilePdfFigure + ".eps")
@@ -495,6 +506,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                     if Options.DebugPlot:
                         print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))
                         print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
+                        print(Options.Indent + "PlotCmd: " + str(PlotCmd))
 
 
 def ShowSyntax():
@@ -519,6 +531,8 @@ def ParseArgs():
                     Options.Plot = True
                 elif e == "view":
                     Options.View = True
+                elif e == "delete":
+                    Options.Delete = True
                 else:
                     Msg.Error(0, "Invalid command line option: ", e)
                     
