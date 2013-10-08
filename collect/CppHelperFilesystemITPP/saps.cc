@@ -94,16 +94,3 @@ bool mkpath( std::string path ) {
         bSuccess = true;
     return bSuccess;
 }
-
-string construct_result_it_filename(int argc, char** argv, string DirResults) {
-	stringstream filename_it;
-	filename_it << replace_tilde_by_home(DirResults) << "/";
-	for (int i=2;i<argc;i++) {
-		filename_it << argv[i];
-		if (i < argc-1) filename_it << "_";
-	}
-	#ifdef debug
-		cout << "Opened file: " << filename_it.str() << endl;
-	#endif
-	return filename_it.str();
-}

@@ -20,11 +20,15 @@ import sys, os
 
 verbose = False
 MatApp = "octave -q --eval \""
-#MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
 
 Args = sys.argv
 VecArgs = ExtractArgs(Args[2:])
-DirResults = Args[1].split("=")[1]
+
+try:
+    NameFileResult = Args[1].split("NameFileResult=")[1]
+except:
+    print "Error: The first parameter has to be NameFileResult"
+    exit()
 
 FilenameMat = Args[0] + ".m"
 [CommasepSig, VecSig] = ReadFunctionSignature(FilenameMat)
@@ -40,11 +44,10 @@ Filename = Args[0].split("/")
 Filename = Filename[len(Filename)-1]
 Basename = os.path.dirname(__file__)
 
-UnderscoreArgs = "_".join(Args[2:])
-FilenameResults = DirResults + "/" + Filename + "/" + UnderscoreArgs
-Args.append("FilenameResults='" + FilenameResults + "'")
+Args.append("NameFileResult='" + NameFileResult + "'")
 
 Variables = ";".join(Args[2:])
+
 Cmd = "cd " + Basename + ";" + MatApp + "addpath('" + os.path.expanduser("~/Dissertation/libgjm") + "');" + Variables + ";" + Filename + "(" + CommasepSig + ");exit\""
 if verbose:
 	print "Cmd: " + Cmd

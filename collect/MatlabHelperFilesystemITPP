@@ -26,9 +26,9 @@ Args = sys.argv
 VecArgs = ExtractArgs(Args[2:])
 
 try:
-    DirResults = Args[1].split("DirResults=")[1]
+    NameFileResult = Args[1].split("NameFileResult=")[1]
 except:
-    print "Error: The first parameter has to be DirResults"
+    print "Error: The first parameter has to be NameFileResult"
     exit()
 
 FilenameMat = Args[0] + ".m"
@@ -45,9 +45,7 @@ Filename = Args[0].split("/")
 Filename = Filename[len(Filename)-1]
 Basename = os.path.dirname(__file__)
 
-UnderscoreArgs = "_".join(Args[2:])
-FilenameResults = DirResults + "/" + UnderscoreArgs
-Args.append("FilenameResults='" + FilenameResults + "'")
+Args.append("NameFileResult='" + NameFileResult + "'")
 
 Variables = ";".join(Args[2:])
 

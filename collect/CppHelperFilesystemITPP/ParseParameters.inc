@@ -54,7 +54,7 @@ if (!file_exists(NameFileTemplate.c_str())) {
 #define X(a,b) a b = parser.get_##a(#b); inputvarcnt++;
 	int inputvarcnt = 0;
 	INPUTVARS
-	X(string, DirResults)
+	X(string, NameFileResult)
 #undef X
 
 #ifdef OPTINPUTVARS
@@ -66,7 +66,7 @@ if (!file_exists(NameFileTemplate.c_str())) {
 #define X(a,b) if (strncmp(argv[i], #b, strlen( #b )) == 0) continue;
 	for (int i=1; i<argc;i++) {
 		INPUTVARS
-		X(string, DirResults)
+		X(string, NameFileResult)
 		#ifdef OPTINPUTVARS
 			OPTINPUTVARS
 		#endif
@@ -116,7 +116,7 @@ Duration = -1;
 
 
 /**Initializing results file **/
-string NameFileItppResults = construct_result_it_filename(argc, argv, DirResults);
+string NameFileItppResults = NameFileResult;
 check_path(NameFileItppResults);
 check_file(NameFileItppResults, Version);
 
