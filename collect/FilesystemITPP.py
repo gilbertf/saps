@@ -36,11 +36,12 @@ for Args in ListArgs:
     import numbers
     if r == "" or r == "defekt":
         NumDefectResultsFiles = NumDefectResultsFiles + 1
+        Msg.Notice(2, "Defect result file " + NameFileResult)
         continue
     try:
         Complete = r["Complete"]
     except:
-        Warning(2, "The Complete variable can not be found in the results file")
+        Msg.Warning(2, "The Complete variable can not be found in the results file")
         continue
     if not isinstance(Complete, numbers.Number):
         Complete = float(Complete)
