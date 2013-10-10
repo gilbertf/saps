@@ -25,6 +25,20 @@ NumResultsFiles = len(ListArgs)
 
 DebugCollect = Options.DebugCollect
 
+import math
+def ReadableTime(s):
+    Seconds = math.floor(s % 60)
+    m = math.floor(s/60)
+    Minutes = m % 60
+    h = math.floor(m/60)
+    Hours = h % 24
+    Days = math.floor(h/24)
+    if Days == 0:
+        ret = str(Hours) + "h " + str(Minutes) + "min " + str(Seconds) + "sec"
+    else:
+        ret = str(Days)+"d " + str(Hours) + "h " + str(Minutes) + "min " + str(Seconds) + "sec"
+    return ret
+
 val = []
 for i in range(NumAxis):
     val.append([])
@@ -40,6 +54,7 @@ for Args in ListArgs:
         continue
     try:
         Complete = r["Complete"]
+        Duration = r["Duration"]
     except:
         Msg.Warning(2, "The Complete variable can not be found in the results file")
         continue
@@ -58,9 +73,10 @@ for Args in ListArgs:
                     val[i].append(float(v))
     else:
         if StopOnIncompleteResultFiles:
-            Msg.Error(2, "Incomplete result file " + NameFileResult)
+            Msg.Error(2, str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + " ".join(Args))
         else:
-            Msg.Warning(2, "Incomplete result file " + NameFileResult)
+            Msg.Warning(2, str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + " ".join(Args))
+
 
 Msg.Msg(2, "Collect:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " complete, " + str(NumDefectResultsFiles) + " defect")
 if NumDefectResultsFiles > 0:

@@ -133,3 +133,7 @@ int LastTime = timer.get_time();
 
 int Time;
 #include "WriteOutputVars.inc"
+
+#ifdef debug
+	it_file DebugFile("DebugFile.it");
+#endif
