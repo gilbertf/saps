@@ -72,16 +72,18 @@ for Args in ListArgs:
                 for v in x:
                     val[i].append(float(v))
     else:
+        msg = str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + "_".join(Args)
         if StopOnIncompleteResultFiles:
-            Msg.Error(2, str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + " ".join(Args))
+            Msg.Error(2, msg)
         else:
-            Msg.Warning(2, str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + " ".join(Args))
+            Msg.Warning(2, msg)
 
 
 Msg.Msg(2, "Collect:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " complete, " + str(NumDefectResultsFiles) + " defect")
 if NumDefectResultsFiles > 0:
+    msg = "Not all set files could be read."
     if StopOnDefectResultFiles:
-        Msg.Error(2, "Not all set files could be read.")
+        Msg.Error(2, msg)
     else:
-        Msg.Warning(2, "Not all set files could be read.")
+        Msg.Warning(2, msg)
 Values = val
