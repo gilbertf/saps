@@ -32,11 +32,12 @@ except:
 
 NumCreated = 0
 for Args in ListArgs:
-    NameFileResult = os.path.join(DirResults, Program.split("/").pop(), "_".join(Args))
+    Executable = Program.split("/").pop()
+    NameFileResult = os.path.join(DirResults, Executable, "_".join(Args))
     if os.path.isfile(NameFileResult):
         Msg.Notice(2, "Result file exists already, skipping job.")
         continue
-    NameFileJob = "_".join(Args)
+    NameFileJob = Executable + "_".join(Args)
     Cmd = " ".join([Program] + ["NameFileResult=" + NameFileResult] + Args)
     NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameFileJob)
     
