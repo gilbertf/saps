@@ -18,7 +18,7 @@ try:
 except:
     StopOnIncompleteResultFiles = True
     
-    
+NumMissingResultFiles = 0
 NumDefectResultsFiles = 0
 NumCompleteResultsFiles = 0
 NumResultsFiles = len(ListArgs)
@@ -46,6 +46,10 @@ for Args in ListArgs:
     NameFileResult = os.path.join(DirResults, Program.split("/").pop(), "_".join(Args))
     if DebugCollect:
         print("NameFileResult: " + NameFileResult)
+    if not os.path.isfile(NameFileResult):
+        NumMissingResultFiles = NumMissingResultFiles + 1
+        Msg.Notice(2, "Missing result file " + NameFileResult)
+        continue
     r = itload(NameFileResult)
     import numbers
     if r == "" or r == "defekt":
@@ -79,7 +83,7 @@ for Args in ListArgs:
             Msg.Warning(2, msg)
 
 
-Msg.Msg(2, "Collect:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " complete, " + str(NumDefectResultsFiles) + " defect")
+Msg.Msg(2, "Collect:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " complete, " + str(NumMissingResultFiles) + " missing and " + str(NumDefectResultsFiles) + " defect.")
 if NumDefectResultsFiles > 0:
     msg = "Not all set files could be read."
     if StopOnDefectResultFiles:
