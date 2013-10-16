@@ -289,7 +289,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
 
         try:
             Axis = SplitComma(Set.pop("Axis"))
-            NumAxis = len(Axis)
         except:
             Msg.Error(2, "Axis property is missing")
 
@@ -343,22 +342,43 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, NameSet)
 
         if Options.Collect:
+            CollectAxis = list()
+            NotCollectAxis = list()
+            for Analyse in DictAnalyse:
+                if type(DictAnalyse[Analyse]) is not Options.ydict:
+                    Msg.Error(2, "We expect the Analyse option to be a list of parameters.")
+                Analyse =  DictAnalyse[Analyse]
+                InAxis = SplitComma(Analyse["AxisIn"])
+                for InAx in InAxis:
+                    if InAx not in NotCollectAxis and InAx not in CollectAxis:
+                        CollectAxis.append(InAx)
+                OutAxis = SplitComma(Analyse["AxisOut"])
+                for OutAx in OutAxis:
+                    if OutAx in CollectAxis:
+                        Msg.Error(2, OutAx + " should be a unique.")
+                    if OutAx not in NotCollectAxis:
+                        NotCollectAxis.append(OutAx)
+            for Ax in Axis:
+                if Ax not in NotCollectAxis and Ax not in CollectAxis:
+                    CollectAxis.append(Ax)
+            if Options.DebugAnalyse:                    
+                print("Collecting: " +  str(CollectAxis) + " and ignoring " + str(NotCollectAxis))
+                        
+                        
             try:
                 Collect = Options.Config["Collect"]
             except:
                 Msg.Error(1,"Collect interface is not defined in configfile")
-            Env = dict(ListArgs=ListArgs, Axis = Axis, NumAxis=NumAxis, Program=Program, Options=Options, Msg=Msg)
+            Env = dict(ListArgs=ListArgs, Axis = CollectAxis, NumAxis=len(CollectAxis), Program=Program, Options=Options, Msg=Msg)
             RunFileCode(os.path.join("collect", Collect), True, Env)
             try:
-                Values = Env["Values"]
-                Axis = Env["Axis"]
+                CollectValues = Env["Values"]
+                CollectAxis = Env["Axis"]
             except:
                 Msg.Notice(2, "The collect module did not return Values and Axis")
             
             for Analyse in DictAnalyse:                  
                 NameAnalyse = Analyse[Analyse.find(" ")+1:]
-                if type(DictAnalyse[Analyse]) is not Options.ydict:
-                    Msg.Error(2, "We expect the Analyse option to be a list of parameters.")
                 Analyse =  DictAnalyse[Analyse].copy() #Restructure may put references in the Tree, we only want to modify a copy+
                 Msg.Msg(2, "Analyse:", NameAnalyse)
                 try:
@@ -377,11 +397,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 AxisIn = list()
                 ValuesIn = list()
                 for axis in AxisInAnalyse:
-                    if axis not in Axis:
-                        Msg.Error(3, "Analyse AxisIn definition " + str(axis) + " is invalid. Available are: " + str(Axis))
-                    idx = Axis.index(axis)
-                    AxisIn.append(Axis.pop(idx))
-                    ValuesIn.append(Values.pop(idx))
+                    if axis not in CollectAxis:
+                        Msg.Error(3, "Analyse AxisIn definition " + str(axis) + " is invalid. Available are: " + str(CollectAxis))
+                    idx = CollectAxis.index(axis)
+                    AxisIn.append(CollectAxis[idx])
+                    ValuesIn.append(CollectValues[idx])
                     
                 if Options.DebugAnalyse:
                     print(Options.Indent*3 + "AxisIn: " + str(AxisIn) + "\n" + Options.Indent*3 + "ValuesIn: " + str(ValuesIn))
@@ -395,14 +415,19 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                     AxisOut = Env["AxisOut"]
                     if Options.DebugAnalyse:
                         print(Options.Indent*3 + "AxisOut: " + str(AxisOut) + "\n" + Options.Indent*3 + "ValuesOut: " + str(ValuesOut))
-                    for axis in AxisOut:
-                        Axis.append(AxisOut.pop())
-                        Values.append(ValuesOut.pop())
+                    CollectAxis = CollectAxis + AxisOut
+                    CollectValues = CollectValues+ ValuesOut
                 except:
                     Msg.Notice(2, "The analyse module did not return the values correctly.")                
                     
                 if Options.DebugAnalyse:
-                    print(Options.Indent*3 + "Axis: " + str(Axis) + "\n" + Options.Indent*3 + "Values: " + str(Values))
+                    print(Options.Indent*3 + "Axis: " + str(CollectAxis) + "\n" + Options.Indent*3 + "Values: " + str(CollectValues))
+
+            Values = []
+            #Select Axis for plot
+            for axis in Axis:
+                idx = CollectAxis.index(axis)
+                Values.append(CollectValues[idx])
 
             ##Check if all axis contain the same number of Elements
             Start = None
@@ -420,6 +445,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             for v in Values:
                 SetFile.write("\t".join([str(x) for x in v])+"\n")
             SetFile.close()
+            
 
 
         if Options.View or Options.Plot:
