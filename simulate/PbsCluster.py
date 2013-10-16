@@ -66,7 +66,7 @@ def Cluster(Cmd, DirJob, NameFileJob):
         Options.append("-l walltime=" + Walltime)
     ClusterCmd = "echo \"" + Cmd + "\" | qsub " + " ".join(Options)
     if DirWork:
-	ClusterCmd = "cd " + DirWork + ";" + ClusterCmd
+        ClusterCmd = "cd " + DirWork + ";" + ClusterCmd
     #Msg.Msg(2, "Cluster", ClusterCmd)
     ret = os.system(ClusterCmd)
     if ret != 0:
