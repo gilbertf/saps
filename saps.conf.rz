@@ -35,7 +35,8 @@ FilesystemCluster:
 PbsCluster:
   DirJob: ~/Dissertation/cluster/jobs/waiting
   DirLog: ~/Dissertation/cluster/logs
-  #Walltime: "10:00:00"
+  DirWork: /work_j/sutei013
+  #Walltime: "200:00:00"
   #Queue: small
   #Resources:
   #  - ncpus=1
