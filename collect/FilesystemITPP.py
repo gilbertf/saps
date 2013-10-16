@@ -45,7 +45,7 @@ for i in range(NumAxis):
 for Args in ListArgs:
     NameFileResult = os.path.join(DirResults, Program.split("/").pop(), "_".join(Args))
     if DebugCollect:
-        print("NameFileResult: " + NameFileResult)
+        print(Options.Indent*2 + "NameFileResult: " + NameFileResult)
     if not os.path.isfile(NameFileResult):
         NumMissingResultFiles = NumMissingResultFiles + 1
         Msg.Notice(2, "Missing result file " + NameFileResult)
@@ -57,8 +57,12 @@ for Args in ListArgs:
         Msg.Notice(2, "Defect result file " + NameFileResult)
         continue
     try:
-        Complete = r["Complete"]
         Duration = r["Duration"]
+    except:
+        Duration = 0
+
+    try:
+        Complete = r["Complete"]
     except:
         Msg.Warning(2, "The Complete variable can not be found in the results file")
         continue
