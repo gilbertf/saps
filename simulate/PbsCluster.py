@@ -26,6 +26,11 @@ except:
     Walltime = None
     
 try:
+    DirWork = Options.Config["PbsCluster"]["DirWork"]
+except:
+    DirWork = None
+
+try:
     Queue = Options.Config["PbsCluster"]["Queue"]
 except:
     Queue = None
@@ -60,6 +65,8 @@ def Cluster(Cmd, DirJob, NameFileJob):
             Msg.Error(1, "Walltime has to be given as string")
         Options.append("-l walltime=" + Walltime)
     ClusterCmd = "echo \"" + Cmd + "\" | qsub " + " ".join(Options)
+    if DirWork:
+	ClusterCmd = "cd " + DirWork + ";" + ClusterCmd
     #Msg.Msg(2, "Cluster", ClusterCmd)
     ret = os.system(ClusterCmd)
     if ret != 0:
