@@ -547,7 +547,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                         os.system(PlotCmd)
                         os.system("ps2pdf " + NameFilePdfFigure + ".eps " + NameFilePdfFigure + ".pdf")
                         os.system("rm " + NameFilePdfFigure + ".eps")
-                        os.system("acroread " + NameFilePdfFigure + ".pdf")
+                        os.system("acroread " + NameFilePdfFigure + ".pdf 2> /dev/null")
 
                     if Options.Plot2EpsLatex:
                         DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, NameFigure.replace(" ","_"))
@@ -560,8 +560,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                         print(Options.Indent + "Plotting to pdfs using Gnuplot+Latex")
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
                         os.system(PlotCmd)
-                        os.system("cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex")
-                        os.system("acroread " + NameFilePdfFigure + ".pdf")
+                        os.system("cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null")
+                        os.system("acroread " + NameFilePdfFigure + ".pdf 2> /dev/null")
                     if Options.DebugPlot:
                         print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))
                         print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
