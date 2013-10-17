@@ -1,0 +1,3 @@
+plots richtig specihern wenn saps file im Unterordner. z:B saps Ferig/123.saps speichert auch in plots/Fertig,....
+
+Escaping von $ und "
