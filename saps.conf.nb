@@ -6,13 +6,14 @@ Saps:
   #Plot configuration
   DirPlot: ~/Dissertation/plots
   Plot2Pdf: False
-  Plot2X: True
+  Plot2X: False
+  Plot2EpsLatex: True
 
   #Debug
   DebugAnalyse: False
   DebugCollect: False
   DebugRestructure: False
-  DebugPlot: False
+  DebugPlot: True
 
   #Msg configuration
   ShowNotice: False

@@ -24,6 +24,7 @@ class options():
 
     Plot2Pdf = False
     Plot2X = False
+    Plot2EpsLatex = False
     
     #Actions
     Simulate = False
@@ -86,12 +87,17 @@ class options():
             self.Plot2X = int(self.Config["Saps"]["Plot2X"])
         except:
             None
+
+        try:
+            self.Plot2EpsLatex = int(self.Config["Saps"]["Plot2EpsLatex"])
+        except:
+            None
             
-        if self.Plot2Pdf:
+        if self.Plot2Pdf or self.Plot2EpsLatex:
             try:
                 self.DirPlot = os.path.expanduser(self.Config["Saps"]["DirPlot"])
             except:
-                Msg.Error(1, "Saps -> DirPlot has to be defined in configfile, because Plot2Pdf is set.")
+                Msg.Error(1, "Saps -> DirPlot has to be defined in configfile, because Plot2Pdf and/or Plot2EpsLatex is set.")
         
         #Collect configuration
         try:
@@ -541,6 +547,20 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                         os.system(PlotCmd)
                         os.system("ps2pdf " + NameFilePdfFigure + ".eps " + NameFilePdfFigure + ".pdf")
                         os.system("rm " + NameFilePdfFigure + ".eps")
+                        os.system("acroread " + NameFilePdfFigure + ".pdf")
+
+                    if Options.Plot2EpsLatex:
+                        DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, NameFigure.replace(" ","_"))
+                        try:
+                            os.makedirs(DirPlot)
+                        except:
+                            None
+                        NameFilePdfFigure = os.path.join(DirPlot, NameFigure.replace(" ","_"))
+                        ListPlotSet = ["terminal epslatex color standalone solid size 29.7cm,21cm","output \\\"" + NameFilePdfFigure + ".tex\\\""] + ListPlotSet
+                        print(Options.Indent + "Plotting to pdfs using Gnuplot+Latex")
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
+                        os.system(PlotCmd)
+                        os.system("cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex")
                         os.system("acroread " + NameFilePdfFigure + ".pdf")
                     if Options.DebugPlot:
                         print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))

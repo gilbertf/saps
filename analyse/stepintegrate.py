@@ -23,6 +23,6 @@ elif len(ValuesIn) == 2:
         print(Options.Indent, "Trapz integral of", AxisIn[0], "with steps", AxisIn[1], ":", ValuesOut)
 else:
     print("We expect one or two input variables")
-print(ValuesOut)
+
 ValuesOut = [ValuesOut]
 
