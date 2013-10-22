@@ -71,7 +71,10 @@ for Args in ListArgs:
     if round(Complete, Options.RoundDigits) == 1:
         NumCompleteResultsFiles = NumCompleteResultsFiles + 1
         for i, a in enumerate(Axis):
-            x = r[a]
+            try:
+                x = r[a]
+            except:
+                Msg.Error(2, "Axis " + a + " does not exist in results file!")
             if isinstance(x, numbers.Number):
                 val[i].append(float(x))
             else:
