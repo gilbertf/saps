@@ -24,8 +24,11 @@ class options():
     DebugPlot = False
 
     Plot2Pdf = False
+    Plot2PdfShow = False
     Plot2X = False
     Plot2EpsLatex = False
+    Plot2EpsLatexShow = False
+    PdfViewer = "acroread"
     
     #Actions
     Simulate = False
@@ -85,6 +88,11 @@ class options():
             None
             
         try:
+            self.Plot2PdfShow = int(self.Config["Saps"]["Plot2PdfShow"])
+        except:
+            None
+            
+        try:
             self.Plot2X = int(self.Config["Saps"]["Plot2X"])
         except:
             None
@@ -93,6 +101,16 @@ class options():
             self.Plot2EpsLatex = int(self.Config["Saps"]["Plot2EpsLatex"])
         except:
             None
+            
+        try:
+            self.Plot2EpsLatexShow = int(self.Config["Saps"]["Plot2EpsLatexShow"])
+        except:
+            None    
+
+        try:
+            self.PdfViewer = int(self.Config["Saps"]["PdfViewer"])
+        except:
+            None   
             
         if self.Plot2Pdf or self.Plot2EpsLatex:
             try:
@@ -258,14 +276,14 @@ def RestructureTree(Tree, inFigure, inRoot):
             
 
     
-def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListParameter = {}):
+def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
     def ExtractValues(s, DoExtract): #Always returns list of strs to make handling easier
         if type(s) == str and DoExtract:
             return(ParseFloatRange(s))
         else:
             return([Num2Str(s)])
             
-    def ParseSet(Set, NameFigure, NameSet, ListPlotOpt, ListParameter):
+    def ParseSet(Set, NameFigure, NameSet, ListPlotOpt):
         global Options
         def ExpandSet(Set, ListArgs, cmd = []):
             if len(Set) > 0:
@@ -281,14 +299,14 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListP
         def SplitComma(s):
             return s.replace(", ",",").split(",")
         
-        def ReplaceParameterByValue(Set, ListParameter):
+        def ReplaceParameterByValue(Set, Parameter):
             for s in Set:
                 Value = Set[s]
                 if type(Value) is Options.ydict:
-                    ReplaceParameterByValue(Value, ListParameter)
+                    ReplaceParameterByValue(Value, Parameter)
                 else:
-                    if Value in ListParameter:
-                        Set[s] = ListParameter[Value]
+                    if Value in Parameter:
+                        Set[s] = Parameter[Value]
                         
         ### ParseSet ###
         global Options
@@ -315,14 +333,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListP
             
         #Used in ExpandValue, dropping here
         try:
-            Set.pop("Parameter")
+            Parameter = Set.pop("Parameter")
         except:
-            None
+            Parameter = {}
             
-        print("ListParameter: ", ListParameter)
-        print(Set)
-        ReplaceParameterByValue(Set, ListParameter)
-        print(Set)
+        ReplaceParameterByValue(Set, Parameter)
+
         DictAnalyse = Options.ydict()
         for s in Set:
             if "Analyse" in s: #Akzeptiere auch Analysen ohne Eigenname, deshalb kein Leerzeichen
@@ -331,7 +347,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListP
         #Check that parameters do not contain "forbidden" stuff
         for s in Set:
             if " " in s:
-                Msg.Error(2, "The space character is not allowed for parameter names. Please modify: " + str(s))
+                Msg.Error(2, "The space character is not allowed for variable names. Please modify: " + str(s))
                 
         #Puting the parameters in a list                
         Set = list(Set.items())
@@ -494,7 +510,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListP
                 s = s + PlotOpt
             ListPlotOpt.append(s)
 
-    def ExpandValue(Tree, NameFigure, NameSet, ListPlotOpt, ListParameter):
+    def ExpandValue(Tree, NameFigure, NameSet, ListPlotOpt):
         global Msg
         if "%" in NameSet:
             a = NameSet.find("%")
@@ -521,16 +537,16 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListP
             for ExpandedValue in ExpandedValues:
                 TmpNameSet = NameSet[:a] + str(ExpandedValue) + NameSet[a+b+2:]
                 TmpTree = copy.deepcopy(Tree) #Weil wir in ParseSet auch an Unterstrukturen, etwa Analyse Ersetzungen vornehmen
-                TmpListParameter = ListParameter.copy()
+                
                 if isParameter is False:
                     TmpTree[VarName] = ExpandedValue
                 else:
-                    TmpListParameter[VarName] = ExpandedValue
-                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlotOpt, TmpListParameter)
+                    TmpTree["Parameter"][VarName] = ExpandedValue
+                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlotOpt)
 
         else:
             Msg.Msg(1, "Set", NameSet)
-            ParseSet(Tree, NameFigure, NameSet, ListPlotOpt, ListParameter)
+            ParseSet(Tree, NameFigure, NameSet, ListPlotOpt)
             
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
@@ -544,7 +560,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListP
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
                     Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
-                ExpandValue(Tree[t], NameFigure, NameSet, ListPlotOpt, ListParameter)
+                ExpandValue(Tree[t], NameFigure, NameSet, ListPlotOpt)
             elif "Figure " in t:
                 NameFigure = t.split("Figure ")[1]
                 print("Figure", NameFigure)
@@ -577,7 +593,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListP
                         os.system(PlotCmd)
                         os.system("ps2pdf " + NameFilePdfFigure + ".eps " + NameFilePdfFigure + ".pdf")
                         os.system("rm " + NameFilePdfFigure + ".eps")
-                        os.system("acroread " + NameFilePdfFigure + ".pdf 2> /dev/null")
+                        if Options.Plot2PdfShow:
+                            os.system(Options.PdfViewer + " " + NameFilePdfFigure + ".pdf 2> /dev/null")
+                            
 
                     if Options.Plot2EpsLatex:
                         DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, NameFigure.replace(" ","_"))
@@ -591,7 +609,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListP
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
                         os.system(PlotCmd)
                         os.system("cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null")
-                        os.system("acroread " + NameFilePdfFigure + ".pdf 2> /dev/null")
+                        if Options.Plot2EpsLatexShow:                        
+                            os.system(Options.PdfViewer + " " + NameFilePdfFigure + ".pdf 2> /dev/null")
+                    
                     if Options.DebugPlot:
                         print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))
                         print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))

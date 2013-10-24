@@ -6,8 +6,11 @@ Saps:
   #Plot configuration
   DirPlot: ~/Dissertation/plots
   Plot2Pdf: False
-  Plot2X: False
+  Plot2PdfShow: False
+  Plot2X: True
   Plot2EpsLatex: True
+  Plot2EpsLatexShow: False
+  PdfViewer: acroread
 
   #Debug
   DebugAnalyse: False
