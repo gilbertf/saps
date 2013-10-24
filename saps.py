@@ -5,6 +5,7 @@ import os
 import sys
 import random
 import math
+import copy
 
 class options():
     global Msg
@@ -257,14 +258,14 @@ def RestructureTree(Tree, inFigure, inRoot):
             
 
     
-def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
+def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = [], ListParameter = {}):
     def ExtractValues(s, DoExtract): #Always returns list of strs to make handling easier
         if type(s) == str and DoExtract:
             return(ParseFloatRange(s))
         else:
             return([Num2Str(s)])
             
-    def ParseSet(Set, NameFigure, NameSet, ListPlotOpt):
+    def ParseSet(Set, NameFigure, NameSet, ListPlotOpt, ListParameter):
         global Options
         def ExpandSet(Set, ListArgs, cmd = []):
             if len(Set) > 0:
@@ -279,7 +280,16 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 
         def SplitComma(s):
             return s.replace(", ",",").split(",")
-            
+        
+        def ReplaceParameterByValue(Set, ListParameter):
+            for s in Set:
+                Value = Set[s]
+                if type(Value) is Options.ydict:
+                    ReplaceParameterByValue(Value, ListParameter)
+                else:
+                    if Value in ListParameter:
+                        Set[s] = ListParameter[Value]
+                        
         ### ParseSet ###
         global Options
         if Set is None:
@@ -302,7 +312,17 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             PlotOpt = Set.pop("PlotOpt")
         except:
             PlotOpt = None
-
+            
+        #Used in ExpandValue, dropping here
+        try:
+            Set.pop("Parameter")
+        except:
+            None
+            
+        print("ListParameter: ", ListParameter)
+        print(Set)
+        ReplaceParameterByValue(Set, ListParameter)
+        print(Set)
         DictAnalyse = Options.ydict()
         for s in Set:
             if "Analyse" in s: #Akzeptiere auch Analysen ohne Eigenname, deshalb kein Leerzeichen
@@ -347,6 +367,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
         if Options.Collect or Options.View or Options.Plot:
             NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, NameSet)
 
+        #Liste der zu sammelnden "Axen" zusammenstellen
         if Options.Collect:
             CollectAxis = list()
             NotCollectAxis = list()
@@ -370,7 +391,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             if Options.DebugAnalyse:                    
                 print("Collecting: " +  str(CollectAxis) + " and ignoring " + str(NotCollectAxis))
                         
-                        
+            #Axenwerte aus den Ergebnisdateien auslesen         
             try:
                 Collect = Options.Config["Collect"]
             except:
@@ -383,6 +404,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             except:
                 Msg.Notice(2, "The collect module did not return Values and Axis")
             
+            #Analysen durchführen
             for Analyse in DictAnalyse:                  
                 NameAnalyse = Analyse[Analyse.find(" ")+1:]
                 Analyse =  DictAnalyse[Analyse].copy() #Restructure may put references in the Tree, we only want to modify a copy+
@@ -452,8 +474,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 SetFile.write("\t".join([str(x) for x in v])+"\n")
             SetFile.close()
             
-
-
         if Options.View or Options.Plot:
             SetFile = open(NameFileSet, 'r')
             data = SetFile.read().split("\n")
@@ -474,7 +494,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 s = s + PlotOpt
             ListPlotOpt.append(s)
 
-    def ExpandValue(Tree, NameFigure, NameSet, ListPlotOpt):
+    def ExpandValue(Tree, NameFigure, NameSet, ListPlotOpt, ListParameter):
         global Msg
         if "%" in NameSet:
             a = NameSet.find("%")
@@ -485,22 +505,32 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             if len(VarName) > 1 and VarName[0] == "!" :
                 VarName = VarName[1:]
                 DoExtract = True
-                
+            
             try:
-                VarValue = Tree[VarName]
+                if VarName in Tree:
+                    VarValue = Tree[VarName]
+                    isParameter = False
+                elif VarName in Tree["Parameter"]:
+                    VarValue = Tree["Parameter"][VarName]
+                    isParameter = True
             except:
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
-                
+            
             ExpandedValues = ExtractValues(VarValue, DoExtract)
             
             for ExpandedValue in ExpandedValues:
                 TmpNameSet = NameSet[:a] + str(ExpandedValue) + NameSet[a+b+2:]
-                TmpTree = Tree.copy()
-                TmpTree[VarName] = ExpandedValue
-                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlotOpt)
+                TmpTree = copy.deepcopy(Tree) #Weil wir in ParseSet auch an Unterstrukturen, etwa Analyse Ersetzungen vornehmen
+                TmpListParameter = ListParameter.copy()
+                if isParameter is False:
+                    TmpTree[VarName] = ExpandedValue
+                else:
+                    TmpListParameter[VarName] = ExpandedValue
+                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlotOpt, TmpListParameter)
+
         else:
             Msg.Msg(1, "Set", NameSet)
-            ParseSet(Tree, NameFigure, NameSet, ListPlotOpt)
+            ParseSet(Tree, NameFigure, NameSet, ListPlotOpt, ListParameter)
             
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
@@ -514,7 +544,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
                     Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
-                ExpandValue(Tree[t], NameFigure, NameSet, ListPlotOpt)
+                ExpandValue(Tree[t], NameFigure, NameSet, ListPlotOpt, ListParameter)
             elif "Figure " in t:
                 NameFigure = t.split("Figure ")[1]
                 print("Figure", NameFigure)

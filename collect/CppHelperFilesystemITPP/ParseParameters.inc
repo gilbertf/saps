@@ -25,7 +25,9 @@ if (!file_exists(NameFileTemplate.c_str())) {
 
 	FileTemplate << "# Input variables" << endl;
 	#define X(a,b) FileTemplate << #b << ": " << endl;
-		INPUTVARS
+		#ifdef INPUTVARS
+			INPUTVARS
+		#endif
 	#undef X
 	
 	#ifdef OPTINPUTVARS
@@ -41,9 +43,11 @@ if (!file_exists(NameFileTemplate.c_str())) {
 	FileTemplate << "    PlotOpt: w lines" << endl;
 	FileTemplate << "    #Analyse: integrate.py, y" << endl;
 	FileTemplate << "    #Output variables that can be used for Axis: ";
-	#define X(a,b) FileTemplate << #b << ", ";
-		OUTPUTVARS
-	#undef X
+	#ifdef OUTPUTVARS
+		#define X(a,b) FileTemplate << #b << ", ";
+			OUTPUTVARS
+		#undef X
+	#endif
 	FileTemplate << "Duration" << endl;
 	FileTemplate << "    Axis: , " << endl;
 	FileTemplate.close();
@@ -53,7 +57,9 @@ if (!file_exists(NameFileTemplate.c_str())) {
 /** Parse input variables **/
 #define X(a,b) a b = parser.get_##a(#b); inputvarcnt++;
 	int inputvarcnt = 0;
-	INPUTVARS
+	#ifdef INPUTVARS
+		INPUTVARS
+	#endif
 	X(string, NameFileResult)
 #undef X
 
@@ -65,7 +71,9 @@ if (!file_exists(NameFileTemplate.c_str())) {
 
 #define X(a,b) if (strncmp(argv[i], #b, strlen( #b )) == 0) continue;
 	for (int i=1; i<argc;i++) {
-		INPUTVARS
+		#ifdef INPUTVARS
+			INPUTVARS
+		#endif
 		X(string, NameFileResult)
 		#ifdef OPTINPUTVARS
 			OPTINPUTVARS
@@ -74,14 +82,22 @@ if (!file_exists(NameFileTemplate.c_str())) {
 		err_ss << argv[0] << ": You specified " << strtok(argv[i],"=") << " which is a irrelevant input variable";
 #undef X
 #define X(a,b) #b " "
-		err_ss << ", we only accept: " INPUTVARS ;
+		err_ss << ", we only accept: " ;
+		#ifdef INPUTVARS
+			err_ss << INPUTVARS ;
+		#endif
+		#ifdef OPTINPUTVARS
+			err_ss << OPTINPUTVARS ;
+		#endif
 		it_error(err_ss.str());
 	}
 #undef X
 
 /** Initalizing output variables **/
 #define X(a,b) a b;
-	OUTPUTVARS
+	#ifdef OUTPUTVARS
+		OUTPUTVARS
+	#endif
 	X(double, Duration)
 	X(double, Complete)
 #undef X
@@ -96,9 +112,11 @@ Duration = -1;
 	cout.width(20); cout << left << "Type";
 	cout.width(20); cout << left << "Name";
 	cout.width(20); cout << left << "Value" << endl;
-	#define X(a,b) cout.width(20); cout << #a; cout.width(20); cout << #b; cout.width(20); cout << b << endl;
-		INPUTVARS
-	#undef X
+	#ifdef INPUTVARS
+		#define X(a,b) cout.width(20); cout << #a; cout.width(20); cout << #b; cout.width(20); cout << b << endl;
+			INPUTVARS
+		#undef X
+	#endif
 	cout << endl;
 	#ifdef OPTINPUTVARS
 		cout << "===== Optional Input variables =====" << endl;

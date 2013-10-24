@@ -14,7 +14,9 @@ Duration = timer.get_time();
 	cout.width(15);
 	cout << left << "Value" << endl;
 	#define X(a,b) cout.width(10); cout << #a; cout.width(20); cout << #b; cout.width(15); cout << b << endl;
-		OUTPUTVARS
+		#ifdef OUTPUTVARS
+			OUTPUTVARS
+		#endif
 		X(double, Duration)
 		X(double, Complete)
 	#undef X
@@ -22,11 +24,15 @@ Duration = timer.get_time();
 
 /** Save values to Itpp results file **/
 #define X(a,b) FileItppResults << Name(#b) << b;
-	INPUTVARS
+	#ifdef INPUTVARS
+		INPUTVARS
+	#endif
 	#ifdef OPTINPUTVARS
 		OPTINPUTVARS
 	#endif
-	OUTPUTVARS
+	#ifdef OUTPUTVARS
+		OUTPUTVARS
+	#endif
 	X(double, Duration)
 	X(double, Complete)
 	X(int , Version)
@@ -35,11 +41,15 @@ FileItppResults.close();
 
 /** Save values to plaintxt results file **/
 #define X(a,b) FilePlainResults << #b << "\t" << b << endl;
-	INPUTVARS
+	#ifdef INPUTVARS
+		INPUTVARS
+	#endif
 	#ifdef OPTINPUTVARS
 		OPTINPUTVARS
 	#endif
-	OUTPUTVARS
+	#ifdef OUTPUTVARS
+		OUTPUTVARS
+	#endif
 	X(double, Duration)
 	X(double, Complete)
 	X(int , Version)
