@@ -23,8 +23,6 @@ class options():
     DebugRestructure = False
     DebugPlot = False
 
-    Plot2Pdf = False
-    Plot2PdfShow = False
     Plot2X = False
     Plot2EpsLatex = False
     Plot2EpsLatexShow = False
@@ -81,17 +79,7 @@ class options():
         except:
             None
             
-        #Plot configuration
-        try:
-            self.Plot2Pdf = int(self.Config["Saps"]["Plot2Pdf"])
-        except:
-            None
-            
-        try:
-            self.Plot2PdfShow = int(self.Config["Saps"]["Plot2PdfShow"])
-        except:
-            None
-            
+        #Plot configuration           
         try:
             self.Plot2X = int(self.Config["Saps"]["Plot2X"])
         except:
@@ -112,11 +100,11 @@ class options():
         except:
             None   
             
-        if self.Plot2Pdf or self.Plot2EpsLatex:
+        if self.Plot2EpsLatex:
             try:
                 self.DirPlot = os.path.expanduser(self.Config["Saps"]["DirPlot"])
             except:
-                Msg.Error(1, "Saps -> DirPlot has to be defined in configfile, because Plot2Pdf and/or Plot2EpsLatex is set.")
+                Msg.Error(1, "Saps -> DirPlot has to be defined in configfile, because Plot2EpsLatex is set.")
         
         #Collect configuration
         try:
@@ -283,6 +271,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
         else:
             return([Num2Str(s)])
             
+    def RemoveLatexChars(s):
+        if '\\' in s:
+            Msg.Error(2, "Backslash is not allowed in " + s)
+        return s.replace('{','').replace('}','').replace('_','').replace('$','')       
+        
     def ParseSet(Set, NameFigure, NameSet, ListPlotOpt):
         global Options
         def ExpandSet(Set, ListArgs, cmd = []):
@@ -298,7 +291,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 
         def SplitComma(s):
             return s.replace(", ",",").split(",")
-        
+            
         def ReplaceParameterByValue(Set, Parameter):
             for s in Set:
                 Value = Set[s]
@@ -381,7 +374,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             RunFileCode(os.path.join("simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
-            NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, NameSet)
+            NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet))
 
         #Liste der zu sammelnden "Axen" zusammenstellen
         if Options.Collect:
@@ -503,7 +496,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 Msg.Msg(2, "", v)
 
         if Options.Plot:
-            s = "\\\"" + NameFileSet + "\\\"" + " title " + "\\\"" + NameSet + "\\\" "
+            s = "\"" + NameFileSet + "\"" + " title " + "\"" + NameSet + "\" "
             if PlotOpt is not None:
                 if type(PlotOpt) is list:
                     PlotOpt = " ".join(PlotOpt)
@@ -548,6 +541,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             Msg.Msg(1, "Set", NameSet)
             ParseSet(Tree, NameFigure, NameSet, ListPlotOpt)
             
+    def EscapeGnuplot(s):
+        return s.replace('$','\$').replace('\"','\\\"')
+        
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
         for t in Tree:
@@ -574,29 +570,16 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 ListPlotSet = []
                 ListPlotOpt = []
                 ProcessTree(Tree[t], NameFigure, ListPlotOpt, ListPlotSet)
+                
                 if Options.Plot:
+                    if not Options.Plot2X and not Options.Plot2EpsLatex:
+                        Msg.Error(2, "Please enable Plot2X or Plot2EpsLatex if you want to use the plot action.")
+                        
                     if Options.Plot2X:
                         print(Options.Indent + "Plotting to X11 using Gnuplot")
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotSet))) + ";" for PlotSet in ListPlotSet]) + "plot " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) for PlotOpt in ListPlotOpt]) + "\""
                         os.system(PlotCmd)
                         
-                    if Options.Plot2Pdf:
-                        DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, NameFigure.replace(" ","_"))
-                        try:
-                            os.makedirs(DirPlot)
-                        except:
-                            None
-                        NameFilePdfFigure = os.path.join(DirPlot, NameFigure.replace(" ","_"))
-                        ListPlotSet = ["terminal postscript eps enhanced color solid size 7,7","output \\\"" + NameFilePdfFigure + ".eps\\\""] + ListPlotSet
-                        print(Options.Indent + "Plotting to pdfs using Gnuplot")
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
-                        os.system(PlotCmd)
-                        os.system("ps2pdf " + NameFilePdfFigure + ".eps " + NameFilePdfFigure + ".pdf")
-                        os.system("rm " + NameFilePdfFigure + ".eps")
-                        if Options.Plot2PdfShow:
-                            os.system(Options.PdfViewer + " " + NameFilePdfFigure + ".pdf 2> /dev/null")
-                            
-
                     if Options.Plot2EpsLatex:
                         DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, NameFigure.replace(" ","_"))
                         try:
@@ -604,9 +587,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                         except:
                             None
                         NameFilePdfFigure = os.path.join(DirPlot, NameFigure.replace(" ","_"))
-                        ListPlotSet = ["terminal epslatex color standalone solid size 29.7cm,21cm","output \\\"" + NameFilePdfFigure + ".tex\\\""] + ListPlotSet
+                        ListPlotSet = ["terminal epslatex color standalone solid size 29.7cm,21cm","output \"" + NameFilePdfFigure + ".tex\""] + ListPlotSet
                         print(Options.Indent + "Plotting to pdfs using Gnuplot+Latex")
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + str(g) + ";" for g in ListPlotSet]) + "plot " + ", ".join(ListPlotOpt) + "\""
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotSet)) + ";" for PlotSet in ListPlotSet]) + "plot " + ", ".join([EscapeGnuplot(str(PlotOpt)) for PlotOpt in ListPlotOpt]) + "\""                      
                         os.system(PlotCmd)
                         os.system("cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null")
                         if Options.Plot2EpsLatexShow:                        
