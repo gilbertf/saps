@@ -575,6 +575,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                     if not Options.Plot2X and not Options.Plot2EpsLatex:
                         Msg.Error(2, "Please enable Plot2X or Plot2EpsLatex if you want to use the plot action.")
                         
+                    if len(ListPlotOpt) == 0:
+                        Msg.Error(2, "Can not plot since no data could be collected.")
+
                     if Options.Plot2X:
                         print(Options.Indent + "Plotting to X11 using Gnuplot")
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotSet))) + ";" for PlotSet in ListPlotSet]) + "plot " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) for PlotOpt in ListPlotOpt]) + "\""
@@ -593,7 +596,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                         os.system(PlotCmd)
                         os.system("cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null")
                         if Options.Plot2EpsLatexShow:                        
-                            os.system(Options.PdfViewer + " " + NameFilePdfFigure + ".pdf 2> /dev/null")
+                            os.system(Options.PdfViewer + " " + NameFilePdfFigure + ".pdf 2> /dev/null &")
                     
                     if Options.DebugPlot:
                         print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))
@@ -602,13 +605,14 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
 
 
 def ShowSyntax():
-    print("saps command line utility")
-    print(sys.argv[0], "<action> <saps configuration file>")
+    print("SAPS Command Line Utility")
+    print(sys.argv[0], "<action> <saps configuration file>\n")
     print("<action>:")
-    print("\t-s\tSimulate")
-    print("\t-c\tCollect")
-    print("\t-v\tView")
-    print("\t-p\tPlot")
+    print("\t-s\t--simulate\tSimulate")
+    print("\t-c\t--collect\tCollect")
+    print("\t-v\t--view\t\tView")
+    print("\t-p\t--plot\t\tPlot")
+    print("\t\t--delete\tDelete result files\n")
 
 def ParseArgs():
     global Options
