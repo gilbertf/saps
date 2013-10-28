@@ -1,7 +1,5 @@
 FileItppResults.open(NameFileItppResults);
 
-FilePlainResults.open((NameFileItppResults + (string)".plaintxt").c_str());
-
 Duration = timer.get_time(); 	
 
 /** Printing output variables **/
@@ -38,20 +36,3 @@ Duration = timer.get_time();
 	X(int , Version)
 #undef X
 FileItppResults.close();
-
-/** Save values to plaintxt results file **/
-#define X(a,b) FilePlainResults << #b << "\t" << b << endl;
-	#ifdef INPUTVARS
-		INPUTVARS
-	#endif
-	#ifdef OPTINPUTVARS
-		OPTINPUTVARS
-	#endif
-	#ifdef OUTPUTVARS
-		OUTPUTVARS
-	#endif
-	X(double, Duration)
-	X(double, Complete)
-	X(int , Version)
-#undef X
-FilePlainResults.close();

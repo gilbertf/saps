@@ -143,7 +143,6 @@ check_file(NameFileItppResults, Version);
 #endif
 
 it_file FileItppResults;
-ofstream FilePlainResults;
 
 Real_Timer timer;
 timer.start();
