@@ -274,7 +274,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
     def RemoveLatexChars(s):
         if '\\' in s:
             Msg.Error(2, "Backslash is not allowed in " + s)
-        return s.replace('{','').replace('}','').replace('_','').replace('$','')       
+        return s.replace('{','').replace('}','').replace('_','').replace('$','')
         
     def ParseSet(Set, NameFigure, NameSet, ListPlotOpt):
         global Options
@@ -374,7 +374,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
             RunFileCode(os.path.join("simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
-            NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet))
+            NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet).replace('/','')) #Slashes in Setname indicate subdirs
 
         #Liste der zu sammelnden "Axen" zusammenstellen
         if Options.Collect:

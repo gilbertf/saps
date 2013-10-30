@@ -6,15 +6,15 @@ Saps:
   #Plot configuration
   DirPlot: ~/Dissertation/plots
   Plot2X: True
-  Plot2EpsLatex: True
+  Plot2EpsLatex: False
   Plot2EpsLatexShow: True
   PdfViewer: acroread
 
   #Debug
-  DebugAnalyse: False
+  DebugAnalyse: True
   DebugCollect: False
   DebugRestructure: False
-  DebugPlot: False
+  DebugPlot: True
 
   #Msg configuration
   ShowNotice: False
