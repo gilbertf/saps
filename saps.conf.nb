@@ -11,10 +11,10 @@ Saps:
   PdfViewer: acroread
 
   #Debug
-  DebugAnalyse: True
+  DebugAnalyse: False
   DebugCollect: False
   DebugRestructure: False
-  DebugPlot: True
+  DebugPlot: False
 
   #Msg configuration
   ShowNotice: False
