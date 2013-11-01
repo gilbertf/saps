@@ -20,6 +20,7 @@ import sys, os
 
 verbose = False
 MatApp = "octave -q --eval \""
+#MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
 
 Args = sys.argv
 VecArgs = ExtractArgs(Args[2:])
@@ -33,11 +34,13 @@ except:
 FilenameMat = Args[0] + ".m"
 [CommasepSig, VecSig] = ReadFunctionSignature(FilenameMat)
 
-VecArgs.append("FilenameResults")
+VecArgs.append("NameFileResult")
 if not sorted(VecSig) == sorted(VecArgs):
 	print "Signatures do not match"
 	print "We require: " + " ".join(sorted(VecSig[:len(VecSig)-1]))
 	print "You specified: " + " ".join(sorted(VecArgs[:len(VecArgs)-1]))
+	print "We require: " + " ".join(VecSig)
+	print "You specified: " + " ".join(VecArgs)
 	exit()
 
 Filename = Args[0].split("/")
@@ -52,12 +55,12 @@ Cmd = "cd " + Basename + ";" + MatApp + "addpath('" + os.path.expanduser("~/Diss
 if verbose:
 	print "Cmd: " + Cmd
 
-P = FilenameResults[0:FilenameResults.rfind("/")]
+P = NameFileResult[0:NameFileResult.rfind("/")]
 print(P)
 if not os.path.exists(P):
 	os.makedirs(P)
-if not os.path.exists(FilenameResults):
-	open(FilenameResults, 'w').close() 
+if not os.path.exists(NameFileResult):
+	open(NameFileResult, 'w').close() 
 	os.system(Cmd)
 else:
 	if verbose:
