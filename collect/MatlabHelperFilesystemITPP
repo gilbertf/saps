@@ -20,7 +20,7 @@ import sys, os
 
 verbose = False
 #MatApp = "octave -q --eval \"pkg load statistics;"
-MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
+MatApp = "/cluster/matlabR2010b/bin/matlab -nodesktop -nosplash -nojvm -r \""
 
 Args = sys.argv
 VecArgs = ExtractArgs(Args[2:])
@@ -56,7 +56,6 @@ if verbose:
 	print "Cmd: " + Cmd
 
 P = NameFileResult[0:NameFileResult.rfind("/")]
-print(P)
 if not os.path.exists(P):
 	os.makedirs(P)
 if not os.path.exists(NameFileResult):

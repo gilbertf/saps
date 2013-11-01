@@ -54,8 +54,8 @@ except:
 
 def Cluster(Cmd, DirJob, NameFileJob):
     Options = list()
-    Options.append("-o " + os.path.join(DirLog, "out", NameFileJob))
-    Options.append("-e " + os.path.join(DirLog, "err", NameFileJob))
+    #Options.append("-o " + os.path.join(DirLog, "out", NameFileJob))
+    #Options.append("-e " + os.path.join(DirLog, "err", NameFileJob))
     if Resources:
         Options.append("-l " + ":".join(Resources))
     if Queue:
