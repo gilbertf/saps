@@ -1,4 +1,6 @@
 #!/usr/bin/python
+import sys
+
 def ReadFunctionSignature(FilenameMat):
 	f = open(FilenameMat)
 	l = ""
@@ -6,7 +8,7 @@ def ReadFunctionSignature(FilenameMat):
 		l = f.readline()
 		if not f:
 			print "function nicht gefunden"
-			exit()
+			sys.exit(-1)
 	Sig = l.replace("(","*").replace(")","*").split("*")[1].replace(" ","")
 	return [Sig, Sig.split(",")]
 
@@ -29,7 +31,7 @@ try:
     NameFileResult = Args[1].split("NameFileResult=")[1]
 except:
     print "Error: The first parameter has to be NameFileResult"
-    exit()
+    sys.exit(-1)
 
 FilenameMat = Args[0] + ".m"
 [CommasepSig, VecSig] = ReadFunctionSignature(FilenameMat)
@@ -41,7 +43,7 @@ if not sorted(VecSig) == sorted(VecArgs):
 	print "You specified: " + " ".join(sorted(VecArgs[:len(VecArgs)-1]))
 	print "We require: " + " ".join(VecSig)
 	print "You specified: " + " ".join(VecArgs)
-	exit()
+	sys.exit(-1)
 
 Filename = Args[0].split("/")
 Filename = Filename[len(Filename)-1]
