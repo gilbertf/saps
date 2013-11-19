@@ -152,5 +152,5 @@ int Time;
 #include "WriteOutputVars.inc"
 
 #ifdef debug
-	it_file DebugFile("DebugFile.it");
+	it_file DebugFile("/tmp/DebugFile.it");
 #endif

@@ -7,6 +7,12 @@ except:
 DirResults = os.path.expanduser(DirResults)
 
 for Args in ListArgs:
-    Cmd = " ".join([Program] + ["DirResults=" + DirResults] + Args)
+    Executable = Program.split("/").pop()
+    NameFileResult = os.path.join(DirResults, Executable, "_".join(Args))
+    if os.path.isfile(NameFileResult):
+        Msg.Notice(2, "Result file exists already, skipping job.")
+        continue
+    NameFileJob = Executable + "_".join(Args)
+    Cmd = " ".join([Program] + ["NameFileResult=" + NameFileResult] + Args)
     print("Running: ", Cmd)
     os.system(Cmd)
