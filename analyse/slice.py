@@ -1,7 +1,7 @@
 ValuesOut = list()
 
 if len(AxisOut) != 1:
-    Msg.Error(3, "Number of output axis has to be one, when using Integrate")
+    Msg.Error(3, "Number of output axis has to be one, when using slice")
 
 for RowValues in ValuesIn:
     NewRow = list()
