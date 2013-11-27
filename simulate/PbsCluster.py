@@ -74,7 +74,7 @@ def Cluster(Cmd, DirJob, NameFileJob):
     return(1)
 
 
-NumCreated = 0
+ListCmd = []
 for Args in ListArgs:
     NameFileResult = os.path.join(DirResults, Program.split("/").pop(), "_".join(Args))
     if os.path.isfile(NameFileResult):
@@ -82,6 +82,12 @@ for Args in ListArgs:
         continue
     NameFileJob = "_".join(Args)
     Cmd = " ".join([Program] + ["NameFileResult=" + NameFileResult] + Args)
-    NumCreated = NumCreated + Cluster(Cmd, DirJob, NameFileJob)
+    ListCmd.append(Cmd)
+
+NumCreated = 0
+for Cmd in ListCmd:
+    if Cmd not in ListPrevCmd:
+        NumCreated = NumCreated + Cluster(Cmd, DirJob, NameFileJob)
+        ListPrevCmd.append(Cmd)
     
 Msg.Msg(1, "Simulating", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobs send to pbs.")

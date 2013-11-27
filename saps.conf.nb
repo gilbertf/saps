@@ -23,7 +23,8 @@ Saps:
 
 #Module selection
 #Simulate: FilesystemCluster.py
-Simulate: RunOnline.py
+#Simulate: RunOnline.py
+Simulate: PbsCluster.py
 Collect: FilesystemITPP.py
 
 #Module configuration

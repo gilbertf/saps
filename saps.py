@@ -360,17 +360,14 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                 if os.path.isfile(NameFileResult):
                         os.remove(NameFileResult)
                         Msg.Notice(1, "Deleting result file " + NameFileResult)
-                NameFileResult = NameFileResult + ".plaintxt"
-                if os.path.isfile(NameFileResult):
-                        os.remove(NameFileResult)
-                        Msg.Notice(1, "Deleting result file " + NameFileResult)
            
         if Options.Simulate:
             try:
                 Simulate = Options.Config["Simulate"]
             except:
                 Msg.Error(1,"Simulate interface is not defined in configfile")
-            Env = dict(ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg)
+            global ListPrevCmd
+            Env = dict(ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg, ListPrevCmd=ListPrevCmd)
             RunFileCode(os.path.join("simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
@@ -659,7 +656,8 @@ def ParseArgs():
         Msg.Error(0, "Please specify at least one action.")
     
 def main():
-    global Options, Msg
+    global Options, Msg, ListPrevCmd
+    ListPrevCmd = []
     
     Options = options()
     Msg = msg()
