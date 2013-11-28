@@ -560,6 +560,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
 
                 if Options.Collect:
                     try:
+                        os.removedirs("/".join([Options.SetDir, Options.Descriptionfile, NameFigure]))
+                    except:
+                        None
+                    try:
                         os.makedirs("/".join([Options.SetDir, Options.Descriptionfile, NameFigure]))
                     except:
                         None
