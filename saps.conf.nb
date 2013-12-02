@@ -22,9 +22,9 @@ Saps:
   RoundDigits: 13
 
 #Module selection
-#Simulate: FilesystemCluster.py
+Simulate: FilesystemCluster.py
 #Simulate: RunOnline.py
-Simulate: PbsCluster.py
+#Simulate: PbsCluster.py
 Collect: FilesystemITPP.py
 
 #Module configuration
