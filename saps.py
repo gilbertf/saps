@@ -647,6 +647,8 @@ def ParseArgs():
                     Msg.Error(0, "Invalid command line option: " + e)
         else:
             if Options.Descriptionfile is None:
+                if "_" in a:
+                    Msg.Error(0, "Please do not use the _ character in description file names.")
                 Options.Descriptionfile = a
             else:
                 Msg.Error(0, "You are only allowed to specify one configuration file. I do not understand " + a)
