@@ -149,4 +149,4 @@ timer.start();
 int LastTime = timer.get_time();
 
 int Time;
-//#include "WriteOutputVars.inc"
+#include "WriteOutputVars.inc"
