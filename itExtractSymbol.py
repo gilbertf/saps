@@ -15,21 +15,16 @@ if len(Cmd) == 2:
     M = len(Symbol)
     print M
     f.write("ivec labelling("+ str(M) + ");")
-    f.write("for (int i=0;i<" + str(M) + ";i++) labelling(" + str(M-1) + "-i) = i;")
+    f.write("for (int i=0;i<" + str(M) + ";i++) labelling(" + str(M-1) + "-i) = i;\n")
 
     f.write("cvec symbols = \"")
     for s in Symbol:
         x = s.item(0)
-        s = str(x.real)
-        if x.imag > 0:
-            s = s + "+" + str(x.imag) + "i "
-        else:
-            s = s + str(x.imag) + "i "
-
+        s = str(x).replace('(','').replace(')',' ').replace('j','i')
         f.write(s)
 else:
     print "Syntax: " + Cmd[0] + " <filename>"
 
-f.write("\";")
-f.write("Modulator_2D mod(symbols, labelling); return mod;")
+f.write("\";\n")
+f.write("Modulator_2D mod(symbols, labelling);\nreturn mod;")
 f.close()
