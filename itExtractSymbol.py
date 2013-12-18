@@ -20,7 +20,7 @@ if len(Cmd) == 2:
     f.write("cvec symbols = \"")
     for s in Symbol:
         x = s.item(0)
-        s = str(x).replace('(','').replace(')',' ').replace('j','i')
+        s = str(x).replace('(','').replace(')','').replace('j','i') + " "
         f.write(s)
 else:
     print "Syntax: " + Cmd[0] + " <filename>"
