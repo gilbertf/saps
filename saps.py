@@ -434,6 +434,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                     if axis not in CollectAxis:
                         Msg.Error(3, "Analyse AxisIn definition " + str(axis) + " is invalid. Available are: " + str(CollectAxis))
                     idx = CollectAxis.index(axis)
+                    if len(CollectValues[idx]) == 0:
+                        Msg.Error(2, "Axis " + axis + " does not contain any data")
                     AxisIn.append(CollectAxis[idx])
                     ValuesIn.append(CollectValues[idx])
                     
