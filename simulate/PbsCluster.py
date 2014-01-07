@@ -64,10 +64,11 @@ def Cluster(Cmd, DirJob, NameFileJob):
         if type(Walltime) is not str:
             Msg.Error(1, "Walltime has to be given as string")
         Options.append("-l walltime=" + Walltime)
+    Options.append("-N \"" + Cmd[0:14] + "\"")
     ClusterCmd = "echo \"" + Cmd + "\" | qsub " + " ".join(Options)
     if DirWork:
         ClusterCmd = "cd " + DirWork + ";" + ClusterCmd
-    #Msg.Msg(2, "Cluster", ClusterCmd)
+    Msg.Msg(2, "Cluster", ClusterCmd)
     ret = os.system(ClusterCmd)
     if ret != 0:
         Msg.Error(1, "qsub execution failed.")
