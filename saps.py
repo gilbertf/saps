@@ -581,30 +581,41 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                     if len(ListPlotOpt) == 0:
                         Msg.Error(2, "Can not plot since no data could be collected.")
 
+                    if Options.DebugPlot:
+                        print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))
+                        print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
+
                     if Options.Plot2X:
                         print(Options.Indent + "Plotting to X11 using Gnuplot")
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotSet))) + ";" for PlotSet in ListPlotSet]) + "plot " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) for PlotOpt in ListPlotOpt]) + "\""
+                        if Options.DebugPlot:
+                            print(Options.Indent + "PlotCmd: " + str(PlotCmd))
                         os.system(PlotCmd)
                         
                     if Options.Plot2EpsLatex:
-                        DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, NameFigure.replace(" ","_"))
+                        EscapedNameFigure = NameFigure.replace(" ","SPACE").replace(".","DOT")
+                        DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, EscapedNameFigure)
                         try:
                             os.makedirs(DirPlot)
                         except:
                             None
-                        NameFilePdfFigure = os.path.join(DirPlot, NameFigure.replace(" ","_"))
+                        NameFilePdfFigure = os.path.join(DirPlot, EscapedNameFigure)
                         ListPlotSet = ["terminal epslatex color standalone solid size 29.7cm,21cm","output \"" + NameFilePdfFigure + ".tex\""] + ListPlotSet
                         print(Options.Indent + "Plotting to pdfs using Gnuplot+Latex")
+
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotSet)) + ";" for PlotSet in ListPlotSet]) + "plot " + ", ".join([EscapeGnuplot(str(PlotOpt)) for PlotOpt in ListPlotOpt]) + "\""                      
+                        if Options.DebugPlot:
+                            print(Options.Indent + "PlotCmd: " + str(PlotCmd))
                         os.system(PlotCmd)
-                        os.system("cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null")
+
+                        LatexCmd = "cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null"
+                        if Options.DebugPlot:
+                            print(Options.Indent + "LatexCmd: " + str(LatexCmd))
+                        os.system(LatexCmd)
+
                         if Options.Plot2EpsLatexShow:                        
                             os.system(Options.PdfViewer + " " + NameFilePdfFigure + ".pdf 2> /dev/null &")
                     
-                    if Options.DebugPlot:
-                        print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))
-                        print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
-                        print(Options.Indent + "PlotCmd: " + str(PlotCmd))
 
 
 def ShowSyntax():
