@@ -5,7 +5,7 @@ Saps:
 
   #Plot configuration
   DirPlot: ~/Dissertation/plots
-  Plot2X: False
+  Plot2X: True
   Plot2EpsLatex: True
   Plot2EpsLatexShow: True
   PdfViewer: acroread

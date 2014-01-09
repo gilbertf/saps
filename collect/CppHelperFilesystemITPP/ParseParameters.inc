@@ -16,12 +16,13 @@ if (!file_exists(NameFileTemplate.c_str())) {
 	FileTemplate << "Program: " << replace_home_by_tilde(NamePathProgram) << endl << endl;
 
 	FileTemplate << "# Gnuplot options" << endl;
-	FileTemplate << "PlotSet: grid" << endl;
-	FileTemplate << "#PlotSet: size square" << endl;
-	FileTemplate << "#PlotSet: xtics 0.2" << endl;
-	FileTemplate << "#PlotSet: ytics 0.2" << endl;
-	FileTemplate << "#PlotSet: xrange [0:1]" << endl;
-	FileTemplate << "#PlotSet: yrange [0:1]" << endl << endl;
+	FileTemplate << "PlotSet:" << endl;
+	FileTemplate << "  - grid" << endl;
+	FileTemplate << "#  - size square" << endl;
+	FileTemplate << "#  - xtics 0.2" << endl;
+	FileTemplate << "#  - ytics 0.2" << endl;
+	FileTemplate << "#  - xrange [0:1]" << endl;
+	FileTemplate << "#  - yrange [0:1]" << endl << endl;
 
 	FileTemplate << "# Input variables" << endl;
 	#define X(a,b) FileTemplate << #b << ": " << endl;
@@ -41,7 +42,7 @@ if (!file_exists(NameFileTemplate.c_str())) {
 	FileTemplate << "Figure Example application:" << endl;
 	FileTemplate << "  Set First parameter set:" << endl;
 	FileTemplate << "    PlotOpt: w lines" << endl;
-	FileTemplate << "    #Analyse: integrate.py, y" << endl;
+	FileTemplate << "      - w lines" << endl;
 	FileTemplate << "    #Output variables that can be used for Axis: ";
 	#ifdef OUTPUTVARS
 		#define X(a,b) FileTemplate << #b << ", ";
