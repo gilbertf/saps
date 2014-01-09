@@ -1,5 +1,12 @@
 #!/usr/bin/python
 import sys
+import string
+
+def CheckIfString(v):
+    for l in string.letters:
+        if l in v:
+            return True
+    return False
 
 def ReadFunctionSignature(FilenameMat):
 	f = open(FilenameMat)
@@ -22,7 +29,6 @@ import sys, os
 
 verbose = False
 MatApp = "octave -q --eval \""
-#MatApp = "matlab -nodesktop -nosplash -nojvm -r \""
 
 Args = sys.argv
 VecArgs = ExtractArgs(Args[2:])
@@ -49,9 +55,16 @@ Filename = Args[0].split("/")
 Filename = Filename[len(Filename)-1]
 Basename = os.path.dirname(__file__)
 
-Args.append("NameFileResult='" + NameFileResult + "'")
 
-Variables = ";".join(Args[2:])
+for Idx in range(len(Args)-1):
+    Cur = Args[1+Idx]
+    PosEq = Cur.find("=")
+    Name = Cur[0:PosEq]
+    Value = Cur[PosEq+1:]
+    if CheckIfString(Value):
+        Args[1+Idx] = Name + "=\'" + Value + "\'"
+
+Variables = ";".join(Args[1:])
 
 Cmd = "cd " + Basename + ";" + MatApp + "addpath('" + os.path.expanduser("~/Dissertation/libgjm") + "');" + Variables + ";" + Filename + "(" + CommasepSig + ");exit\""
 if verbose:
