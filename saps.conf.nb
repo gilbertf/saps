@@ -14,7 +14,7 @@ Saps:
   DebugAnalyse: False
   DebugCollect: False
   DebugRestructure: False
-  DebugPlot: True
+  DebugPlot: False
 
   #Msg configuration
   ShowNotice: False
