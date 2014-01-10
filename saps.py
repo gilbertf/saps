@@ -212,7 +212,62 @@ def ParseFloatRange(s):
             Msg.Error(2,"Syntax error in " + t)
     return l 
 
-def RestructureTree(Tree, inFigure, inRoot):
+def ExtractValues(s, DoExtract): #Always returns list of strs to make handling easier
+    if type(s) == str and DoExtract:
+        return(ParseFloatRange(s))
+    else:
+        return([Num2Str(s)])
+            
+def ExpandFigures(Tree):
+    def ExpandValueNameFigure(Tree, Figure, NameFigure):
+        global Msg
+        if "%" in NameFigure:
+            a = NameFigure.find("%")
+            b = NameFigure[a+1:].find("%")
+            VarName = NameFigure[a+1:a+b+1]
+            
+            DoExtract = False
+            if len(VarName) > 1 and VarName[0] == "!" :
+                VarName = VarName[1:]
+                DoExtract = True
+
+            try:
+                if VarName in Figure:
+                    VarValue = Figure[VarName]
+                    isParameter = False
+                elif "Parameter" in Figure and VarName in Figure["Parameter"]:
+                    VarValue = Figure["Parameter"][VarName]
+                    isParameter = True
+            except:
+                Msg.Error(2, "The variable " + VarName + " could not be found.")
+            
+            ExpandedValues = ExtractValues(VarValue, DoExtract)
+            
+            for ExpandedValue in ExpandedValues:
+                TmpNameFigure = NameFigure[:a] + str(ExpandedValue) + NameFigure[a+b+2:]
+                TmpFigure = copy.deepcopy(Figure) #Weil wir in ParseSet auch an Unterstrukturen, etwa Analyse Ersetzungen vornehmen
+                if isParameter is False:
+                    TmpFigure[VarName] = ExpandedValue
+                else:
+                    TmpFigure["Parameter"][VarName] = ExpandedValue
+                ExpandValueNameFigure(Tree, TmpFigure, TmpNameFigure)
+
+        else:
+            Msg.Msg(1, "Figure", NameFigure)
+            Tree["Figure "+ NameFigure] = Figure
+            
+    if type(Tree) == Options.ydict:
+        for t in Tree:
+            if "Figure " in t and "%" in t:
+                NameFigure = t.split("Figure ")[1]
+                if NameFigure.count("%") % 2 != 0:
+                    Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
+                ExpandValueNameFigure(Tree, Tree[t], NameFigure)
+                del Tree[t]
+                
+    return Tree
+    
+def RestructureTree(Tree, inFigure, inRoot, RunRecursive):            
     global Options
     hasFigure = False
     hasSet = False
@@ -255,7 +310,8 @@ def RestructureTree(Tree, inFigure, inRoot):
                     inFigure = False
                     if "Figure " in fs:
                         inFigure = True
-                    FiguresSets[fs] = RestructureTree(FiguresSets[fs], inFigure, False)
+                    if RunRecursive:
+                        FiguresSets[fs] = RestructureTree(FiguresSets[fs], inFigure, False, RunRecursive)
 
         if len(FiguresSets) == 0:
             return(Properties) # In der tiefsten Ebene gibt es nur noch properties
@@ -264,13 +320,7 @@ def RestructureTree(Tree, inFigure, inRoot):
             
 
     
-def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
-    def ExtractValues(s, DoExtract): #Always returns list of strs to make handling easier
-        if type(s) == str and DoExtract:
-            return(ParseFloatRange(s))
-        else:
-            return([Num2Str(s)])
-            
+def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):          
     def RemoveLatexChars(s):
         if '\\' in s:
             Msg.Error(2, "Backslash is not allowed in " + s)
@@ -557,7 +607,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
                     Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
                 ExpandValue(Tree[t], NameFigure, NameSet, ListPlotOpt)
             elif "Figure " in t:
-                NameFigure = t.split("Figure ")[1]
+                LatexNameFigure = t.split("Figure ")[1]
+                NameFigure = RemoveLatexChars(LatexNameFigure)
                 print("Figure", NameFigure)
 
                 if Options.Collect:
@@ -572,8 +623,16 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListPlotSet = []):
 
                 ListPlotSet = []
                 ListPlotOpt = []
+
                 ProcessTree(Tree[t], NameFigure, ListPlotOpt, ListPlotSet)
-                
+
+                TitleIsSet = False
+                for s in ListPlotSet:
+                    if "title " in s or "notitle" in s:
+                        TitleIsSet = True
+                if not TitleIsSet:
+                    ListPlotSet.append("title \"" + LatexNameFigure + "\"")
+                    
                 if Options.Plot:
                     if not Options.Plot2X and not Options.Plot2EpsLatex:
                         Msg.Error(2, "Please enable Plot2X or Plot2EpsLatex if you want to use the plot action.")
@@ -683,7 +742,15 @@ def main():
     Options.ReadFileConfig("saps.conf")
     ParseArgs()
     Tree = ReadYaml(Options.Descriptionfile, False)
-    Tree = RestructureTree(Tree, False, True)
+    
+    #Move Properties intop Figures to prepare ExpandFigure
+    Tree = RestructureTree(Tree, False, True, False)
+    
+    Tree = ExpandFigures(Tree)
+    
+    #Now move into fuill depth
+    Tree = RestructureTree(Tree, False, True, True)
+    
     if Options.DebugRestructure:
         print(yaml.dump(Tree, default_flow_style=False))
     try:
