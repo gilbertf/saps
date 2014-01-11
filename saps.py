@@ -274,7 +274,7 @@ def RestructureTree(Tree, inFigure, inRoot, RunRecursive):
     Properties = Options.ydict()
     FiguresSets = Options.ydict()
     if type(Tree) == Options.ydict:
-        #Seperate in two Groups: FigureSets and Properties. Move PlotSet into the Figures but not the Sets
+        #Seperate in two Groups: FigureSets and Properties. Move PlotOpt into the Figures but not the Sets
         for t in Tree:
             if "Figure " in t or "Set " in t:
                 if type(Tree[t]) is not Options.ydict:
@@ -284,7 +284,7 @@ def RestructureTree(Tree, inFigure, inRoot, RunRecursive):
                     hasFigure = True
                 elif "Set " in t:
                     hasSet = True
-            elif t == "PlotSet" or t == "SapsOpt":
+            elif t == "PlotOpt" or t == "SapsOpt":
                 if inFigure:
                     FiguresSets[t] = Tree[t]
                 else:
@@ -320,13 +320,13 @@ def RestructureTree(Tree, inFigure, inRoot, RunRecursive):
             
 
     
-def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListPlotSet = []):          
+def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlotOpt = []):          
     def RemoveLatexChars(s):
         if '\\' in s:
             Msg.Error(2, "Backslash is not allowed in " + s)
         return s.replace('{','').replace('}','').replace('_','').replace('$','')
         
-    def ParseSet(Set, NameFigure, NameSet, ListPlotOpt):
+    def ParseSet(Set, NameFigure, NameSet, ListPlot):
         global Options
         def ExpandSet(Set, ListArgs, cmd = []):
             if len(Set) > 0:
@@ -370,9 +370,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
             Msg.Error(2, "Axis property is missing")
 
         try:
-            PlotOpt = Set.pop("PlotOpt")
+            Plot = Set.pop("Plot")
         except:
-            PlotOpt = None
+            Plot = None
             
         #Used in ExpandValue, dropping here
         try:
@@ -546,13 +546,13 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
 
         if Options.Plot:
             s = "\"" + NameFileSet + "\"" + " title " + "\"" + NameSet + "\" "
-            if PlotOpt is not None:
-                if type(PlotOpt) is list:
-                    PlotOpt = " ".join(PlotOpt)
-                s = s + PlotOpt
-            ListPlotOpt.append(s)
+            if Plot is not None:
+                if type(Plot) is list:
+                    Plot = " ".join(Plot)
+                s = s + Plot
+            ListPlot.append(s)
 
-    def ExpandValue(Tree, NameFigure, NameSet, ListPlotOpt):
+    def ExpandValue(Tree, NameFigure, NameSet, ListPlot):
         global Msg
         if "%" in NameSet:
             a = NameSet.find("%")
@@ -584,11 +584,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
                     TmpTree[VarName] = ExpandedValue
                 else:
                     TmpTree["Parameter"][VarName] = ExpandedValue
-                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlotOpt)
+                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlot)
 
         else:
             Msg.Msg(1, "Set", NameSet)
-            ParseSet(Tree, NameFigure, NameSet, ListPlotOpt)
+            ParseSet(Tree, NameFigure, NameSet, ListPlot)
             
     def EscapeGnuplot(s):
         return s.replace('$','\$').replace('\"','\\\"')
@@ -596,11 +596,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
         for t in Tree:
-            if t == "PlotSet":
+            if t == "PlotOpt":
                 if type(Tree[t]) is  list:
-                    ListPlotSet.extend(Tree[t])
+                    ListPlotOpt.extend(Tree[t])
                 else:
-                    ListPlotSet.append(Tree[t])
+                    ListPlotOpt.append(Tree[t])
             elif t == "SapsOpt":
                 if type(Tree[t]) is  list:
                     ListSapsOpt.extend(Tree[t])
@@ -610,7 +610,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
                     Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
-                ExpandValue(Tree[t], NameFigure, NameSet, ListPlotOpt)
+                ExpandValue(Tree[t], NameFigure, NameSet, ListPlot)
             elif "Figure " in t:
                 LatexNameFigure = t.split("Figure ")[1]
                 NameFigure = RemoveLatexChars(LatexNameFigure)
@@ -626,14 +626,14 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
                     except:
                         None
 
-                ListPlotSet = []
-                ListSapsOpt = []
                 ListPlotOpt = []
+                ListSapsOpt = []
+                ListPlot = []
 
-                ProcessTree(Tree[t], NameFigure, ListPlotOpt, ListSapsOpt, ListPlotSet)
+                ProcessTree(Tree[t], NameFigure, ListPlot, ListSapsOpt, ListPlotOpt)
 
                 TitleIsSet = False
-                for s in ListPlotSet:
+                for s in ListPlotOpt:
                     if "title " in s:
                         TitleIsSet = True
                 for s in ListSapsOpt:
@@ -641,19 +641,19 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
                         TitleIsSet = True
                         
                 if not TitleIsSet:
-                    ListPlotSet.append("title \"" + LatexNameFigure + "\"")
+                    ListPlotOpt.append("title \"" + LatexNameFigure + "\"")
                     
                 if Options.Plot:
                     if not Options.Plot2X and not Options.Plot2EpsLatex:
                         Msg.Error(2, "Please enable Plot2X or Plot2EpsLatex if you want to use the plot action.")
                         
-                    if len(ListPlotOpt) == 0:
+                    if len(ListPlot) == 0:
                         Msg.Error(2, "Can not plot since no data could be collected.")
 
                     if Options.DebugPlot:
-                        print(Options.Indent + "ListPlotSet: " + str(ListPlotSet))
-                        print(Options.Indent + "ListSapsOpt: " + str(ListSapsOpt))
                         print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
+                        print(Options.Indent + "ListSapsOpt: " + str(ListSapsOpt))
+                        print(Options.Indent + "ListPlot: " + str(ListPlot))
 
                     PlotType = None
                     for s in ListSapsOpt:
@@ -671,7 +671,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
                     
                     if Options.Plot2X:
                         print(Options.Indent + "Plotting to X11 using Gnuplot")
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotSet))) + ";" for PlotSet in ListPlotSet]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) for PlotOpt in ListPlotOpt]) + "\""
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
                         if Options.DebugPlot:
                             print(Options.Indent + "PlotCmd: " + str(PlotCmd))
                         os.system(PlotCmd)
@@ -684,10 +684,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlotOpt = [], ListSapsOpt = [], ListP
                         except:
                             None
                         NameFilePdfFigure = os.path.join(DirPlot, EscapedNameFigure)
-                        ListPlotSet = ["terminal epslatex color standalone solid size 29.7cm,21cm","output \"" + NameFilePdfFigure + ".tex\""] + ListPlotSet
+                        ListPlotOpt = ["terminal epslatex color standalone solid size 29.7cm,21cm","output \"" + NameFilePdfFigure + ".tex\""] + ListPlotOpt
                         print(Options.Indent + "Plotting to pdfs using Gnuplot+Latex")
 
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotSet)) + ";" for PlotSet in ListPlotSet]) + PlotType + " " + ", ".join([EscapeGnuplot(str(PlotOpt)) for PlotOpt in ListPlotOpt]) + "\""                      
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
                         if Options.DebugPlot:
                             print(Options.Indent + "PlotCmd: " + str(PlotCmd))
                         os.system(PlotCmd)
