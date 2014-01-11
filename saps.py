@@ -264,9 +264,40 @@ def ExpandFigures(Tree):
                     Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
                 ExpandValueNameFigure(Tree, Tree[t], NameFigure)
                 del Tree[t]
+
+def RemoveGroups(Tree, Parent, InGroup):
+    if type(Tree) == Options.ydict:
+        for t in Tree:
+            if "Group" in t:
+                RemoveGroups(Tree[t], Tree, True)
+                del Tree[t]
+            elif "Figure " in t or "Set " in t:
+                RemoveGroups(Tree[t], None, False)
                 
-    return Tree
+        Properties = Options.ydict()
+        Opts = Options.ydict()
+        FiguresSets = Options.ydict()
     
+        if InGroup:
+            for t in Tree:
+                if "Figure " in t or "Set " in t:
+                    if type(Tree[t]) is not Options.ydict:
+                        Msg.Error(0, "\"" + t + "\" does not have any properties defined,")
+                    FiguresSets[t] = Tree[t]
+                elif t == "PlotOpt" or t == "SapsOpt":
+                    Opts[t] = Tree[t]
+                else:
+                    Properties[t] = Tree[t]
+            for fs in FiguresSets:
+                Parent[fs] = FiguresSets[fs]
+                for p in Properties:
+                    (Parent[fs])[p] = Properties[p]
+                for o in Opts:
+                    if "Figure " in fs:
+                        (Parent[fs])[o] = Opts[o]
+                    elif "Set " in fs:
+                        Parent[o] = Opts[o]
+                
 def RestructureTree(Tree, inFigure, inRoot, RunRecursive):            
     global Options
     hasFigure = False
@@ -648,7 +679,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         Msg.Error(2, "Please enable Plot2X or Plot2EpsLatex if you want to use the plot action.")
                         
                     if len(ListPlot) == 0:
-                        Msg.Error(2, "Can not plot since no data could be collected.")
+                        Msg.Warning(2, "Can not plot since no data could be collected.")
+                        continue
 
                     if Options.DebugPlot:
                         print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
@@ -768,10 +800,13 @@ def main():
     ParseArgs()
     Tree = ReadYaml(Options.Descriptionfile, False)
     
+    #Remove Groups
+    RemoveGroups(Tree, None, False)
+
     #Move Properties intop Figures to prepare ExpandFigure
     Tree = RestructureTree(Tree, False, True, False)
     
-    Tree = ExpandFigures(Tree)
+    ExpandFigures(Tree)
     
     #Now move into fuill depth
     Tree = RestructureTree(Tree, False, True, True)

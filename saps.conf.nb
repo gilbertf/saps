@@ -12,7 +12,7 @@ Saps:
 
   #Debug
   DebugAnalyse: False
-  DebugCollect: False
+  DebugCollect: True
   DebugRestructure: False
   DebugPlot: False
 
