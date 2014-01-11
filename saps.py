@@ -803,7 +803,7 @@ def main():
     #Remove Groups
     RemoveGroups(Tree, None, False)
 
-    #Move Properties intop Figures to prepare ExpandFigure
+    #Move Properties into Figures to prepare ExpandFigure
     Tree = RestructureTree(Tree, False, True, False)
     
     ExpandFigures(Tree)
