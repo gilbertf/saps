@@ -640,7 +640,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             elif "Set " in t:
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
-                    Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
+                    Msg.Error(2, "Beginning and end of each variable has to be marked with \'%\'")
                 ExpandValue(Tree[t], NameFigure, NameSet, ListPlot)
             elif "Figure " in t:
                 LatexNameFigure = t.split("Figure ")[1]
