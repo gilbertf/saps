@@ -681,18 +681,35 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
                 ProcessTree(Tree[t], NameFigure, ListPlot, ListSapsOpt, ListPlotOpt)
 
-                TitleIsSet = False
-                for s in ListPlotOpt:
-                    if "title " in s:
-                        TitleIsSet = True
-                for s in ListSapsOpt:
-                    if "notitle" in s:
-                        TitleIsSet = True
-                        
-                if not TitleIsSet:
-                    ListPlotOpt.append("title \"" + LatexNameFigure + "\"")
-                    
                 if Options.Plot:
+                    TitleIsSet = False
+                    for s in ListPlotOpt:
+                        if "title " in s:
+                            TitleIsSet = True
+
+                    PlotType = None
+                    for s in ListSapsOpt:
+                        if "notitle" in s:
+                            TitleIsSet = True
+                        elif s == "3d" or s == "2d":
+                            if PlotType is None:
+                                if s == "3d":
+                                    PlotType = "splot"
+                                elif s == "2d":
+                                    PlotType = "plot"
+                            else:
+                                Msg.Error(2, "You are allowed to set SapsOpt to 3d or 2d but not both the same time")
+                        else:
+                            Msg.Error(2, "Invalid SapsOpt command " + s)
+
+                    if PlotType is None:
+                        Msg.Notice(2, "No PlotType was set in SapsOpt, default value 2d is used")
+                        PlotType = "plot"
+                    
+                            
+                    if not TitleIsSet:
+                        ListPlotOpt.append("title \"" + LatexNameFigure + "\"")
+                    
                     if not Options.Plot2X and not Options.Plot2EpsLatex:
                         Msg.Error(2, "Please enable Plot2X or Plot2EpsLatex if you want to use the plot action.")
                         
@@ -705,20 +722,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         print(Options.Indent + "ListSapsOpt: " + str(ListSapsOpt))
                         print(Options.Indent + "ListPlot: " + str(ListPlot))
 
-                    PlotType = None
-                    for s in ListSapsOpt:
-                        if s == "3d" or s == "2d":
-                            if PlotType is None:
-                                if s == "3d":
-                                    PlotType = "splot"
-                                elif s == "2d":
-                                    PlotType = "plot"
-                            else:
-                                Msg.Error(2, "You are allowed to set SapsOpt to 3d or 2d but not both the same time")
-                    if PlotType is None:
-                        Msg.Notice(2, "No PlotType was set in SapsOpt, default value 2d is used")
-                        PlotType = "plot"
-                    
                     if Options.Plot2X:
                         print(Options.Indent + "Plotting to X11 using Gnuplot")
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
