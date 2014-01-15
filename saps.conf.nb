@@ -13,7 +13,7 @@ Saps:
   #Debug
   DebugAnalyse: False
   DebugCollect: False
-  DebugRestructure: False
+  DebugRestructure: True
   DebugPlot: False
 
   #Msg configuration

@@ -1,3 +1,4 @@
+#Extract value at position "Index" of AxisIn and save to AxisOut
 ValuesOut = list()
 
 if len(AxisOut) != 1:

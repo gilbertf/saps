@@ -240,7 +240,12 @@ def ExpandFigures(Tree):
                     isParameter = True
             except:
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
-            
+
+            try:
+                VarValue
+            except:
+                Msg.Error(2, "The value of " + VarName + " is undefined.")
+
             ExpandedValues = ExtractValues(VarValue, DoExtract)
             
             for ExpandedValue in ExpandedValues:
@@ -258,7 +263,7 @@ def ExpandFigures(Tree):
             
     if type(Tree) == Options.ydict:
         for t in Tree:
-            if "Figure " in t and "%" in t:
+            if t.startswith("Figure ") and "%" in t:
                 NameFigure = t.split("Figure ")[1]
                 if NameFigure.count("%") % 2 != 0:
                     Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
@@ -268,10 +273,10 @@ def ExpandFigures(Tree):
 def RemoveGroups(Tree, Parent, InGroup):
     if type(Tree) == Options.ydict:
         for t in Tree:
-            if "Group" in t:
+            if t.startswith("Group"):
                 RemoveGroups(Tree[t], Tree, True)
                 del Tree[t]
-            elif "Figure " in t or "Set " in t:
+            elif t.startswith("Figure ") or t.startswith("Set "):
                 RemoveGroups(Tree[t], None, False)
                 
         Properties = Options.ydict()
@@ -280,7 +285,7 @@ def RemoveGroups(Tree, Parent, InGroup):
     
         if InGroup:
             for t in Tree:
-                if "Figure " in t or "Set " in t:
+                if t.startswith("Figure ") or t.startswith("Set "):
                     if type(Tree[t]) is not Options.ydict:
                         Msg.Error(0, "\"" + t + "\" does not have any properties defined,")
                     FiguresSets[t] = Tree[t]
@@ -293,9 +298,9 @@ def RemoveGroups(Tree, Parent, InGroup):
                 for p in Properties:
                     (Parent[fs])[p] = Properties[p]
                 for o in Opts:
-                    if "Figure " in fs:
+                    if fs.startswith("Figure "):
                         (Parent[fs])[o] = Opts[o]
-                    elif "Set " in fs:
+                    elif fs.startswith("Set "):
                         Parent[o] = Opts[o]
                 
 def RestructureTree(Tree, inFigure, inRoot, RunRecursive):            
@@ -307,15 +312,17 @@ def RestructureTree(Tree, inFigure, inRoot, RunRecursive):
     if type(Tree) == Options.ydict:
         #Seperate in two Groups: FigureSets and Properties. Move PlotOpt into the Figures but not the Sets
         for t in Tree:
-            if "Figure " in t or "Set " in t:
+            if t.startswith("Figure ") or t.startswith("Set "):
                 if type(Tree[t]) is not Options.ydict:
                     Msg.Error(0, "\"" + t + "\" does not have any properties defined,")
                 FiguresSets[t] = Tree[t]
-                if "Figure " in t:
+                if t.startswith("Figure "):
                     hasFigure = True
-                elif "Set " in t:
+                elif t.startswith("Set "):
                     hasSet = True
-            elif t == "PlotOpt" or t == "SapsOpt":
+            elif t.startswith("Figure") or t.startswith("Set"):
+                Msg.Error(t + " without a name is not permitted")
+            elif t == "PlotOpt" or t == "SapsOpt"
                 if inFigure:
                     FiguresSets[t] = Tree[t]
                 else:
@@ -331,7 +338,7 @@ def RestructureTree(Tree, inFigure, inRoot, RunRecursive):
             
         #Append all properties to all FigureSets
         for fs in FiguresSets:
-            if "Figure " in fs or "Set " in fs:
+            if fs.startswith("Figure ") or fs.startswith("Set "):
                 if type(FiguresSets[fs]) == Options.ydict:
                     for p in Properties:
                         if not p in FiguresSets[fs]:
@@ -339,7 +346,7 @@ def RestructureTree(Tree, inFigure, inRoot, RunRecursive):
                         else:
                             Msg.Warning(0, "More specific value " + str(FiguresSets[fs][p]) + " for " + p + " overwrites " + str(Properties[p]) + ".")
                     inFigure = False
-                    if "Figure " in fs:
+                    if fs.startswith("Figure "):
                         inFigure = True
                     if RunRecursive:
                         FiguresSets[fs] = RestructureTree(FiguresSets[fs], inFigure, False, RunRecursive)
@@ -492,8 +499,13 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 Msg.Notice(2, "The collect module did not return Values and Axis")
             
             #Analysen durchführen
-            for Analyse in DictAnalyse:                  
-                NameAnalyse = Analyse[Analyse.find(" ")+1:]
+            for Analyse in DictAnalyse:
+                Pos = Analyse.find(" ")
+                if Pos == -1:
+                    NameAnalyse = "Unnames analysis"
+                else:
+                    NameAnalyse = Analyse[Pos+1:]
+
                 Analyse =  DictAnalyse[Analyse].copy() #Restructure may put references in the Tree, we only want to modify a copy+
                 Msg.Msg(2, "Analyse:", NameAnalyse)
                 try:
@@ -637,12 +649,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     ListSapsOpt.extend(Tree[t])
                 else:
                     ListSapsOpt.append(Tree[t])
-            elif "Set " in t:
+            elif t.startswith("Set "):
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
                     Msg.Error(2, "Beginning and end of each variable has to be marked with \'%\'")
                 ExpandValue(Tree[t], NameFigure, NameSet, ListPlot)
-            elif "Figure " in t:
+            elif t.startswith("Figure "):
                 LatexNameFigure = t.split("Figure ")[1]
                 NameFigure = RemoveLatexChars(LatexNameFigure)
                 print("Figure", NameFigure)
