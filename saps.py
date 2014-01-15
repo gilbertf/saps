@@ -258,7 +258,6 @@ def ExpandFigures(Tree):
                 ExpandValueNameFigure(Tree, TmpFigure, TmpNameFigure)
 
         else:
-            Msg.Msg(1, "Figure", NameFigure)
             Tree["Figure "+ NameFigure] = Figure
             
     if type(Tree) == Options.ydict:
@@ -303,26 +302,30 @@ def RemoveGroups(Tree, Parent, InGroup):
                     elif fs.startswith("Set "):
                         Parent[o] = Opts[o]
                 
-def RestructureTree(Tree, inFigure, inRoot, RunRecursive):            
+def RestructureTree(Tree, inFigure, inSet, inRoot, RunRecursive):            
     global Options
     hasFigure = False
     hasSet = False
     Properties = Options.ydict()
     FiguresSets = Options.ydict()
     if type(Tree) == Options.ydict:
-        #Seperate in two Groups: FigureSets and Properties. Move PlotOpt into the Figures but not the Sets
+        #Seperate in two Groups: FigureSets and Properties.
+        #Move PlotOpt and SapsOpt into the Figures but not into the Sets
         for t in Tree:
             if t.startswith("Figure ") or t.startswith("Set "):
                 if type(Tree[t]) is not Options.ydict:
-                    Msg.Error(0, "\"" + t + "\" does not have any properties defined,")
+                    Msg.Error(0, "\"" + t + "\" does not have any properties defined.")
                 FiguresSets[t] = Tree[t]
                 if t.startswith("Figure "):
                     hasFigure = True
                 elif t.startswith("Set "):
                     hasSet = True
             elif t.startswith("Figure") or t.startswith("Set"):
-                Msg.Error(t + " without a name is not permitted")
-            elif t == "PlotOpt" or t == "SapsOpt"
+                Msg.Error(2, t + " without a name is not permitted")
+            elif t == "PlotOpt" or t == "SapsOpt":
+                if inSet:
+                    Msg.Error(0, "Using " + t + " inside of set definitions is not allowed.")
+
                 if inFigure:
                     FiguresSets[t] = Tree[t]
                 else:
@@ -345,11 +348,14 @@ def RestructureTree(Tree, inFigure, inRoot, RunRecursive):
                             FiguresSets[fs][p] = Properties[p]
                         else:
                             Msg.Warning(0, "More specific value " + str(FiguresSets[fs][p]) + " for " + p + " overwrites " + str(Properties[p]) + ".")
-                    inFigure = False
-                    if fs.startswith("Figure "):
-                        inFigure = True
                     if RunRecursive:
-                        FiguresSets[fs] = RestructureTree(FiguresSets[fs], inFigure, False, RunRecursive)
+                        inFigure = False
+                        inSet = False
+                        if fs.startswith("Figure "):
+                            inFigure = True
+                        elif fs.startswith("Set "):
+                            inSet = True
+                        FiguresSets[fs] = RestructureTree(FiguresSets[fs], inFigure, inSet, False, RunRecursive)
 
         if len(FiguresSets) == 0:
             return(Properties) # In der tiefsten Ebene gibt es nur noch properties
@@ -528,7 +534,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         Msg.Error(3, "Analyse AxisIn definition " + str(axis) + " is invalid. Available are: " + str(CollectAxis))
                     idx = CollectAxis.index(axis)
                     if len(CollectValues[idx]) == 0:
-                        Msg.Error(2, "Axis " + axis + " does not contain any data")
+                        Msg.Error(3, "Axis " + axis + " does not contain any data")
                     AxisIn.append(CollectAxis[idx])
                     ValuesIn.append(CollectValues[idx])
                     
@@ -630,7 +636,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlot)
 
         else:
-            Msg.Msg(1, "Set", NameSet)
+            Msg.Msg(1, "Set:", NameSet)
             ParseSet(Tree, NameFigure, NameSet, ListPlot)
             
     def EscapeGnuplot(s):
@@ -657,7 +663,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             elif t.startswith("Figure "):
                 LatexNameFigure = t.split("Figure ")[1]
                 NameFigure = RemoveLatexChars(LatexNameFigure)
-                print("Figure", NameFigure)
+                print("Figure:", NameFigure)
 
                 if Options.Collect:
                     try:
@@ -816,12 +822,12 @@ def main():
     RemoveGroups(Tree, None, False)
 
     #Move Properties into Figures to prepare ExpandFigure
-    Tree = RestructureTree(Tree, False, True, False)
+    Tree = RestructureTree(Tree, False, False, True, False)
     
     ExpandFigures(Tree)
     
     #Now move into fuill depth
-    Tree = RestructureTree(Tree, False, True, True)
+    Tree = RestructureTree(Tree, False, False, True, True)
     
     if Options.DebugRestructure:
         print(yaml.dump(Tree, default_flow_style=False))
