@@ -1,5 +1,5 @@
 import os
 
 for Cmd in ListCmd:
-    print("Running: ", Cmd)
+    #print("Running: ", Cmd)
     os.system(Cmd)

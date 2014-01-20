@@ -156,9 +156,8 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             Msg.Error(2, "Function signature can not be found in " + NamePathFile)
         else:
             Sig = Sig.replace(" ","").split(",")
-        return [set(Sig), Ret]
+        return [Sig, Ret]
         
-    ProgramType = -1
     isPy = False
     isM = False
     if Program.endswith(".py"):
@@ -174,27 +173,27 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
              Msg.Error(2, "Return signature can not be found in " + Program)
         else:
             ReturnSignature = ReturnSignature.replace(" ","").replace("[","").replace("]","").replace("=","").split(",")
-
+    
 
     for Args in ListArgs:
         if isPy or isM:
             SapsSignature = set(Args.keys())
-            Difference = FunctionSignature - SapsSignature
+            Difference = set(FunctionSignature) - SapsSignature
             if Difference != set():
                 Msg.Error(2, "The following program parameters are not specified in the saps description: " + ", ".join(Difference))        
             
         l = []
         for Arg in Args.items():
             l.append("=".join(Arg))
-            
+   
         NameFileResult = ConstructNameFileResult(DirResults, Program, l)
         if os.path.isfile(NameFileResult):
             Msg.Notice(2, "Result file exists already, skipping job.")
             continue
         if isPy:
-            Exe = "cd " + os.path.dirname(Program) + "; python -c \"from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ", ".join(l) + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
+            Exe = "export PYTHONPATH="+ os.path.dirname(__file__) + "; cd " + os.path.dirname(Program) + "; python -c \"from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ", ".join(l) + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
         elif isM:
-            Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ";".join(l) + "; Complete = 1; [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(Args.keys()) + "); itsave(\'" + NameFileResult + "\', Ber, Wer, Complete)\""
+            Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ";".join(l) + "; Complete = 1; addpath(\'" + os.path.dirname(__file__) + "\'); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature)+  ", Complete)\""
         else:
             l.append("=".join(["NameFileResult",NameFileResult]))
             Exe = Program + " " + " ".join(l)
@@ -543,8 +542,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             global ListPrevCmd
             ListCmd = list()
             ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults)
-            print(ListCmd)
-            exit()
+
             Env = dict(ListCmd=ListCmd, ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg, ListPrevCmd=ListPrevCmd)
             RunFileCode(os.path.join("simulate", Simulate), True, Env)
             
