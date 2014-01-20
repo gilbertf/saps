@@ -59,6 +59,89 @@ def __fgetstr(fid):
         s = s + d.decode("UTF-8");
     return s
 
+import numpy as np
+
+def TermString(s):
+    return (s+"\0").encode("ascii")
+    
+def WriteVar(f, v, NameVar):
+    if type(v) == int:
+        v = np.int32(v)
+    elif type(v) == float:
+        v = np.float32(v)
+
+    if type(v) == np.ndarray:
+        NumElem = v.shape
+        Dim = len(NumElem)
+    
+        itpptyp = dict()
+        itpptyp["int32"] = "i"
+        itpptyp["float64"] = "d"
+        itpptyp["float32"] = "f"
+        itpptyp["int16"] = "s"
+        itpptyp["char"] = "b"
+        
+        try:
+            TypVar = itpptyp[str(v.dtype)]
+        except KeyError:
+            raise Exception("Variable type " + str(v.dtype) + " is not supported")
+        
+        if Dim == 1:
+            CntElem = NumElem[0]
+            TypVar = TypVar + "vec"
+        elif Dim == 2:
+            CntElem = NumElem[0]*NumElem[1]
+            TypVar = TypVar + "mat"
+        else:
+            raise Exception("unsupported dimensionality")
+  
+    elif type(v) in [np.int8, np.int16, np.int32, np.float32, np.float64]:
+        CntElem = 1
+        Dim = 0
+        TypVar = str(v.dtype)
+    else:
+        raise Exception("Type " + str(type(v)) + "is not supported")
+
+    
+    Desc = ""
+    
+    hdr_bytes = 3*np.uint64().itemsize + len(NameVar+TypVar+Desc) + 3 #3*8bytes for length fields, 3 bytes for StringTerm
+    data_bytes = Dim*np.uint64().itemsize + CntElem * v.dtype.itemsize #1x uint64 for NumElem
+    block_bytes = hdr_bytes + data_bytes
+        
+    f.write(np.uint64(hdr_bytes))
+    f.write(np.uint64(data_bytes))
+    f.write(np.uint64(block_bytes))
+        
+    f.write(TermString(NameVar))
+    f.write(TermString(TypVar))
+    f.write(TermString(Desc))
+
+    for d in range(Dim):
+        f.write(np.uint64(NumElem[d]))
+        
+    for e in v.flat:
+        f.write(e)
+        
+def itsave(out_file, vars):
+    if type(vars) != dict:
+        print("Expecting variables as dict")
+        exit()
+    try:
+        f = open(out_file, 'wb')
+    except IOError:
+        print("Cannot open " + out_file + " for writing")
+        exit()
+    f.write(b"IT++")
+    f.write(b"\3") #Version number
+    
+    for v in vars:
+        WriteVar(f, vars[v], v)
+        
+    f.close()
+        
+    
+    
 def itload(in_file):
     try:
         f = open(in_file, 'rb')
@@ -388,3 +471,12 @@ def itload(in_file):
 
     f.close()
     return out
+    
+#v = dict()
+##v["Flu"] = np.array([[1.1,2.2,3.3],[4.4,5.5,6.6]], np.float64)
+##v["Flu"] = np.array([[1,2,3],[4,5,6]], np.int32)
+#v["Flu"] = np.array(list([1,2,3]), np.int32)
+#v["Integ"] = np.int32(23)
+#itsave("/tmp/test", v)
+#w = itload("/tmp/test")
+#print(w)

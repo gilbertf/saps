@@ -1,6 +1,7 @@
 from itpp import itload
-import numpy
+import numpy as np
 import os
+from saps import ConstructNameFileResult
 
 try:
     DirResults = Options.Config["FilesystemITPP"]["DirResults"]
@@ -43,7 +44,11 @@ val = []
 for i in range(NumAxis):
     val.append([])
 for Args in ListArgs:
-    NameFileResult = os.path.join(DirResults, Program.split("/").pop(), "_".join(Args))
+    l = []
+    for Arg in Args.items():
+        l.append("=".join(Arg))
+    NameFileResult = ConstructNameFileResult(DirResults, Program, l)
+    
     if DebugCollect:
         print(Options.Indent*2 + "NameFileResult: " + NameFileResult)
     if not os.path.isfile(NameFileResult):
@@ -75,7 +80,7 @@ for Args in ListArgs:
                 x = r[a]
             except:
                 Msg.Error(2, "Axis " + a + " does not exist in results file!")
-            if isinstance(x, numbers.Number):
+            if np.isscalar(x):
                 val[i].append(float(x))
             else:
                 if len(x) == 0: #For example if calculation is still running

@@ -6,6 +6,7 @@ import sys
 import random
 import math
 import copy
+from collections import OrderedDict
 
 class options():
     global Msg
@@ -131,7 +132,75 @@ class msg():
     def Error(self, i, m):
         self.Msg(i, "Error:", m)
         exit()
+        
+        
+import os
+import re
 
+def ConstructNameFileResult(DirResults, Program, List):
+    return os.path.join(DirResults, os.path.basename(Program), "_".join(List))
+
+def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
+    def ReadSignature(NameFile, NamePathFile, FunctionDef):
+        f = open(NamePathFile)
+        d = f.read()
+        try:
+            s = FunctionDef + "(.*)" + NameFile + "\((.*)\)"
+            m = re.search(s, d)
+            Sig = m.group(2)
+            Ret = m.group(1)
+        except:
+            Msg.Error(2, "Parsing function definition failed for " + NamePathFile)
+                
+        if not Sig:
+            Msg.Error(2, "Function signature can not be found in " + NamePathFile)
+        else:
+            Sig = Sig.replace(" ","").split(",")
+        return [set(Sig), Ret]
+        
+    ProgramType = -1
+    isPy = False
+    isM = False
+    if Program.endswith(".py"):
+        isPy = True
+        NameFile = os.path.basename(Program).strip(".py")
+        [FunctionSignature, ReturnSignature] = ReadSignature(NameFile, Program, "def ")
+
+    elif Program.endswith(".m"):
+        isM = True
+        NameFile = os.path.basename(Program).strip(".m")
+        [FunctionSignature, ReturnSignature] = ReadSignature(NameFile, Program, "function ")
+        if not ReturnSignature:
+             Msg.Error(2, "Return signature can not be found in " + Program)
+        else:
+            ReturnSignature = ReturnSignature.replace(" ","").replace("[","").replace("]","").replace("=","").split(",")
+
+
+    for Args in ListArgs:
+        if isPy or isM:
+            SapsSignature = set(Args.keys())
+            Difference = FunctionSignature - SapsSignature
+            if Difference != set():
+                Msg.Error(2, "The following program parameters are not specified in the saps description: " + ", ".join(Difference))        
+            
+        l = []
+        for Arg in Args.items():
+            l.append("=".join(Arg))
+            
+        NameFileResult = ConstructNameFileResult(DirResults, Program, l)
+        if os.path.isfile(NameFileResult):
+            Msg.Notice(2, "Result file exists already, skipping job.")
+            continue
+        if isPy:
+            Exe = "cd " + os.path.dirname(Program) + "; python -c \"from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ", ".join(l) + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
+        elif isM:
+            Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ";".join(l) + "; Complete = 1; [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(Args.keys()) + "); itsave(\'" + NameFileResult + "\', Ber, Wer, Complete)\""
+        else:
+            l.append("=".join(["NameFileResult",NameFileResult]))
+            Exe = Program + " " + " ".join(l)
+        ListCmd.append(Exe)
+    
+    
 def ConstructFullPath(NameFile, DirSaps):
     if DirSaps:
         CompleteNameFile = os.path.join(os.path.split(__file__)[0], NameFile)
@@ -372,13 +441,13 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
         
     def ParseSet(Set, NameFigure, NameSet, ListPlot):
         global Options
-        def ExpandSet(Set, ListArgs, cmd = []):
+        def ExpandSet(Set, ListArgs, cmd = OrderedDict()):
             if len(Set) > 0:
                 s = Set[0]
                 V = ExtractValues(s[1], True)
                 for v in V:
-                    reccmd = cmd[:] #one method to copy lists
-                    reccmd.append(s[0] + "=" + str(v))
+                    reccmd = cmd.copy() 
+                    reccmd[s[0]] = str(v)
                     ExpandSet(Set[1:], ListArgs, reccmd)
             else:
                 ListArgs.append(cmd)
@@ -439,18 +508,22 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
         #Puting the parameters in a list                
         Set = list(Set.items())
         Set.sort()
-        ListArgs = []
+        ListArgs = list()
         ExpandSet(Set, ListArgs)
 
+        try:
+            DirResults = Options.Config["FilesystemITPP"]["DirResults"]
+        except:
+            Msg.Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
+        DirResults = os.path.expanduser(DirResults)
+    
         if Options.Delete:
-            try:
-                DirResults = Options.Config["FilesystemITPP"]["DirResults"]
-            except:
-                Msg.Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
-            DirResults = os.path.expanduser(DirResults)
-
             for Args in ListArgs:
-                NameFileResult = os.path.join(DirResults, (Program.split("/")).pop(), "_".join(Args))
+                l = []
+                for Arg in Args.items():
+                    l.append("=".join(Arg))
+                NameFileResult = ConstructNameFileResult(DirResults, Program, l)
+
                 if os.path.isfile(NameFileResult):
                         os.remove(NameFileResult)
                         Msg.Notice(1, "Deleting result file " + NameFileResult)
@@ -460,8 +533,19 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 Simulate = Options.Config["Simulate"]
             except:
                 Msg.Error(1,"Simulate interface is not defined in configfile")
+                
+            #Create results program folder
+            ResultsProgram = os.path.join(DirResults, os.path.basename(Program))
+            if not os.path.isdir(ResultsProgram):
+                os.makedirs(ResultsProgram)
+                
+            #Simulate
             global ListPrevCmd
-            Env = dict(ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg, ListPrevCmd=ListPrevCmd)
+            ListCmd = list()
+            ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults)
+            print(ListCmd)
+            exit()
+            Env = dict(ListCmd=ListCmd, ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg, ListPrevCmd=ListPrevCmd)
             RunFileCode(os.path.join("simulate", Simulate), True, Env)
             
         if Options.Collect or Options.View or Options.Plot:
