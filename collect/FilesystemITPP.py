@@ -44,10 +44,8 @@ val = []
 for i in range(NumAxis):
     val.append([])
 for Args in ListArgs:
-    l = []
-    for Arg in Args.items():
-        l.append("=".join(Arg))
-    NameFileResult = ConstructNameFileResult(DirResults, Program, l)
+    ArgsStr = ArgsToStr(Args)
+    NameFileResult = ConstructNameFileResult(DirResults, Program, Args)
     
     if DebugCollect:
         print(Options.Indent*2 + "NameFileResult: " + NameFileResult)
