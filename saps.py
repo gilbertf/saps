@@ -195,10 +195,16 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
         if isPy:
             Exe = "python3 -c \"import sys; sys.path.extend([" + IncPaths + "]); from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
         elif isM:
-            Exe = "octave -q --eval \"" + ArgsToStr(Args, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature)+  ", Complete)\""
+            TmpArgs = Args.copy() #Octave preferes strings in quotation marks
+            for Arg in TmpArgs:
+                if not TmpArgs[Arg].replace(".","").isdigit():
+                    TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
+
+            Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature)+  ", Complete)\""
         else:
-            l.append("=".join(["NameFileResult",NameFileResult]))
-            Exe = Program + " " + " ".join(l)
+            TmpArgs = Args.copy()
+            TmpArgs.update({"NameFileResult":NameFileResult})
+            Exe = Program + " " + ArgsToStr(TmpArgs, " ")
         ListCmd.append(Exe) 
     
 def ConstructFullPath(NameFile, DirSaps):

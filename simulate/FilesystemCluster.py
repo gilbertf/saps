@@ -12,7 +12,7 @@ def WriteJobfile(Cmd, DirJob, NameFileJob):
         FileJob.write(Cmd)
         FileJob.close()
     except:
-        Msg.Error(2, "Could not write jobfile", NameFileJob)
+        Msg.Error(2, "Could not write jobfile " + NameFileJob)
     return(1)
 
 try:
