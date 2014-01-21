@@ -173,7 +173,6 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
              Msg.Error(2, "Return signature can not be found in " + Program)
         else:
             ReturnSignature = ReturnSignature.replace(" ","").replace("[","").replace("]","").replace("=","").split(",")
-    
 
     for Args in ListArgs:
         if isPy or isM:
@@ -197,7 +196,7 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
         else:
             l.append("=".join(["NameFileResult",NameFileResult]))
             Exe = Program + " " + " ".join(l)
-        ListCmd.append(Exe)
+        ListCmd.append(Exe) 
     
     
 def ConstructFullPath(NameFile, DirSaps):
