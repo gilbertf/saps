@@ -137,9 +137,15 @@ class msg():
 import os
 import re
 
-def ConstructNameFileResult(DirResults, Program, List):
-    return os.path.join(DirResults, os.path.basename(Program), "_".join(List))
+def ConstructNameFileResult(DirResults, Program, ArgStr):
+    return os.path.join(DirResults, os.path.basename(Program), ArgStr)
 
+def ArgsToStr(Args, Sep="_", Comb="="):
+    l = []
+    for Arg in Args.items():
+        l.append(Comb.join(Arg))
+    return Sep.join(l)
+            
 def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
     def ReadSignature(NameFile, NamePathFile, FunctionDef):
         f = open(NamePathFile)
@@ -179,25 +185,21 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             SapsSignature = set(Args.keys())
             Difference = set(FunctionSignature) - SapsSignature
             if Difference != set():
-                Msg.Error(2, "The following program parameters are not specified in the saps description: " + ", ".join(Difference))        
+                Msg.Error(2, "The following program parameters are not specified in the saps description: " + ", ".join(Difference))
+            IncPaths = "\'{0}\', \'{1}\'".format(os.path.dirname(Program), os.path.dirname(__file__))
             
-        l = []
-        for Arg in Args.items():
-            l.append("=".join(Arg))
-   
-        NameFileResult = ConstructNameFileResult(DirResults, Program, l)
+        NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
         if os.path.isfile(NameFileResult):
             Msg.Notice(2, "Result file exists already, skipping job.")
             continue
         if isPy:
-            Exe = "export PYTHONPATH="+ os.path.dirname(__file__) + "; cd " + os.path.dirname(Program) + "; python -c \"from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ", ".join(l) + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
+            Exe = "python -c \"import sys; sys.path.extend([" + IncPaths + "]); from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
         elif isM:
-            Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ";".join(l) + "; Complete = 1; addpath(\'" + os.path.dirname(__file__) + "\'); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature)+  ", Complete)\""
+            Exe = "octave -q --eval \"" + ArgsToStr(Args, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature)+  ", Complete)\""
         else:
             l.append("=".join(["NameFileResult",NameFileResult]))
             Exe = Program + " " + " ".join(l)
         ListCmd.append(Exe) 
-    
     
 def ConstructFullPath(NameFile, DirSaps):
     if DirSaps:
@@ -517,10 +519,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
     
         if Options.Delete:
             for Args in ListArgs:
-                l = []
-                for Arg in Args.items():
-                    l.append("=".join(Arg))
-                NameFileResult = ConstructNameFileResult(DirResults, Program, l)
+                NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
 
                 if os.path.isfile(NameFileResult):
                         os.remove(NameFileResult)

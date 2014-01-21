@@ -1,11 +1,6 @@
 import os
 import random
-
-try:
-    DirResults = Options.Config["FilesystemITPP"]["DirResults"]
-except:
-    Msg.Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
-DirResults = os.path.expanduser(DirResults)
+from saps import ArgsToStr
 
 def WriteJobfile(Cmd, DirJob, NameFileJob):
     NameFileJob = os.path.join(os.path.expanduser(DirJob), NameFileJob)
@@ -31,14 +26,8 @@ except:
     None
 
 NumCreated = 0
-for Args in ListArgs:
-    Executable = Program.split("/").pop()
-    NameFileResult = os.path.join(DirResults, Executable, "_".join(Args))
-    if os.path.isfile(NameFileResult):
-        Msg.Notice(2, "Result file exists already, skipping job.")
-        continue
-    NameFileJob = Executable + "_".join(Args)
-    Cmd = " ".join([Program] + ["NameFileResult=" + NameFileResult] + Args)
+for Pos, Cmd in enumerate(ListCmd):
+    NameFileJob = ArgsToStr(ListArgs[Pos])
     NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameFileJob)
     
 Msg.Msg(1, "Simulating", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobfiles created.")

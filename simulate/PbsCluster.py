@@ -1,11 +1,6 @@
 import os
 import random
 
-try:
-    DirResults = Options.Config["FilesystemITPP"]["DirResults"]
-except:
-    Msg.Error(1, "FilesystemITPP -> DirResults has to be defined in config file.")
-DirResults = os.path.expanduser(DirResults)
 
 try:
     DirLog = Options.Config["PbsCluster"]["DirLog"]
@@ -74,16 +69,6 @@ def Cluster(Cmd, DirJob, NameFileJob):
         Msg.Error(1, "qsub execution failed.")
     return(1)
 
-
-ListCmd = []
-for Args in ListArgs:
-    NameFileResult = os.path.join(DirResults, Program.split("/").pop(), "_".join(Args))
-    if os.path.isfile(NameFileResult):
-        Msg.Notice(1, "Result file exists already, skipping job.")
-        continue
-    NameFileJob = "_".join(Args)
-    Cmd = " ".join([Program] + ["NameFileResult=" + NameFileResult] + Args)
-    ListCmd.append(Cmd)
 
 NumCreated = 0
 for Cmd in ListCmd:
