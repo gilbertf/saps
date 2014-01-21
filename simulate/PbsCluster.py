@@ -1,6 +1,6 @@
 import os
 import random
-
+from saps import ArgsToStr
 
 try:
     DirLog = Options.Config["PbsCluster"]["DirLog"]
@@ -60,9 +60,10 @@ def Cluster(Cmd, DirJob, NameFileJob):
             Msg.Error(1, "Walltime has to be given as string")
         Options.append("-l walltime=" + Walltime)
     #Options.append("-N \"" + Cmd[0:13] + "\"")
-    ClusterCmd = "echo \"" + Cmd + "\" | qsub " + " ".join(Options)
+    ClusterCmd = "echo \"" + Cmd.replace("\"","\\\"") + "\" | qsub " + " ".join(Options)
     if DirWork:
         ClusterCmd = "cd " + DirWork + ";" + ClusterCmd
+
     #Msg.Msg(2, "Cluster", ClusterCmd)
     ret = os.system(ClusterCmd)
     if ret != 0:
