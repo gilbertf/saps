@@ -71,8 +71,9 @@ def Cluster(Cmd, DirJob, NameFileJob):
 
 
 NumCreated = 0
-for Cmd in ListCmd:
+for Pos, Cmd in enumerate(ListCmd):
     if Cmd not in ListPrevCmd:
+        NameFileJob = ArgsToStr(ListArgs[Pos])
         NumCreated = NumCreated + Cluster(Cmd, DirJob, NameFileJob)
         ListPrevCmd.append(Cmd)
     
