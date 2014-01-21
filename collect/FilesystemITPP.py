@@ -2,6 +2,7 @@ from itpp import itload
 import numpy as np
 import os
 from saps import ConstructNameFileResult
+from saps import ArgsToStr
 
 try:
     DirResults = Options.Config["FilesystemITPP"]["DirResults"]
@@ -45,7 +46,7 @@ for i in range(NumAxis):
     val.append([])
 for Args in ListArgs:
     ArgsStr = ArgsToStr(Args)
-    NameFileResult = ConstructNameFileResult(DirResults, Program, Args)
+    NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsStr)
     
     if DebugCollect:
         print(Options.Indent*2 + "NameFileResult: " + NameFileResult)
