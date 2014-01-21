@@ -193,7 +193,7 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             Msg.Notice(2, "Result file exists already, skipping job.")
             continue
         if isPy:
-            Exe = "python -c \"import sys; sys.path.extend([" + IncPaths + "]); from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
+            Exe = "python3 -c \"import sys; sys.path.extend([" + IncPaths + "]); from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
         elif isM:
             Exe = "octave -q --eval \"" + ArgsToStr(Args, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature)+  ", Complete)\""
         else:
