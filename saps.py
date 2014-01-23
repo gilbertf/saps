@@ -199,8 +199,9 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             for Arg in TmpArgs:
                 if not TmpArgs[Arg].replace(".","").isdigit():
                     TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
-
-            Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature)+  ", Complete)\""
+            
+            Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
+            print(Exe)
         else:
             TmpArgs = Args.copy()
             TmpArgs.update({"NameFileResult":NameFileResult})
