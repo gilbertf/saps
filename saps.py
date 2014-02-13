@@ -193,15 +193,14 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             Msg.Notice(2, "Result file exists already, skipping job.")
             continue
         if isPy:
-            Exe = "python3 -c \"import sys; sys.path.extend([" + IncPaths + "]); from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + "); Vars['Complete'] = 1; itsave(\'" + NameFileResult + "\', Vars)\""
+            VarsAppendArgs = ";".join([ "Vars['" + str(Arg) + "'] = " + str(Args[Arg]) for Arg in Args ])
+            Exe = "python3 -c \"import sys; sys.path.extend([" + IncPaths + "]); from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + "); Vars['Complete'] = 1; " + VarsAppendArgs + "; itsave(\'" + NameFileResult + "\', Vars)\""
         elif isM:
             TmpArgs = Args.copy() #Octave preferes strings in quotation marks
             for Arg in TmpArgs:
                 if not TmpArgs[Arg].replace(".","").isdigit():
                     TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
-            
             Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
-            print(Exe)
         else:
             TmpArgs = Args.copy()
             TmpArgs.update({"NameFileResult":NameFileResult})
