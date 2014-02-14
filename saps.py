@@ -137,6 +137,13 @@ class msg():
 import os
 import re
 
+def ListToNiceStr(List):
+    Str = ", ".join(List)
+    if len(List) > 1:
+        Idx = Str.rfind(", ")
+        Str = Str[0:Idx] + " and " + Str[Idx+2:]
+    return Str
+
 def ConstructNameFileResult(DirResults, Program, ArgStr):
     return os.path.join(DirResults, os.path.basename(Program), ArgStr)
 
@@ -159,7 +166,7 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             Msg.Error(2, "Parsing function definition failed for " + NamePathFile)
                 
         if not Sig:
-            Msg.Error(2, "Function signature can not be found in " + NamePathFile)
+            Msg.Error(2, "Function signature can not be found in " + NamePathFile + ". It has to contain at least one variable name")
         else:
             Sig = Sig.replace(" ","").split(",")
         return [Sig, Ret]
@@ -185,7 +192,7 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             SapsSignature = set(Args.keys())
             Difference = set(FunctionSignature) - SapsSignature
             if Difference != set():
-                Msg.Error(2, "The following program parameters are not specified in the saps description: " + ", ".join(Difference))
+                Msg.Error(2, "The following program parameters are not specified in " + Options.Descriptionfile + ": " + ListToNiceStr(Difference))
             IncPaths = "\'{0}\', \'{1}\'".format(os.path.dirname(Program), os.path.dirname(__file__))
             
         NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
