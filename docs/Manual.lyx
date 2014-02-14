@@ -364,7 +364,7 @@ The grid is drawn with defined spacing
 \begin_layout Plain Layout
 
 \family typewriter
-  log y
+  log (x,y,z)
 \end_layout
 
 \end_inset
@@ -419,11 +419,11 @@ pm3d
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+Colored surface plot when using 3d
 \end_layout
 
 \end_inset
@@ -441,7 +441,7 @@ dgrid3d
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -535,14 +535,8 @@ Axis
 \family default
  is used to select the data plotted as x, y and, in case of 3d plots, as
  z values.
- The specified names can point to program parameters
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Program-parameters"
-
-\end_inset
-
- as well as simulation results.
+ The specified names can point to program parameters as well as simulation
+ results.
 \end_layout
 
 \begin_layout Itemize
@@ -557,7 +551,8 @@ Analyse <Name of analyse>:
 \family typewriter
 Function
 \family default
- gives the filename of the function found in the saps/analyse directory.
+ gives the filename of the function found in the saps/analyse directory
+ (ommiting the .py extension).
 \end_layout
 
 \begin_layout Itemize
@@ -717,9 +712,7 @@ Index
 \family typewriter
 AxisIn
 \family default
- and puts to 
-\family typewriter
-AxisOut.
+.
 \end_layout
 
 \begin_deeper
@@ -937,12 +930,72 @@ Python3
 \begin_layout Standard
 The python3 wrapper requires the output values to be given as numpy variables.
  Matrizes are not supported at the moment.
-\end_layout
+ The results have to be returned as a dict.
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout Standard
+
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "/home/gilbert/Dissertation/saps/examples/gauss.py"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Octave
+\end_layout
+
+\begin_layout Standard
+All return values in the function's signature are written to the results
+ file.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "/home/gilbert/Dissertation/saps/examples/gauss.m"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -958,27 +1011,7 @@ Reuse of simulation results
 \end_layout
 
 \begin_layout Itemize
-Easy to use parallelization of simulation runs 
-\end_layout
-
-\begin_layout Section
-Open problems
-\end_layout
-
-\begin_layout Itemize
-itpp does not support matrix saving for python
-\end_layout
-
-\begin_layout Itemize
-Ugly printing when using 
-\begin_inset Quotes eld
-\end_inset
-
-saps -v
-\begin_inset Quotes erd
-\end_inset
-
-
+Easy to use parallelization of simulation runs
 \end_layout
 
 \end_body

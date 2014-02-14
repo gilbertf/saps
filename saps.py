@@ -206,15 +206,15 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
         elif isM:
             TmpArgs = Args.copy() #Octave preferes strings in quotation marks
             for Arg in TmpArgs:
-                if not TmpArgs[Arg].replace(".","").isdigit():
+                if not TmpArgs[Arg].replace(".","").replace("-","").isdigit():
                     TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
             Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
-            print(Exe)
         else:
             TmpArgs = Args.copy()
             TmpArgs.update({"NameFileResult":NameFileResult})
             Exe = Program + " " + ArgsToStr(TmpArgs, " ")
-        #ListCmd.append(Exe) 
+        #print(Exe)
+        ListCmd.append(Exe) 
     
 def ConstructFullPath(NameFile, DirSaps):
     if DirSaps:

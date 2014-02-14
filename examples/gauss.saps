@@ -1,4 +1,4 @@
-#Program: gauss.py
+Program: gauss.m|gauss.py
 
 PlotOpt:
   - grid
@@ -14,8 +14,7 @@ Variance: 0.5|1|2
 #  Set Var=%Variance% Expect=%Expectation%:
 #    Expectation: 0|2.5
 
-Figure Gaussian cumulative distribution function :
-  Program: gauss.m
+Figure Gaussian cumulative distribution function using %!Program%:
   Plot: with lines
   Set Var=%!Variance% Expectation=%!Expectation%:
     Axis: x, cdf
