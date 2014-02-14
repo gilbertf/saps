@@ -1,0 +1,985 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass scrartcl
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Part
+Saps Documentation
+\end_layout
+
+\begin_layout Section
+Remarks
+\end_layout
+
+\begin_layout Standard
+The saps files describe the process of simulation, analyse and plot in yaml
+ syntax notation.
+ In this documentation arguments are put in brakets 
+\family typewriter
+<Argument>
+\family default
+ and required ones are marked with asterisks 
+\family typewriter
+<*Required Argument>
+\family default
+.
+ Due to the fact that yaml does not allow for duplicate entries in one tree
+ branch 
+\family typewriter
+Group
+\family default
+ and 
+\family typewriter
+Analyse
+\family default
+ have to be given a name that is exclusively used for distinguishing multiple
+ entries.
+\end_layout
+
+\begin_layout Section
+Hirarchical statements
+\end_layout
+
+\begin_layout Standard
+Hirarchical statements are closely related to the structure of simulation
+ results.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Figure <*Name of figure>:
+\family default
+ is a ensable of results visualized in one plot.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Set <*Name of set>:
+\family default
+ represents a dataset containing all simulation results for one parameter
+ set.
+ In other words, it represents one curve of the plot.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Group <Name of group>:
+\family default
+ can be used to encapsulate the other hirachical statements.
+ E.g.
+ If there are three sets inside one figure and a program parameter (see
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Program-parameters"
+
+\end_inset
+
+) applies to two of the sets these can be put together with this parameter
+ inside a group.
+\end_layout
+
+\begin_layout Standard
+The names of above statements can be parameterized by putting program parameter
+ names in, sourounded with percent signs 
+\family typewriter
+%parameter name%
+\family default
+.
+ When running the saps script, these parameter names are replaced by there
+ values as specified in the description file.
+ By prepending an exclamation mark 
+\family typewriter
+%!parameter name%
+\family default
+ the values are extended as descibed in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Program-parameters"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Parameters
+\end_layout
+
+\begin_layout Standard
+The are two types of parameters.
+ Predefined ones and all others (program parameters) that are forwarded
+ to the program in simulation.
+ Parameters are evaluated in hirarchical order, where more deep (specific)
+ values overwrite the top (more general) ones.
+\end_layout
+
+\begin_layout Subsection
+Predefined parameters
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Program
+\family default
+ points to the simulation program to use.
+ This can be a special prepared binary, octave or python script.
+ More details are shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Programs"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+SapsOpt
+\family default
+ specify the behaviour of the saps script
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+2d
+\family default
+ and 
+\family typewriter
+3d
+\family default
+ specify if two or three dimensional plots are generated.
+ 
+\family typewriter
+2d
+\family default
+ is used by default.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+PlotOpt
+\family default
+ values are forwarded to gnuplot as set commands that apply to all sets
+ of one figure.
+ Some examples:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+grid
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+If set a grid is drawn
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+size square
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+If set all axis are of same length
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+(x, y, z)range [a:b]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+The axis is set to range from a to b
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+(x, y, z)label 
+\begin_inset Quotes eld
+\end_inset
+
+Test
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A label with the text Test shown next to the axis
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+(x,y,z)tics spacing
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+The grid is drawn with defined spacing
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+  log y
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Use logarithmic scaling
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+format y "$10^{%L}$"
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Print axis values as exponents.
+ E.g.
+ 
+\begin_inset Formula $10^{-5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+pm3d
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+dgrid3d
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+Plot
+\family default
+ can be used to modify the appearance of a single dataset.
+ Examples:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+w(ith) l(ines)p(oints)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+The points of the dataset are connected by lines
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+lc cindex
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Color with index cindex is used.
+ Typical 0: black, 1: red, 2: green, 3: blue
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+Axis
+\family default
+ is used to select the data plotted as x, y and, in case of 3d plots, as
+ z values.
+ The specified names can point to program parameters
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Program-parameters"
+
+\end_inset
+
+ as well as simulation results.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Analyse <Name of analyse>:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+Function
+\family default
+ gives the filename of the function found in the saps/analyse directory.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+AxisIn
+\family default
+ and 
+\family typewriter
+AxisOut
+\family default
+ define the variables in and output of the analyse function.
+ These can be program parameter names as well as names of simulation result
+ variables.
+\end_layout
+
+\begin_layout Itemize
+Custom analyse parameters can be appended if the analyse script require
+ this
+\end_layout
+
+\begin_layout Standard
+Some predefined functions:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Index
+\family default
+ generates a index vector of the length of the input vector.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Description
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Example
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisIn
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+One or more vectors of equal length
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(4,1,2,5,9)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisOut
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(1,2,3,4,5)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+Select
+\family default
+ extracts a value at position 
+\family typewriter
+Index
+\family default
+ of 
+\family typewriter
+AxisIn
+\family default
+ and puts to 
+\family typewriter
+AxisOut.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Description
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Example
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Index
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Scalar that points to vector position
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisIn
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+One or more vectors of equal length
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(4,1,2,5,9)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisOut
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Scalar
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $5$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Subsection
+Program parameters
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Program-parameters"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Parameters can represent numbers as well as text values.
+ Value ranges from Start to Stop can be given with 
+\family typewriter
+Start..Stop
+\family default
+ and 
+\family typewriter
+Start..Increment..Stop
+\family default
+.
+ In the first case an increment of one is assumed.
+ A list is defined by using 
+\family typewriter
+|
+\family default
+ as seperator.
+ Examples: 
+\family typewriter
+1|2|5
+\family default
+ expands to 
+\family typewriter
+
+\begin_inset Formula $(1,2,5)$
+\end_inset
+
+ and 1..3|7
+\family default
+ to 
+\family typewriter
+
+\begin_inset Formula $(1,2,3,7)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Programs
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Programs"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Python3
+\end_layout
+
+\begin_layout Standard
+The python3 wrapper requires the output values to be given as numpy variables.
+ Matrizes are not supported at the moment.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "/home/gilbert/Dissertation/saps/examples/gauss.py"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Advantages 
+\end_layout
+
+\begin_layout Itemize
+Reuse of simulation results
+\end_layout
+
+\begin_layout Itemize
+Easy to use parallelization of simulation runs 
+\end_layout
+
+\begin_layout Section
+Open problems
+\end_layout
+
+\begin_layout Itemize
+itpp does not support matrix saving for python
+\end_layout
+
+\begin_layout Itemize
+Ugly printing when using 
+\begin_inset Quotes eld
+\end_inset
+
+saps -v
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

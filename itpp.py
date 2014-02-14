@@ -100,8 +100,7 @@ def WriteVar(f, v, NameVar):
         Dim = 0
         TypVar = str(v.dtype)
     else:
-        raise Exception("Type " + str(type(v)) + "is not supported")
-
+        raise Exception("Type " + str(type(v)) + " is not supported")
     
     Desc = ""
     

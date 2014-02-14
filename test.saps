@@ -1,0 +1,15 @@
+Program: /home/gilbert/Dissertation/saps/test.py
+
+SapsOpt:
+  - 3d
+
+Figure Test:
+  Group A:
+    Set X:
+      x: 0..6
+      Analyse A:
+        Function: Select
+        AxisIn: xsquare
+        AxisOut: S1
+        Index: 4
+      Axis: S1

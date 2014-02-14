@@ -162,6 +162,7 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             m = re.search(s, d)
             Sig = m.group(2)
             Ret = m.group(1)
+            
         except:
             Msg.Error(2, "Parsing function definition failed for " + NamePathFile)
                 
@@ -201,18 +202,19 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             continue
         if isPy:
             VarsAppendArgs = ";".join([ "Vars['" + str(Arg) + "'] = " + str(Args[Arg]) for Arg in Args ])
-            Exe = "python3 -c \"import sys; sys.path.extend([" + IncPaths + "]); from itpp import itsave; import " + NameFile + "; Vars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + "); Vars['Complete'] = 1; " + VarsAppendArgs + "; itsave(\'" + NameFileResult + "\', Vars)\""
+            Exe = "python3 -c \"import sys\nsys.path.extend([" + IncPaths + "])\nfrom itpp import itsave\nimport " + NameFile + "\nVars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + ")\nVars['Complete'] = 1\n" + VarsAppendArgs + "\ntry:\n    itsave(\'" + NameFileResult + "\', Vars)\nexcept:\n    print('" + Options.Indent*2 + "Error: Running python script " + Program + " failed with exception.')\""
         elif isM:
             TmpArgs = Args.copy() #Octave preferes strings in quotation marks
             for Arg in TmpArgs:
                 if not TmpArgs[Arg].replace(".","").isdigit():
                     TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
             Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
+            print(Exe)
         else:
             TmpArgs = Args.copy()
             TmpArgs.update({"NameFileResult":NameFileResult})
             Exe = Program + " " + ArgsToStr(TmpArgs, " ")
-        ListCmd.append(Exe) 
+        #ListCmd.append(Exe) 
     
 def ConstructFullPath(NameFile, DirSaps):
     if DirSaps:
