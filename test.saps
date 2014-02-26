@@ -6,10 +6,24 @@ SapsOpt:
 Figure Test:
   Group A:
     Set X:
-      x: 0..6
+      x: 9..0
       Analyse A:
-        Function: Select
-        AxisIn: xsquare
-        AxisOut: S1
-        Index: 4
-      Axis: S1
+        Function: Slice
+        AxisIn: x
+        AxisOut: Slice
+        First: 0
+        Last: 0
+        Repeat: 5
+      Axis: Slice
+
+Figure Int:
+  x: 0..9
+  Set X:
+    Analyse A:
+      Function: StepIntegrate
+      AxisIn: x
+      AxisOut: Integral
+      StepLen: 5
+    Axis: Integral
+  Set Y:
+    Axis: x

@@ -1,6 +1,3 @@
-#Extract the values from "First" to "Last" from vectors. "Repeat" specifies the
-#index in the vector when repeated slicing is necessary.
-
 ValuesOut = list()
 
 if len(AxisOut) != 1:

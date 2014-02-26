@@ -1,10 +1,3 @@
-#Desciption: The shorter of both inputs vector is repeated to match the length of the longer vector
-#  AxisIn: A, B (two vectors of arbitrary length)
-#  AxisOut: C, D (two vectors of equal length)
-#  Example:
-#    A = 1 2      B = 3 4 5 6
-#    C = 1 1 2 2  D = 3 4 5 6
-
 def Extend(Scalar, Vector):
     Factor = int(len(Vector) / len(Scalar))
     if len(Scalar)*Factor != len(Vector):

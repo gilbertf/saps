@@ -4,7 +4,7 @@ import scipy.integrate
 ValuesOut = list()
 
 try:
-    Len = Analyse["Len"]
+    Len = Analyse["StepLen"]
     NumSteps = int(len(ValuesIn[0])/Len)
     if NumSteps != len(ValuesIn[0])/Len:
         Msg.Error(2, "Rounding, thats bad")
@@ -13,6 +13,7 @@ except:
     Len = len(ValuesIn[0])
 if len(ValuesIn) == 1:
     for s in range(NumSteps):
+        print(ValuesIn[0][s*Len:(s+1)*Len])
         ValuesOut.append(numpy.trapz(ValuesIn[0][s*Len:(s+1)*Len]))
     if Options.DebugAnalyse:
         print(Options.Indent, "Trapz integral of", AxisIn[0], "with equal stepsize assumed:", ValuesOut)

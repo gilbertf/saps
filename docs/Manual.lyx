@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass scrartcl
+\textclass article
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -26,7 +26,18 @@
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
+\use_hyperref true
+\pdf_title "Saps Documentation"
+\pdf_author "Gilbert Johannes Martin Forkel"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
 \papersize default
 \use_geometry false
 \use_amsmath 1
@@ -61,7 +72,179 @@
 \begin_body
 
 \begin_layout Part
-Saps Documentation
+The saps toolbox - an introduction
+\end_layout
+
+\begin_layout Standard
+Saps can be used to to simlify the process of simulating systems with varying
+ parameter sets.
+ Please note that this project is in a experimental stage and that you will
+ definetly find bugs while using - so please report to 
+\begin_inset CommandInset href
+LatexCommand href
+target "gilbert@erlangen.ccc.de"
+type "mailto:"
+
+\end_inset
+
+)
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Flow.jpg
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Toolbox overview
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Installation
+\end_layout
+
+\begin_layout Standard
+Checkout the saps toolbox 
+\family typewriter
+git clone https://github.com/gilbertf/saps.git
+\family default
+, adjust the options in 
+\family typewriter
+saps.conf
+\family default
+ and add the folder to the 
+\family typewriter
+PATH
+\family default
+ environment.
+ The toolbox requires python3 including numpy and the itpp c++ library (
+\begin_inset CommandInset href
+LatexCommand href
+target "http://itpp.sourceforge.net"
+
+\end_inset
+
+) if you want to use the binary program interface (see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:ProgramsBinary"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Part
+Configuration
+\end_layout
+
+\begin_layout Section
+Collect
+\end_layout
+
+\begin_layout Standard
+The current only available implementation FilesystemITPP requires the simulation
+ program to write the results with a predefined filename and in the itpp
+ binary format.
+ This maybe changed in a future release.
+\end_layout
+
+\begin_layout Section
+Simulate
+\end_layout
+
+\begin_layout Standard
+Currently we have three different interfaces available:
+\end_layout
+
+\begin_layout Itemize
+FilesystemCluster can be used to write job files with content like: ~/saps/examp
+le/gauss Expectation=0.0 Variance=1.0 x=2.5 to a folder specified by the DirJob
+ variable that can be run with the included cluster.sh script for example.
+\end_layout
+
+\begin_layout Itemize
+PbsCluster shedules jobs to a pbs cluster system using qsub
+\end_layout
+
+\begin_layout Itemize
+RunOnline: The jobs are, one after another executed in your current shell,
+ this is mainly used for debug purposes.
+\end_layout
+
+\begin_layout Part
+Command line options
+\end_layout
+
+\begin_layout Standard
+The framework splits up to three different functions:
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+simulate
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+collect
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+plot
+\end_layout
+
+\begin_layout Standard
+that can be triggered by their name (prepending 
+\family typewriter
+--
+\family default
+) or their first letter (prepending 
+\family typewriter
+-
+\family default
+).
+ E.g.
+ the gauss example can be run with 
+\family typewriter
+saps -scp gauss.saps
+\family default
+.
+\end_layout
+
+\begin_layout Part
+Description file
 \end_layout
 
 \begin_layout Section
@@ -589,26 +772,16 @@ Index
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="3">
+<lyxtabular version="3" rows="3" columns="2">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="15text%">
+<column alignment="center" valignment="top" width="30text%">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Parameter
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Description
 \end_layout
 
 \end_inset
@@ -635,15 +808,6 @@ AxisIn
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-One or more vectors of equal length
-\end_layout
-
-\end_inset
-</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -665,15 +829,6 @@ One or more vectors of equal length
 
 \family typewriter
 AxisOut
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
 \end_layout
 
 \end_inset
@@ -718,26 +873,16 @@ AxisIn
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="3">
+<lyxtabular version="3" rows="4" columns="2">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="15text%">
+<column alignment="center" valignment="top" width="30text%">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Parameter
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Description
 \end_layout
 
 \end_inset
@@ -753,22 +898,13 @@ Example
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
 Index
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Scalar that points to vector position
 \end_layout
 
 \end_inset
@@ -787,22 +923,13 @@ Scalar that points to vector position
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
 AxisIn
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-One or more vectors of equal length
 \end_layout
 
 \end_inset
@@ -832,11 +959,395 @@ AxisOut
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $5$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+FitScalarToVector: 
+\family default
+The shorter of both inputs vector is repeated to match the length of the
+ longer vector 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="15text%">
+<column alignment="center" valignment="top" width="30text%">
+<row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Scalar
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Example
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisIn
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(1,2)$
+\end_inset
+
+ 
+\begin_inset Formula $(3,4,5,6)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisOut
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(1,1,2,2)$
+\end_inset
+
+ 
+\begin_inset Formula $(3,4,5,6)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+Slice
+\family default
+ extracts the values from 
+\family typewriter
+First
+\family default
+ to 
+\family typewriter
+Last
+\family default
+ from vectors.
+ 
+\family typewriter
+Repeat
+\family default
+ specifies the index in the vector when repeated slicing is necessary.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="15text%">
+<column alignment="center" valignment="top" width="30text%">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Example
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+First
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Last
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Repeat
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisIn
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(9,8,7,6,5,4,3,2,1,0)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisOut
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(7,6,5,2,1,0)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+StepIntegrate
+\family default
+ stepwise integrates a vector using the composite trapezoidal rule.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="15text%">
+<column alignment="center" valignment="top" width="30text%">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Example
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisIn
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(9,8,7,6,5,4,3,2,1,0)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisOut
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(8,28)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+StepLen
 \end_layout
 
 \end_inset
@@ -931,32 +1442,12 @@ Python3
 The python3 wrapper requires the output values to be given as numpy variables.
  Matrizes are not supported at the moment.
  The results have to be returned as a dict.
-\begin_inset Newline newline
-\end_inset
+\end_layout
 
-
-\begin_inset Box Boxed
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "/home/gilbert/Dissertation/saps/examples/gauss.py"
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -970,24 +1461,6 @@ Octave
 \begin_layout Standard
 All return values in the function's signature are written to the results
  file.
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Box Boxed
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "/home/gilbert/Dissertation/saps/examples/gauss.m"
@@ -996,6 +1469,12 @@ filename "/home/gilbert/Dissertation/saps/examples/gauss.m"
 
 
 \end_layout
+
+\begin_layout Subsection
+Binary
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:ProgramsBinary"
 
 \end_inset
 
