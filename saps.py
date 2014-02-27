@@ -646,7 +646,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     if Options.DebugAnalyse:
                         print(Options.Indent*3 + "AxisOut: " + str(AxisOut) + "\n" + Options.Indent*3 + "ValuesOut: " + str(ValuesOut))
                     CollectAxis = CollectAxis + AxisOut
-                    CollectValues = CollectValues+ ValuesOut
+                    CollectValues = CollectValues + ValuesOut
                 except:
                     Msg.Notice(2, "The analyse module did not return the values correctly.")                
                     
@@ -672,7 +672,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             Values = zip(*Values[::1])
             SetFile = open(NameFileSet, 'w')
             SetFile.write("#" + "\t".join([str(x) for x in Axis])+"\n")
+            LastVal = ""
             for v in Values:
+                if len(v) == 3:
+                    if v[0] != LastVal: #for 3d plots
+                        SetFile.write("\n")
+                        LastVal = v[0]
                 SetFile.write("\t".join([str(x) for x in v])+"\n")
             SetFile.close()
             
