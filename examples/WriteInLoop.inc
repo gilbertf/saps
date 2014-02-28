@@ -1,0 +1,1 @@
+../collect/CppHelperFilesystemITPP/WriteInLoop.inc

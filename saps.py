@@ -830,7 +830,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         os.system(PlotCmd)
                         
                     if Options.Plot2EpsLatex:
-                        EscapedNameFigure = NameFigure.replace(" ","SPACE").replace(".","DOT")
+                        EscapedNameFigure = NameFigure.replace(" ","").replace(".","").replace('~','').replace('/','')
                         DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, EscapedNameFigure)
                         try:
                             os.makedirs(DirPlot)

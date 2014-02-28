@@ -1,21 +1,20 @@
-Program: gauss.m|gauss.py
+Program: ~/Dissertation/saps/examples/gauss.py|~/Dissertation/saps/examples/gauss.m|~/Dissertation/saps/examples/gauss
 
 PlotOpt:
   - grid
   - size square
 
-x: -5..5
+x: -5..0.1..5
 Variance: 0.5|1|2
 
-#Figure Gaussian probability density function :
-#  Analyse: Integrate.py, pdf, x
-#  PlotOpt: w lp
-#  Axis: x, pdf
-#  Set Var=%Variance% Expect=%Expectation%:
-#    Expectation: 0|2.5
+Figure Gaussian probability density function using %!Program%:
+  Plot: w lp
+  Set $\\sigma^2$=%!Variance% $\\mu$=%!Expectation%:
+    Axis: x, pdf
+    Expectation: 0|2.5
 
 Figure Gaussian cumulative distribution function using %!Program%:
   Plot: with lines
-  Set Var=%!Variance% Expectation=%!Expectation%:
+  Set $\\sigma^2$=%!Variance% $\\mu$=%!Expectation%:
     Axis: x, cdf
     Expectation: 0|2.5

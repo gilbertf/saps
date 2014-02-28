@@ -27,3 +27,14 @@ Figure Int:
     Axis: Integral
   Set Y:
     Axis: x
+
+Figure Int2:
+  x: 0..9
+  Set X:
+    Analyse A:
+      Function: Integrate
+      AxisIn: x
+      AxisOut: Integral
+    Axis: Integral
+  Set Y:
+    Axis: x

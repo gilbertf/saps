@@ -241,6 +241,13 @@ that can be triggered by their name (prepending
 saps -scp gauss.saps
 \family default
 .
+\begin_inset Newline newline
+\end_inset
+
+The additional option --delete can be used to wipe all results defined with
+ the saps file given.
+ Use this command with care, since it might also delete results used in
+ other definition files.
 \end_layout
 
 \begin_layout Part
@@ -274,6 +281,17 @@ Analyse
 \family default
  have to be given a name that is exclusively used for distinguishing multiple
  entries.
+ The examples/gauss.saps example is shown below:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "/home/gilbert/Dissertation/saps/examples/gauss.saps"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -410,8 +428,15 @@ SapsOpt
 \family typewriter
 PlotOpt
 \family default
- values are forwarded to gnuplot as set commands that apply to all sets
- of one figure.
+ values are forwarded to gnuplot (
+\begin_inset CommandInset href
+LatexCommand href
+name "gnuplot manual"
+target "http://www.gnuplot.info/docs_4.6/gnuplot.pdf"
+
+\end_inset
+
+) as set commands that apply to all sets of one figure.
  Some examples:
 \end_layout
 
@@ -1255,6 +1280,100 @@ AxisOut
 \begin_layout Itemize
 
 \family typewriter
+Integrate
+\family default
+ a vector using the composite trapezoidal rule.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="15text%">
+<column alignment="center" valignment="top" width="30text%">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Example
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisIn
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(9,8,7,6,5,4,3,2,1,0)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+AxisOut
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $40.5$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
 StepIntegrate
 \family default
  stepwise integrates a vector using the composite trapezoidal rule.
@@ -1370,7 +1489,8 @@ StepLen
 
 \end_layout
 
-\begin_layout Standard
+\end_deeper
+\begin_layout Itemize
 
 \family typewriter
 Math
@@ -1378,6 +1498,7 @@ Math
  can apply one simple math operation
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
@@ -1589,6 +1710,21 @@ Binary
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:ProgramsBinary"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The in and output variables are defined by using macros and includes, this
+ will be changed in a future version.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "/home/gilbert/Dissertation/saps/examples/gauss.cc"
 
 \end_inset
 
