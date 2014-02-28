@@ -450,9 +450,9 @@ def RestructureTree(Tree, inFigure, inSet, inRoot, RunRecursive):
     
 def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlotOpt = []):          
     def RemoveLatexChars(s):
-        if '\\' in s:
-            Msg.Error(2, "Backslash is not allowed in " + s)
-        return s.replace('{','').replace('}','').replace('_','').replace('$','')
+        #if '\\' in s:
+        #    Msg.Error(2, "Backslash is not allowed in " + s)
+        return s.replace('{','').replace('}','').replace('_','').replace('$','').replace('\\','')
         
     def ParseSet(Set, NameFigure, NameSet, ListPlot):
         global Options
@@ -740,7 +740,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             ParseSet(Tree, NameFigure, NameSet, ListPlot)
             
     def EscapeGnuplot(s):
-        return s.replace('$','\$').replace('\"','\\\"')
+        return s.replace('\\','\\\\').replace('$','\$').replace('\"','\\\"')
         
     ### ProcessTree ###
     if type(Tree) == Options.ydict:
