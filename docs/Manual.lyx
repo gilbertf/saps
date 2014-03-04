@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass article
+\textclass report
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -38,8 +38,8 @@
 \pdf_colorlinks false
 \pdf_backref false
 \pdf_pdfusetitle true
-\papersize default
-\use_geometry false
+\papersize a4paper
+\use_geometry true
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
@@ -54,6 +54,8 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 3cm
+\rightmargin 3cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -71,7 +73,16 @@
 
 \begin_body
 
-\begin_layout Part
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
 The saps toolbox - an introduction
 \end_layout
 
@@ -126,7 +137,7 @@ Toolbox overview
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Installation
 \end_layout
 
@@ -161,7 +172,7 @@ reference "sub:ProgramsBinary"
 ).
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Configuration
 \end_layout
 
@@ -186,8 +197,20 @@ Currently we have three different interfaces available:
 
 \begin_layout Itemize
 FilesystemCluster can be used to write job files with content like: ~/saps/examp
-le/gauss Expectation=0.0 Variance=1.0 x=2.5 to a folder specified by the DirJob
- variable that can be run with the included cluster.sh script for example.
+le/gauss
+\begin_inset space ~
+\end_inset
+
+Expectation=0.0
+\begin_inset space ~
+\end_inset
+
+Variance=1.0
+\begin_inset space ~
+\end_inset
+
+x=2.5 to a folder specified by the DirJob variable that can be run with the
+ included cluster.sh script for example.
 \end_layout
 
 \begin_layout Itemize
@@ -199,12 +222,12 @@ RunOnline: The jobs are, one after another executed in your current shell,
  this is mainly used for debug purposes.
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Command line options
 \end_layout
 
 \begin_layout Standard
-The framework splits up to three different functions:
+The framework splits up to three different actions:
 \end_layout
 
 \begin_layout Enumerate
@@ -250,7 +273,7 @@ The additional option --delete can be used to wipe all results defined with
  other definition files.
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Description file
 \end_layout
 

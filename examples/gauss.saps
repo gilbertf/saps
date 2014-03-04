@@ -1,4 +1,4 @@
-Program: ~/Dissertation/saps/examples/gauss.py|~/Dissertation/saps/examples/gauss.m|~/Dissertation/saps/examples/gauss
+Program: gauss.py|gauss.m|gauss
 
 PlotOpt:
   - grid
