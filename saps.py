@@ -173,6 +173,8 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
         return [Sig, Ret]
      
     Program = os.path.abspath(Program)
+    if not os.path.isfile(Program):
+        Msg.Error(2, "Specified program " + Program + " does not exist")
 
     isPy = False
     isM = False
