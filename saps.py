@@ -171,7 +171,9 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
         else:
             Sig = Sig.replace(" ","").split(",")
         return [Sig, Ret]
-        
+     
+    Program = os.path.abspath(Program)
+
     isPy = False
     isM = False
     if Program.endswith(".py"):
