@@ -1,4 +1,4 @@
-Program: gauss.py|gauss.m|gauss
+Program: gauss.m
 
 PlotOpt:
   - grid
