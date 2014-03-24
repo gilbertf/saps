@@ -8,7 +8,7 @@ clean:
 	-mkdir -p jobs/finished
 	-mkdir -p logs/out
 	-mkdir -p logs/err
-	find ../results -size 0 -delete
+	find ../../results -size 0 -delete
 
 status:
 	echo -n "Waiting: "

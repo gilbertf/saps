@@ -7,6 +7,7 @@ import random
 import math
 import copy
 from collections import OrderedDict
+import numpy as np
 
 class options():
     global Msg
@@ -667,6 +668,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             Start = None
             for idx, v in enumerate(Values):
                 if Start is None:
+                    if np.isscalar(v):
+                        Msg.Error(2, "Axis " + Axis[idx] + " is of type scalar. This is not allowed at the moment.")
                     Start = len(v)
                 else:
                     if Start != len(v):
