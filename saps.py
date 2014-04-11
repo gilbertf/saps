@@ -19,9 +19,9 @@ class options():
     Config = None
     Indent = " " * 2
     
-    DebugAnalyse = False
-    DebugCollect = False
     DebugRestructure = False
+    DebugCollect = False
+    DebugAnalyse = False
     DebugPlot = False
 
     Plot2X = False
@@ -43,7 +43,7 @@ class options():
         
         #Debug Parameters
         try:
-            self.DebugAnalyse = self.Config["Saps"]["DebugAnalyse"]
+            self.DebugRestructure = self.Config["Saps"]["DebugRestructure"]
         except:
             None
         try:
@@ -51,7 +51,7 @@ class options():
         except:
             None
         try:
-            self.DebugRestructure = self.Config["Saps"]["DebugRestructure"]
+            self.DebugAnalyse = self.Config["Saps"]["DebugAnalyse"]
         except:
             None
         try:
