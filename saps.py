@@ -187,7 +187,7 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
         NameFile = os.path.basename(Program).strip(".m")
         [FunctionSignature, ReturnSignature] = ReadSignature(NameFile, Program, "function ")
         if not ReturnSignature:
-             Msg.Error(2, "Return signature can not be found in " + Program)
+            Msg.Error(2, "Return signature can not be found in " + Program)
         else:
             ReturnSignature = ReturnSignature.replace(" ","").replace("[","").replace("]","").replace("=","").split(",")
 
