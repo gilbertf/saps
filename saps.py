@@ -3,7 +3,6 @@ import OrderedYaml
 import yaml
 import os
 import sys
-import random
 import math
 import copy
 from collections import OrderedDict
@@ -135,7 +134,6 @@ class msg():
         exit()
         
         
-import os
 import re
 
 def ListToNiceStr(List):
