@@ -832,7 +832,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
                         if Options.DebugPlot:
                             print(Options.Indent + "PlotCmd: " + str(PlotCmd))
-                        os.system(PlotCmd)
+                        ret = os.system(PlotCmd)
+                        if ret != 0:
+                            Msg.Error(1,"Running gnuplot failed")
                         
                     if Options.Plot2EpsLatex:
                         EscapedNameFigure = NameFigure.replace(" ","").replace(".","").replace('~','').replace('/','')
@@ -848,7 +850,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
                         if Options.DebugPlot:
                             print(Options.Indent + "PlotCmd: " + str(PlotCmd))
-                        os.system(PlotCmd)
+                        ret = os.system(PlotCmd)
+                        if ret != 0:
+                            Msg.Error(1,"Running gnuplot failed")
 
                         LatexCmd = "cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null"
                         if Options.DebugPlot:
