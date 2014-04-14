@@ -2,12 +2,12 @@
 from itpp import itload
 import sys
 
-Cmd = sys.argv
+Args = sys.argv
 
 f = open("/home/gilbert/Dissertation/libgjm/modulations/OptPsm6.inc","w")
-if len(Cmd) == 2:
+if len(Args) == 2:
     try:
-        Data = itload(Cmd[1])
+        Data = itload(Args[1])
         Symbol = Data["OptSymbols"]
     except:
         print "Could not find OptSymbols variable in results file"
@@ -25,7 +25,7 @@ if len(Cmd) == 2:
         #s = str(x).replace('(','').replace(')','').replace('j','i') + " "
         f.write(s)
 else:
-    print "Syntax: " + Cmd[0] + " <filename>"
+    print "Syntax: " + Args[0] + " <filename>"
 
 f.write("\";\n")
 f.write("Modulator_2D mod(symbols, labelling);\nreturn mod;")
