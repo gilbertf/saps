@@ -445,6 +445,12 @@ SapsOpt
  is used by default.
 \end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+plotting the title can be disabled by setting notitle
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 
