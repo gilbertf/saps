@@ -28,6 +28,7 @@ class options():
     Plot2EpsLatex = False
     Plot2EpsLatexShow = False
     PdfViewer = "acroread"
+    Plot2Tikz = False
     
     #Actions
     Simulate = False
@@ -99,9 +100,14 @@ class options():
         try:
             self.PdfViewer = int(self.Config["Saps"]["PdfViewer"])
         except:
-            None   
+            None
             
-        if self.Plot2EpsLatex:
+        try:
+            self.Plot2Tikz = int(self.Config["Saps"]["Plot2Tikz"])
+        except:
+            None    
+            
+        if self.Plot2EpsLatex or self.Plot2Tikz:
             try:
                 self.DirPlot = os.path.expanduser(self.Config["Saps"]["DirPlot"])
             except:
@@ -815,7 +821,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     if not TitleIsSet:
                         ListPlotOpt.append("title \"" + LatexNameFigure + "\"")
                     
-                    if not Options.Plot2X and not Options.Plot2EpsLatex:
+                    if not Options.Plot2X and not Options.Plot2EpsLatex and not Options.Plot2Tikz:
                         Msg.Error(2, "Please enable Plot2X or Plot2EpsLatex if you want to use the plot action.")
                         
                     if len(ListPlot) == 0:
@@ -862,6 +868,23 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         if Options.Plot2EpsLatexShow:                        
                             os.system(Options.PdfViewer + " " + NameFilePdfFigure + ".pdf 2> /dev/null &")
                     
+                    if Options.Plot2Tikz:
+                        EscapedNameFigure = NameFigure.replace(" ","").replace(".","").replace('~','').replace('/','')
+                        DirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile, EscapedNameFigure)
+                        try:
+                            os.makedirs(DirPlot)
+                        except:
+                            None
+                        NameFileTikzFigure = os.path.join(DirPlot, EscapedNameFigure)
+                        ListPlotOpt = ["terminal tikz size 9.5cm,6cm","output \"" + NameFileTikzFigure + ".tikz\""] + ListPlotOpt
+                        print(Options.Indent + "Plotting to tikz using Gnuplot")
+
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
+                        if Options.DebugPlot:
+                            print(Options.Indent + "PlotCmd: " + str(PlotCmd))
+                        ret = os.system(PlotCmd)
+                        if ret != 0:
+                            Msg.Error(1,"Running gnuplot failed")
 
 
 def ShowSyntax():
