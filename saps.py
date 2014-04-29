@@ -811,7 +811,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                             else:
                                 Msg.Error(2, "You are allowed to set SapsOpt to 3d or 2d but not both the same time")
                         else:
-                            Msg.Error(2, "Invalid SapsOpt command " + s)
+                            Msg.Error(2, "Invalid SapsOpt command " + str(s))
 
                     if PlotType is None:
                         Msg.Notice(2, "No PlotType was set in SapsOpt, default value 2d is used")
