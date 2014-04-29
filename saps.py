@@ -876,7 +876,14 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         except:
                             None
                         NameFileTikzFigure = os.path.join(DirPlot, EscapedNameFigure)
-                        ListPlotOpt = ["terminal tikz size 9.5cm,6cm","output \"" + NameFileTikzFigure + ".tikz\""] + ListPlotOpt
+
+                        try:
+                            TikzSize = Options.Config["Saps"]["Plot2TikzSize"]
+                        except:
+                            TikzSize = "9.5cm,6cm"
+                        print("Tikz Size"+ TikzSize)
+
+                        ListPlotOpt = ["terminal tikz size " + TikzSize ,"output \"" + NameFileTikzFigure + ".tikz\""] + ListPlotOpt
                         print(Options.Indent + "Plotting to tikz using Gnuplot")
 
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
