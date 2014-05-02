@@ -271,6 +271,8 @@ The additional option --delete can be used to wipe all results defined with
  the saps file given.
  Use this command with care, since it might also delete results used in
  other definition files.
+ To quickly test a simulation program there is also the commandline option
+ --instant/-i that triggers local simulation with output to the terminal.
 \end_layout
 
 \begin_layout Chapter

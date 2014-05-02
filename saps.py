@@ -30,6 +30,8 @@ class options():
     PdfViewer = "acroread"
     Plot2Tikz = False
     
+    SimulateInstantaneous = False
+    
     #Actions
     Simulate = False
     View = False
@@ -550,11 +552,14 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         Msg.Notice(1, "Deleting result file " + NameFileResult)
            
         if Options.Simulate:
-            try:
-                Simulate = Options.Config["Simulate"]
-            except:
-                Msg.Error(1,"Simulate interface is not defined in configfile")
-                
+            if Options.SimulateInstantaneous:
+                Simulate = "RunOnline.py"
+            else:
+                try:
+                    Simulate = Options.Config["Simulate"]
+                except:
+                    Msg.Error(1,"Simulate interface is not defined in configfile")
+
             #Create results program folder
             ResultsProgram = os.path.join(DirResults, os.path.basename(Program))
             if not os.path.isdir(ResultsProgram):
@@ -919,6 +924,8 @@ def ParseArgs():
                 Options.View = True
             elif e == "delete":
                 Options.Delete = True
+            elif e == "instant":
+                Options.SimulateInstantaneous = True
             else:
                 Msg.Error(0, "Invalid command line option: " + e)
                     
@@ -932,6 +939,8 @@ def ParseArgs():
                     Options.Plot = True
                 elif e == "v":
                     Options.View = True
+                elif e == "i":
+                    Options.SimulateInstantaneous = True
                 else:
                     Msg.Error(0, "Invalid command line option: " + e)
         else:
