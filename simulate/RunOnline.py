@@ -8,4 +8,6 @@ except:
 for Cmd in ListCmd:
     if DebugSimulate:
         print("Simulate: ", Cmd)
-    os.system(Cmd)
+    ret = os.system(Cmd)
+    if ret != 0:
+        Msg.Error(1, "Simulation cmd failed. Stopping here!")
