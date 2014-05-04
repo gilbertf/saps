@@ -709,7 +709,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
         if Options.View:
             for v in data:
-                Msg.Msg(2, "", v)
+                Msg.Msg(2, "", Fore.YELLOW + v + Fore.RESET)
 
         if Options.Plot:
             s = "\"" + NameFileSet + "\"" + " title " + "\"" + NameSet + "\" "
@@ -754,7 +754,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlot)
 
         else:
-            Msg.Msg(1, "Set:", RemoveLatexChars(NameSet))
+            Msg.Msg(1, "Set:", Fore.CYAN + RemoveLatexChars(NameSet) + Fore.RESET)
             ParseSet(Tree, NameFigure, NameSet, ListPlot)
             
     def EscapeGnuplot(s):
@@ -781,7 +781,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             elif t.startswith("Figure "):
                 LatexNameFigure = t.split("Figure ")[1]
                 NameFigure = RemoveLatexChars(LatexNameFigure)
-                print("Figure:", NameFigure)
+                print("Figure:", Fore.BLUE + NameFigure + Fore.RESET)
 
                 if Options.Collect:
                     try:
