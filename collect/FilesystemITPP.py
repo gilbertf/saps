@@ -3,6 +3,7 @@ import numpy as np
 import os
 from saps import ConstructNameFileResult
 from saps import ArgsToStr
+from colorama import Fore
 
 try:
     DirResults = Options.Config["FilesystemITPP"]["DirResults"]
@@ -94,7 +95,11 @@ for Args in ListArgs:
             Msg.Warning(2, msg)
 
 
-Msg.Msg(2, "Collect:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " complete, " + str(NumMissingResultFiles) + " missing and " + str(NumDefectResultsFiles) + " defect.")
+str_missing = str(NumMissingResultFiles)
+if NumMissingResultFiles > 0:
+    str_missing = Fore.RED + str_missing + " missing" + Fore.RESET
+    
+Msg.Msg(2, "Collect:", str(NumCompleteResultsFiles) + "/" + str(NumResultsFiles) + " complete, " + str_missing + " and " + str(NumDefectResultsFiles) + " defect.")
 if NumDefectResultsFiles > 0:
     msg = "Not all set files could be read."
     if StopOnDefectResultFiles:

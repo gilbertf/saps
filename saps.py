@@ -7,6 +7,7 @@ import math
 import copy
 from collections import OrderedDict
 import numpy as np
+from colorama import Fore
 
 class options():
     global Msg
@@ -126,19 +127,22 @@ class options():
     
 class msg():
     global Options
-    def Msg(self, i, notifier, m):
-        print(Options.Indent*i + notifier + " " + m)
-    
+    def Msg(self, i, notifier, m, color = None):
+        if color:
+            print(color + Options.Indent*i + notifier + " " + m + Fore.RESET)
+        else:
+            print(Options.Indent*i + notifier + " " + m)
+            
     def Notice(self, i, m):
         if Options.ShowNotice:
             self.Msg(i, "Notice:", m)
     
     def Warning(self, i, m):
         if Options.ShowWarning:
-            self.Msg(i, "Warning:", m)
+            self.Msg(i, "Warning:", m, Fore.RED)
     
     def Error(self, i, m):
-        self.Msg(i, "Error:", m)
+        self.Msg(i, "Error:", m, Fore.RED)
         exit()
         
         
