@@ -21,6 +21,7 @@ except:
     Msg.Error(1, "FilesystemCluster -> DirJob has to be defined in configfile.")
 
 try:
+    DirJob = os.path.expanduser(DirJob)
     os.makedirs(DirJob)
 except:
     None
