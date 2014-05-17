@@ -364,7 +364,7 @@ def ExpandFigures(Tree):
             if t.startswith("Figure ") and "%" in t:
                 NameFigure = t.split("Figure ")[1]
                 if NameFigure.count("%") % 2 != 0:
-                    Msg.Error("Beginning and end of each variable has to be marked with \'%\'")
+                    Msg.Error(0, "Beginning and end of each variable has to be marked with \'%\'")
                 ExpandValueNameFigure(Tree, Tree[t], NameFigure)
                 del Tree[t]
 
