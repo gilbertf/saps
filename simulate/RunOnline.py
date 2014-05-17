@@ -10,4 +10,4 @@ for Cmd in ListCmd:
         print("Simulate: ", Cmd)
     ret = os.system(Cmd)
     if ret != 0:
-        Msg.Error(1, "Simulation cmd failed. Stopping here!")
+        Msg.Error(1, "Simulation cmd failed. Stopping here! Last command:\n\t\t" + Cmd)

@@ -30,7 +30,7 @@ for Arg in Args[1:]:
         if NameFile == None:
             NameFile = Arg
             if not os.path.isfile(NameFile):
-                print(NameFile + "is no file. Please specify exactly one filename.")
+                print(NameFile, "is no file. Please specify exactly one filename.")
                 ShowSyntax()
         else:
             print("Invalid command: " + Arg)
