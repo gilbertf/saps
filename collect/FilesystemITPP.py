@@ -73,7 +73,7 @@ for Args in ListArgs:
         continue
     if not isinstance(Complete, numbers.Number):
         Complete = float(Complete)
-    if round(Complete, Options.RoundDigits) == 1:
+    if round(Complete, Options.RoundDigits) > 0.99:
         NumCompleteResultsFiles = NumCompleteResultsFiles + 1
         for i, a in enumerate(Axis):
             try:
