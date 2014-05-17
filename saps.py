@@ -488,9 +488,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 Value = Set[s]
                 if type(Value) is Options.ydict:
                     ReplaceParameterByValue(Value, Parameter)
-                else:
+                if type(Value) is not list:
                     if Value in Parameter:
                         Set[s] = Parameter[Value]
+                else:
+                    Msg.Error(1, "Invalid value type for " + s)
                         
         ### ParseSet ###
         global Options
