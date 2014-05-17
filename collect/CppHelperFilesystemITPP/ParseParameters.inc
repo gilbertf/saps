@@ -41,7 +41,7 @@ if (!file_exists(NameFileTemplate.c_str())) {
 	FileTemplate << endl;
 	FileTemplate << "Figure Example application:" << endl;
 	FileTemplate << "  Set First parameter set:" << endl;
-	FileTemplate << "    PlotOpt: w lines" << endl;
+	FileTemplate << "    Plot:" << endl;
 	FileTemplate << "      - w lines" << endl;
 	FileTemplate << "    #Output variables that can be used for Axis: ";
 	#ifdef OUTPUTVARS
