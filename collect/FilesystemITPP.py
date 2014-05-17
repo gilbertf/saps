@@ -88,7 +88,7 @@ for Args in ListArgs:
                 for v in x:
                     val[i].append(float(v))
     else:
-        msg = str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + "_".join(Args)
+        msg = str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + ArgsStr
         if StopOnIncompleteResultFiles:
             Msg.Error(2, msg)
         else:
