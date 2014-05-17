@@ -911,6 +911,7 @@ def ShowSyntax():
     print("\t-c\t--collect\tCollect")
     print("\t-v\t--view\t\tView")
     print("\t-p\t--plot\t\tPlot")
+    print("\t-i\t--instant\tInstant simulation")
     print("\t\t--delete\tDelete result files\n")
 
 def ParseArgs():
