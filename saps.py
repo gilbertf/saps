@@ -173,7 +173,6 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             m = re.search(s, d)
             Sig = m.group(2)
             Ret = m.group(1)
-            
         except:
             Msg.Error(2, "Parsing function definition failed for " + NamePathFile)
                 
@@ -488,11 +487,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 Value = Set[s]
                 if type(Value) is Options.ydict:
                     ReplaceParameterByValue(Value, Parameter)
-                if type(Value) is not list:
-                    if Value in Parameter:
-                        Set[s] = Parameter[Value]
                 else:
-                    Msg.Error(1, "Invalid value type for " + s)
+                    if type(Value) is not list:
+                        if Value in Parameter:
+                            Set[s] = Parameter[Value]
+                    else:
+                        Msg.Error(1, "Invalid value type " + str(type(Value)) + " for " + s)
                         
         ### ParseSet ###
         global Options
@@ -522,7 +522,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             Parameter = Set.pop("Parameter")
         except:
             Parameter = {}
-            
         ReplaceParameterByValue(Set, Parameter)
 
         DictAnalyse = Options.ydict()
@@ -691,6 +690,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             #Save results to Setfiles
             Values = zip(*Values[::1])
             SetFile = open(NameFileSet, 'w')
+            
             SetFile.write("#" + "\t".join([str(x) for x in Axis])+"\n")
             LastVal = ""
             for v in Values:
@@ -837,11 +837,13 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         Msg.Warning(2, "Can not plot since no data could be collected.")
                         continue
 
+                        
                     if Options.DebugPlot:
                         print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
                         print(Options.Indent + "ListSapsOpt: " + str(ListSapsOpt))
                         print(Options.Indent + "ListPlot: " + str(ListPlot))
 
+                    
                     if Options.Plot2X:
                         print(Options.Indent + "Plotting to X11 using Gnuplot")
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
@@ -901,7 +903,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         ret = os.system(PlotCmd)
                         if ret != 0:
                             Msg.Error(1,"Running gnuplot failed")
-
 
 def ShowSyntax():
     print("SAPS Command Line Utility")
