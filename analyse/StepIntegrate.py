@@ -13,7 +13,7 @@ except:
     Len = len(ValuesIn[0])
 if len(ValuesIn) == 1:
     for s in range(NumSteps):
-        print(ValuesIn[0][s*Len:(s+1)*Len])
+        #print(ValuesIn[0][s*Len:(s+1)*Len])
         ValuesOut.append(numpy.trapz(ValuesIn[0][s*Len:(s+1)*Len]))
     if Options.DebugAnalyse:
         print(Options.Indent, "Trapz integral of", AxisIn[0], "with equal stepsize assumed:", ValuesOut)
