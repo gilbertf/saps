@@ -16,7 +16,7 @@ if (!file_exists(NameFileTemplate.c_str())) {
 	FileTemplate << "Program: " << replace_home_by_tilde(NamePathProgram) << endl << endl;
 
 	FileTemplate << "# Gnuplot options" << endl;
-	FileTemplate << "PlotSet:" << endl;
+	FileTemplate << "PlotOpt:" << endl;
 	FileTemplate << "  - grid" << endl;
 	FileTemplate << "#  - size square" << endl;
 	FileTemplate << "#  - xtics 0.2" << endl;
