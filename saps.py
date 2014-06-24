@@ -687,6 +687,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     if Start != len(v):
                         Msg.Error(2, "Number of elements per axis does not match. " + Axis[0] + " has " + str(Start) + " while " + Axis[idx] + " has " + str(len(v)) + " elements.")
             
+            #Check for Nan
+            for v in Values:
+                for s in v:
+                    if np.isnan(s):
+                        Msg.Warning(2, "Nan values are not allowed!")
+                        
             #Save results to Setfiles
             Values = zip(*Values[::1])
             SetFile = open(NameFileSet, 'w')
