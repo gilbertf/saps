@@ -79,7 +79,8 @@ for Args in ListArgs:
             try:
                 x = r[a]
             except:
-                Msg.Error(2, "Axis " + a + " does not exist in results file!")
+                Msg.Error(2, "Axis " + a + " does not exist in results file! Valid are: " + ", ".join(r))
+
             if np.isscalar(x):
                 val[i].append(float(x))
             else:
