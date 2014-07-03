@@ -133,11 +133,11 @@ class msg():
         else:
             print(Options.Indent*i + notifier + " " + m)
             
-    def Notice(self, i, m):
+    def Notice(self, i, *m):
         if Options.ShowNotice:
             self.Msg(i, "Notice:", " ".join(m))
     
-    def Warning(self, i, m):
+    def Warning(self, i, *m):
         if Options.ShowWarning:
             self.Msg(i, "Warning:", " ".join(m), Fore.RED)
     
