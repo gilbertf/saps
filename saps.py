@@ -584,15 +584,25 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
         if Options.Collect:
             CollectAxis = list()
             NotCollectAxis = list()
-            for Analyse in DictAnalyse:
-                if type(DictAnalyse[Analyse]) is not Options.ydict:
+            for AnalyseName in DictAnalyse:
+                if type(DictAnalyse[AnalyseName]) is not Options.ydict:
                     Msg.Error(2, "We expect the Analyse option to be a list of parameters.")
-                Analyse =  DictAnalyse[Analyse]
-                InAxis = SplitComma(Analyse["AxisIn"])
+                Analyse =  DictAnalyse[AnalyseName]
+                
+                try:
+                    InAxis = SplitComma(Analyse["AxisIn"])
+                except:
+                    Msg.Error(2, "AxisIn is required for", str(AnalyseName))
+                    
                 for InAx in InAxis:
                     if InAx not in NotCollectAxis and InAx not in CollectAxis:
                         CollectAxis.append(InAx)
-                OutAxis = SplitComma(Analyse["AxisOut"])
+                        
+                try:
+                    OutAxis = SplitComma(Analyse["AxisOut"])
+                except:
+                    Msg.Error(2, "AxisOut is required for", str(AnalyseName))
+
                 for OutAx in OutAxis:
                     if OutAx in CollectAxis:
                         Msg.Error(2, OutAx + " should be a unique.")
