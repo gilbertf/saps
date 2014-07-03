@@ -135,14 +135,15 @@ class msg():
             
     def Notice(self, i, m):
         if Options.ShowNotice:
-            self.Msg(i, "Notice:", m)
+            self.Msg(i, "Notice:", " ".join(m))
     
     def Warning(self, i, m):
         if Options.ShowWarning:
-            self.Msg(i, "Warning:", m, Fore.RED)
+            self.Msg(i, "Warning:", " ".join(m), Fore.RED)
     
-    def Error(self, i, m):
-        self.Msg(i, "Error:", m, Fore.RED)
+    def Error(self, i, *m):
+            
+        self.Msg(i, "Error:", " ".join(m), Fore.RED)
         exit()
         
         
