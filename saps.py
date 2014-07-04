@@ -1013,4 +1013,7 @@ def main():
     ProcessTree(Tree)
     
 if __name__ == "__main__":
-    main()
+    if sys.version_info >= (3,3):
+         main()
+    else:
+         print("Invalid python version, at least 3.3 is required")
