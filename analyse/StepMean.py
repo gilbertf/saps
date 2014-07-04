@@ -4,6 +4,11 @@ ValuesOut = list()
 
 
 StepLen = Analyse["StepLen"]
+try:
+    Axis = Analyse["Axis"]
+except:
+    Axis = 0
+    
 NumSteps = int(len(ValuesIn[0])/StepLen)
 if NumSteps != len(ValuesIn[0])/StepLen:
     Msg.Error(2, "Rounding, thats bad")
@@ -12,7 +17,7 @@ if NumSteps != len(ValuesIn[0])/StepLen:
 V = np.reshape(ValuesIn, [NumSteps, StepLen])
 
 
-W = np.mean(V, axis=0)
+W = np.mean(V, axis=Axis)
 
 ValuesOut = [W]
 
