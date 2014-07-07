@@ -1,10 +1,10 @@
 #Main programs options
 Saps:
   #Collect
-  DirSet: ~/Dissertation/sets
+  DirSet: ~/Dissertation/saps/sets
 
   #Plot configuration
-  DirPlot: ~/Dissertation/plots
+  DirPlot: ~/Dissertation/saps/plots
   Plot2Pdf: False
   Plot2X: True
 
@@ -25,16 +25,16 @@ Collect: FilesystemITPP.py
 
 #Module configuration
 FilesystemITPP:
-  DirResults: ~/Dissertation/results
+  DirResults: ~/Dissertation/saps/results
   StopOnDefectResultFiles: False
   StopOnIncompleteResultFiles: False
 
 FilesystemCluster:
-  DirJob: ~/Dissertation/cluster/jobs/waiting
+  DirJob: ~/Dissertation/saps/cluster/jobs/waiting
 
 PbsCluster:
-  DirJob: ~/Dissertation/cluster/jobs/waiting
-  DirLog: ~/Dissertation/cluster/logs
+  DirJob: ~/Dissertation/saps/cluster/jobs/waiting
+  DirLog: ~/Dissertation/saps/cluster/logs
   DirWork: /work_j/sutei013
   #Walltime: "200:00:00"
   #Queue: medium

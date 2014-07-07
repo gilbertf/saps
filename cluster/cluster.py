@@ -7,9 +7,9 @@ SleepTime = 1
 
 hostname = socket.gethostname()
 if hostname == "wik":
-    cores = 24
+    cores = 20
 elif hostname == "pries":
-    cores = 24
+    cores = 20
 elif hostname == "gaarden":
     cores = 8
 elif hostname == "mettenhof":
@@ -28,6 +28,8 @@ elif hostname == "ictnb":
     cores = 4
 elif hostname == "asterix":
     cores = 1
+elif hostname == "lore":
+    cores = 8
 else:
     print "No valid host: " + hostname
     exit()
