@@ -7,7 +7,7 @@ except:
     
 if len(ValuesIn) == 1:
     ValuesOut = [[]]
-    ValuesOut = np.mean(ValuesIn, axis = Axis)
+    ValuesOut = np.max(ValuesIn, axis = Axis)
     ValuesOut = [ValuesOut.tolist()]
 else:
     Msg.Error(2, "We expect one input variables")
