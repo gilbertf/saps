@@ -584,7 +584,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             ViewMode = False
             
             
-        if Options.Collect or Options.View or Options.Plot or ViewMode:
+        if Options.Collect or Options.View or Options.Plot:
             NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet).replace('/','')) #Slashes in Setname indicate subdirs
 
         #Liste der zu sammelnden "Axen" zusammenstellen
@@ -726,7 +726,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             SetFile.close()
             
             
-        if Options.View or Options.Plot or ViewMode:
+        if Options.View or Options.Plot:
             SetFile = open(NameFileSet, 'r')
             data = SetFile.read().split("\n")
             SetFile.close()
@@ -735,7 +735,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 return      
 
             
-        if Options.View or ViewMode:
+        if Options.View or (ViewMode and (Options.View or Options.Plot)):
             Msg.Msg(2, "View:", "", Fore.YELLOW)
             
             from prettytable import PrettyTable
