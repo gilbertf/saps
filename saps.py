@@ -467,7 +467,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
     def RemoveLatexChars(s):
         return s.replace('{','').replace('}','').replace('_','').replace('$','').replace('\\','').replace('textrm','')
         
-    def ParseSet(Set, NameFigure, NameSet, ListPlot):
+    def ParseSet(Set, NameFigure, NameSet, ListPlot, ListSpasOpt):
         global Options
         def ExpandSet(Set, ListArgs, cmd = OrderedDict()):
             if len(Set) > 0:
@@ -576,8 +576,15 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
             Env = dict(ListCmd=ListCmd, ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg, ListPrevCmd=ListPrevCmd)
             RunFileCode(os.path.join("simulate", Simulate), True, Env)
+
+
+        if "view" in ListSapsOpt:
+            ViewMode = True
+        else:
+            ViewMode = False
             
-        if Options.Collect or Options.View or Options.Plot:
+            
+        if Options.Collect or Options.View or Options.Plot or ViewMode:
             NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet).replace('/','')) #Slashes in Setname indicate subdirs
 
         #Liste der zu sammelnden "Axen" zusammenstellen
@@ -705,12 +712,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         Msg.Warning(2, "Nan values are not allowed!")
                         
             #Save results to Setfiles
-            Values = zip(*Values[::1])
+            zValues = zip(*Values[::1])
             SetFile = open(NameFileSet, 'w')
             
             SetFile.write("#" + "\t".join([str(x) for x in Axis])+"\n")
             LastVal = ""
-            for v in Values:
+            for v in zValues:
                 if len(v) == 3:
                     if v[0] != LastVal: #for 3d plots
                         SetFile.write("\n")
@@ -718,19 +725,27 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 SetFile.write("\t".join([str(x) for x in v])+"\n")
             SetFile.close()
             
-        if Options.View or Options.Plot:
+            
+        if Options.View or Options.Plot or ViewMode:
             SetFile = open(NameFileSet, 'r')
             data = SetFile.read().split("\n")
             SetFile.close()
             if len(data) < 3:
                 Msg.Warning(2, "Empty set file, skipping.")
-                return
+                return      
 
-        if Options.View:
-            for v in data:
-                Msg.Msg(2, "", Fore.YELLOW + v + Fore.RESET)
+            
+        if Options.View or ViewMode:
+            Msg.Msg(2, "View:", "", Fore.YELLOW)
+            
+            from prettytable import PrettyTable
+            t = PrettyTable(data[0][1:].split("\t"))
+            for v in data[2:]:
+                if len(v) > 0:
+                    t.add_row(v.split("\t"))
+            Msg.Msg(3, t.get_string().replace("\n","\n" + Options.Indent*3), "", Fore.YELLOW)
 
-        if Options.Plot:
+        if Options.Plot and not ViewMode:
             s = "\"" + NameFileSet + "\"" + " title " + "\"" + NameSet + "\" "
             if Plot is not None:
                 if type(Plot) is list:
@@ -738,7 +753,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 s = s + Plot
             ListPlot.append(s)
 
-    def ExpandValue(Tree, NameFigure, NameSet, ListPlot):
+    def ExpandValue(Tree, NameFigure, NameSet, ListPlot, ListSapsOpt):
         global Msg
         if "%" in NameSet:
             a = NameSet.find("%")
@@ -770,11 +785,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     TmpTree[VarName] = ExpandedValue
                 else:
                     TmpTree["Parameter"][VarName] = ExpandedValue
-                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlot)
+                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlot, ListSapsOpt)
 
         else:
             Msg.Msg(1, "Set:", Fore.CYAN + RemoveLatexChars(NameSet) + Fore.RESET)
-            ParseSet(Tree, NameFigure, NameSet, ListPlot)
+            ParseSet(Tree, NameFigure, NameSet, ListPlot, ListSapsOpt)
             
     def EscapeGnuplot(s):
         return s.replace('\\','\\\\').replace('$','\$').replace('\"','\\\"')
@@ -796,11 +811,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
                     Msg.Error(2, "Beginning and end of each variable has to be marked with \'%\'")
-                ExpandValue(Tree[t], NameFigure, NameSet, ListPlot)
+                ExpandValue(Tree[t], NameFigure, NameSet, ListPlot, ListSapsOpt)
             elif t.startswith("Figure "):
                 LatexNameFigure = t.split("Figure ")[1]
                 NameFigure = RemoveLatexChars(LatexNameFigure)
-                print("Figure:", Fore.BLUE + NameFigure + Fore.RESET)
+                print("\nFigure:", Fore.BLUE + NameFigure + Fore.RESET)
 
                 if Options.Collect:
                     try:
@@ -815,10 +830,15 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 ListPlotOpt = []
                 ListSapsOpt = []
                 ListPlot = []
-
+                    
                 ProcessTree(Tree[t], NameFigure, ListPlot, ListSapsOpt, ListPlotOpt)
+                
+                if "view" in ListSapsOpt:
+                    ViewMode = True
+                else:
+                    ViewMode = False
 
-                if Options.Plot:
+                if Options.Plot and not ViewMode:
                     TitleIsSet = False
                     for s in ListPlotOpt:
                         if "title " in s:
@@ -826,8 +846,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
                     PlotType = None
                     for s in ListSapsOpt:
-                        if "notitle" in s:
+                        if s == "notitle":
                             TitleIsSet = True
+                        if s == "view":
+                            Options.Plot = False
+                            Options.View = True
                         elif s == "3d" or s == "2d":
                             if PlotType is None:
                                 if s == "3d":
@@ -856,19 +879,20 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
                         
                     if Options.DebugPlot:
-                        print(Options.Indent + "ListPlotOpt: " + str(ListPlotOpt))
-                        print(Options.Indent + "ListSapsOpt: " + str(ListSapsOpt))
-                        print(Options.Indent + "ListPlot: " + str(ListPlot))
+                        print(Options.Indent*2 + "ListPlotOpt: " + str(ListPlotOpt))
+                        print(Options.Indent*2 + "ListSapsOpt: " + str(ListSapsOpt))
+                        print(Options.Indent*2 + "ListPlot: " + str(ListPlot))
 
                     
                     if Options.Plot2X:
-                        print(Options.Indent + "Plotting to X11 using Gnuplot")
+                        print(Options.Indent*2 + "Plotting to X11 using Gnuplot")
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
                         if Options.DebugPlot:
-                            print(Options.Indent + "PlotCmd: " + str(PlotCmd))
+                            print(Options.Indent*2 + "PlotCmd: " + str(PlotCmd))
                         ret = os.system(PlotCmd)
                         if ret != 0:
                             Msg.Error(1,"Running gnuplot failed")
+                        
                         
                     if Options.Plot2EpsLatex:
                         EscapedNameFigure = NameFigure.replace(" ","").replace(".","").replace('~','').replace('/','')
@@ -879,22 +903,23 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                             None
                         NameFilePdfFigure = os.path.join(DirPlot, EscapedNameFigure)
                         ListPlotOpt = ["terminal epslatex color standalone solid size 29.7cm,21cm","output \"" + NameFilePdfFigure + ".tex\""] + ListPlotOpt
-                        print(Options.Indent + "Plotting to pdfs using Gnuplot+Latex")
+                        print(Options.Indent*2 + "Plotting to pdfs using Gnuplot+Latex")
 
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
                         if Options.DebugPlot:
-                            print(Options.Indent + "PlotCmd: " + str(PlotCmd))
+                            print(Options.Indent*2 + "PlotCmd: " + str(PlotCmd))
                         ret = os.system(PlotCmd)
                         if ret != 0:
                             Msg.Error(1,"Running gnuplot failed")
 
                         LatexCmd = "cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null"
                         if Options.DebugPlot:
-                            print(Options.Indent + "LatexCmd: " + str(LatexCmd))
+                            print(Options.Indent*2 + "LatexCmd: " + str(LatexCmd))
                         os.system(LatexCmd)
 
                         if Options.Plot2EpsLatexShow:                        
                             os.system(Options.PdfViewer + " " + NameFilePdfFigure + ".pdf 2> /dev/null &")
+                    
                     
                     if Options.Plot2Tikz:
                         EscapedNameFigure = NameFigure.replace(" ","").replace(".","").replace('~','').replace('/','')
@@ -909,14 +934,14 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                             TikzSize = Options.Config["Saps"]["Plot2TikzSize"]
                         except:
                             TikzSize = "9.5cm,6cm"
-                        print("Tikz Size"+ TikzSize)
+                        #print("Tikz Size"+ TikzSize)
 
                         ListPlotOpt = ["terminal tikz size " + TikzSize ,"output \"" + NameFileTikzFigure + ".tikz\""] + ListPlotOpt
-                        print(Options.Indent + "Plotting to tikz using Gnuplot")
+                        print(Options.Indent*2 + "Plotting to tikz using Gnuplot")
 
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
                         if Options.DebugPlot:
-                            print(Options.Indent + "PlotCmd: " + str(PlotCmd))
+                            print(Options.Indent*2 + "PlotCmd: " + str(PlotCmd))
                         ret = os.system(PlotCmd)
                         if ret != 0:
                             Msg.Error(1,"Running gnuplot failed")
