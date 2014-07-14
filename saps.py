@@ -463,11 +463,11 @@ def RestructureTree(Tree, inFigure, inSet, inRoot, RunRecursive):
             
 
     
-def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlotOpt = []):          
+def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlotOpt = [], ViewMode = False):          
     def RemoveLatexChars(s):
         return s.replace('{','').replace('}','').replace('_','').replace('$','').replace('\\','').replace('textrm','')
         
-    def ParseSet(Set, NameFigure, NameSet, ListPlot, ListSpasOpt):
+    def ParseSet(Set, NameFigure, NameSet, ListPlot, ViewMode = False):
         global Options
         def ExpandSet(Set, ListArgs, cmd = OrderedDict()):
             if len(Set) > 0:
@@ -575,14 +575,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults)
 
             Env = dict(ListCmd=ListCmd, ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg, ListPrevCmd=ListPrevCmd)
-            RunFileCode(os.path.join("simulate", Simulate), True, Env)
-
-
-        if "view" in ListSapsOpt:
-            ViewMode = True
-        else:
-            ViewMode = False
-            
+            RunFileCode(os.path.join("simulate", Simulate), True, Env)          
             
         if Options.Collect or Options.View or Options.Plot:
             NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet).replace('/','')) #Slashes in Setname indicate subdirs
@@ -725,7 +718,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 SetFile.write("\t".join([str(x) for x in v])+"\n")
             SetFile.close()
             
-            
         if Options.View or Options.Plot:
             SetFile = open(NameFileSet, 'r')
             data = SetFile.read().split("\n")
@@ -734,7 +726,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 Msg.Warning(2, "Empty set file, skipping.")
                 return      
 
-            
         if Options.View or (ViewMode and (Options.View or Options.Plot)):
             Msg.Msg(2, "View:", "", Fore.YELLOW)
             
@@ -753,7 +744,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 s = s + Plot
             ListPlot.append(s)
 
-    def ExpandValue(Tree, NameFigure, NameSet, ListPlot, ListSapsOpt):
+    def ExpandValue(Tree, NameFigure, NameSet, ListPlot, ViewMode = False):
         global Msg
         if "%" in NameSet:
             a = NameSet.find("%")
@@ -785,11 +776,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     TmpTree[VarName] = ExpandedValue
                 else:
                     TmpTree["Parameter"][VarName] = ExpandedValue
-                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlot, ListSapsOpt)
+                ExpandValue(TmpTree, NameFigure, TmpNameSet, ListPlot, ViewMode)
 
         else:
             Msg.Msg(1, "Set:", Fore.CYAN + RemoveLatexChars(NameSet) + Fore.RESET)
-            ParseSet(Tree, NameFigure, NameSet, ListPlot, ListSapsOpt)
+            ParseSet(Tree, NameFigure, NameSet, ListPlot, ViewMode)
             
     def EscapeGnuplot(s):
         return s.replace('\\','\\\\').replace('$','\$').replace('\"','\\\"')
@@ -811,7 +802,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 NameSet = t.split("Set ")[1]
                 if NameSet.count("%") % 2 != 0:
                     Msg.Error(2, "Beginning and end of each variable has to be marked with \'%\'")
-                ExpandValue(Tree[t], NameFigure, NameSet, ListPlot, ListSapsOpt)
+                ExpandValue(Tree[t], NameFigure, NameSet, ListPlot, ViewMode)
             elif t.startswith("Figure "):
                 LatexNameFigure = t.split("Figure ")[1]
                 NameFigure = RemoveLatexChars(LatexNameFigure)
@@ -830,13 +821,16 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 ListPlotOpt = []
                 ListSapsOpt = []
                 ListPlot = []
-                    
-                ProcessTree(Tree[t], NameFigure, ListPlot, ListSapsOpt, ListPlotOpt)
-                
-                if "view" in ListSapsOpt:
-                    ViewMode = True
-                else:
-                    ViewMode = False
+
+                try:
+                    if "view" in (Tree[t])["SapsOpt"]:
+                        ViewMode = True
+                    else:
+                        ViewMode = False
+                except:
+                    ViewMode = False   
+  
+                ProcessTree(Tree[t], NameFigure, ListPlot, ListSapsOpt, ListPlotOpt, ViewMode)
 
                 if Options.Plot and not ViewMode:
                     TitleIsSet = False
