@@ -731,7 +731,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             
             from prettytable import PrettyTable
             t = PrettyTable(data[0][1:].split("\t"))
-            for v in data[2:]:
+            for v in data[1:]:
                 if len(v) > 0:
                     t.add_row(v.split("\t"))
             Msg.Msg(3, t.get_string().replace("\n","\n" + Options.Indent*3), "", Fore.YELLOW)
