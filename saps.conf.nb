@@ -7,7 +7,7 @@ Saps:
   DirPlot: ~/Dissertation/saps/plots
   Plot2X: True
   Plot2EpsLatex: False
-  Plot2EpsLatexShow: True
+  Plot2EpsLatexShow: False
   PdfViewer: acroread
   Plot2Tikz: True
   Plot2TikzSize: 9cm,8cm
