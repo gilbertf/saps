@@ -839,12 +839,16 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                             TitleIsSet = True
 
                     PlotType = None
+                    Size = "9.5,6"
+                    
                     for s in ListSapsOpt:
                         if s == "notitle":
                             TitleIsSet = True
-                        if s == "view":
+                        elif s == "view":
                             Options.Plot = False
                             Options.View = True
+                        elif "size " in s:
+                            Size = s[5:]
                         elif s == "3d" or s == "2d":
                             if PlotType is None:
                                 if s == "3d":
@@ -856,6 +860,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         else:
                             Msg.Error(2, "Invalid SapsOpt command " + str(s))
 
+                    Size = Size.replace(" ", "").split(",")
+                    RatioSize = float(Size[0])/float(Size[1])
+                    PaperSize = Size[0] + "cm," + Size[1] + "cm"
+                    ScreenSize = "1000," + str(1000/RatioSize) 
+                            
                     if PlotType is None:
                         Msg.Notice(2, "No PlotType was set in SapsOpt, default value 2d is used")
                         PlotType = "plot"
@@ -880,7 +889,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     
                     if Options.Plot2X:
                         print(Options.Indent*2 + "Plotting to X11 using Gnuplot")
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
+                        
+                        CurListPlotOpt = ["terminal wxt size " + ScreenSize] + ListPlotOpt
+
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
                         if Options.DebugPlot:
                             print(Options.Indent*2 + "PlotCmd: " + str(PlotCmd))
                         ret = os.system(PlotCmd)
@@ -896,10 +908,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         except:
                             None
                         NameFilePdfFigure = os.path.join(DirPlot, EscapedNameFigure)
-                        ListPlotOpt = ["terminal epslatex color standalone solid size 29.7cm,21cm","output \"" + NameFilePdfFigure + ".tex\""] + ListPlotOpt
+                        CurListPlotOpt = ["terminal epslatex color standalone solid size " + PaperSize, "output \"" + NameFilePdfFigure + ".tex\""] + ListPlotOpt
                         print(Options.Indent*2 + "Plotting to pdfs using Gnuplot+Latex")
 
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
                         if Options.DebugPlot:
                             print(Options.Indent*2 + "PlotCmd: " + str(PlotCmd))
                         ret = os.system(PlotCmd)
@@ -924,16 +936,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                             None
                         NameFileTikzFigure = os.path.join(DirPlot, EscapedNameFigure)
 
-                        try:
-                            TikzSize = Options.Config["Saps"]["Plot2TikzSize"]
-                        except:
-                            TikzSize = "9.5cm,6cm"
-                        #print("Tikz Size"+ TikzSize)
-
-                        ListPlotOpt = ["terminal tikz size " + TikzSize ,"output \"" + NameFileTikzFigure + ".tikz\""] + ListPlotOpt
+                        CurListPlotOpt = ["terminal tikz size " + PaperSize, "output \"" + NameFileTikzFigure + ".tikz\""] + ListPlotOpt
                         print(Options.Indent*2 + "Plotting to tikz using Gnuplot")
 
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in ListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
+                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
                         if Options.DebugPlot:
                             print(Options.Indent*2 + "PlotCmd: " + str(PlotCmd))
                         ret = os.system(PlotCmd)
