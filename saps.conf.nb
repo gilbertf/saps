@@ -10,7 +10,6 @@ Saps:
   Plot2EpsLatexShow: False
   PdfViewer: acroread
   Plot2Tikz: True
-  Plot2TikzSize: 9cm,8cm
   
   #Debug
   DebugRestructure: False
