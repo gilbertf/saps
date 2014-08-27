@@ -737,11 +737,18 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             Msg.Msg(3, t.get_string().replace("\n","\n" + Options.Indent*3), "", Fore.YELLOW)
 
         if Options.Plot and not ViewMode:
-            s = "\"" + NameFileSet + "\"" + " title " + "\"" + NameSet + "\" "
+            s = "\"" + NameFileSet + "\""
             if Plot is not None:
                 if type(Plot) is list:
+                    First = True
+                    for e in Plot:
+                        if "every" in e:
+                            if not First:
+                                Msg.Error(2, "Every has to be the first Plot option")
+                        First = False
                     Plot = " ".join(Plot)
                 s = s + Plot
+            s = s + " title " + "\"" + NameSet + "\" "
             ListPlot.append(s)
 
     def ExpandValue(Tree, NameFigure, NameSet, ListPlot, ViewMode = False):
@@ -880,7 +887,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         Msg.Warning(2, "Can not plot since no data could be collected.")
                         continue
 
-                        
+
                     if Options.DebugPlot:
                         print(Options.Indent*2 + "ListPlotOpt: " + str(ListPlotOpt))
                         print(Options.Indent*2 + "ListSapsOpt: " + str(ListSapsOpt))
