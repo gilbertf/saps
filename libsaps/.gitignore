@@ -1,0 +1,7 @@
+/Debug
+testsaps
+Makefile
+CMakeFiles
+CTestTestfile.cmake
+cmake_install.cmake
+libsaps.a
