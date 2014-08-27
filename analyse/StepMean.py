@@ -11,7 +11,7 @@ except:
     
 NumSteps = int(len(ValuesIn[0])/StepLen)
 if NumSteps != len(ValuesIn[0])/StepLen:
-    Msg.Error(2, "Rounding, thats bad")
+    Msg.Error(2, "Rounding, thats bad. Len" + str(len(ValuesIn[0])))
 
 #V = np.reshape(ValuesIn, [StepLen, NumSteps])
 V = np.reshape(ValuesIn, [NumSteps, StepLen])
