@@ -457,15 +457,17 @@ SapsOpt
 \end_layout
 
 \begin_layout Itemize
-
+plotting the title can be disabled by setting 
 \family typewriter
-plotting the title can be disabled by setting notitle
+notitle
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-view can be used to view the results instead of plotting
+view
+\family default
+ can be used to view the results instead of plotting
 \end_layout
 
 \end_deeper
