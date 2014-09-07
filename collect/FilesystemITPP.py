@@ -48,7 +48,6 @@ for i in range(NumAxis):
 for Args in ListArgs:
     ArgsStr = ArgsToStr(Args)
     NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsStr)
-    
     if DebugCollect:
         print(Options.Indent*2 + "NameFileResult: " + NameFileResult)
     if not os.path.isfile(NameFileResult):
@@ -75,19 +74,75 @@ for Args in ListArgs:
         Complete = float(Complete)
     if round(Complete, Options.RoundDigits) > 0.99:
         NumCompleteResultsFiles = NumCompleteResultsFiles + 1
+        
         for i, a in enumerate(Axis):
+            BracketOpen = "["
+            BracketClose = "]"
+            NumBracketsOpen = a.count(BracketOpen)
+            NumBracketsClose = a.count(BracketClose)
+            SplitArrayIdx = None
+            
+            if NumBracketsOpen == 1 and NumBracketsClose == 1:
+                ArrayIdx = a[a.find(BracketOpen)+1:a.find(BracketClose)]
+                Msg.Notice(2, "Array index: " + ArrayIdx)
+                #if not "#" in ArrayIdx:
+                #    Msg.Error(2, "Seperator for array indexing required in " + ArrayIdx)
+                SplitArrayIdx = ArrayIdx.split("#")
+                if len(SplitArrayIdx) == 1 or len(SplitArrayIdx) == 2:
+                    for Idx in range(len(SplitArrayIdx)):
+                        if SplitArrayIdx[Idx] == "":
+                            SplitArrayIdx[Idx] = -1
+                        else:
+                            SplitArrayIdx[Idx] = int(SplitArrayIdx[Idx])  
+                else:
+                    Msg.Error(2, "Invalid index: " + ArrayIdx)
+
+                a = a[:a.find(BracketOpen)]
+            elif NumBracketsOpen == 0 and NumBracketsClose == 0:
+                Msg.Notice(2, "No indexing specified")
+            else:
+                Msg.Error(2, "Invalid indexing brackets in " + a)
+
             try:
                 x = r[a]
             except:
                 Msg.Error(2, "Axis " + a + " does not exist in results file! Valid are: " + ", ".join(r))
 
-            if np.isscalar(x):
-                val[i].append(float(x))
+            if SplitArrayIdx is None:
+                if np.isscalar(x):
+                    val[i].append(float(x))
+                #elif type(x) is np.matrix:
+                #    Msg.Error(2, "Matrix is not supported without using indexing brackets")
+                else:
+                    if len(x) == 0: #For example if calculation is still running
+                        x = [-1]
+                    for v in x:
+                        val[i].append(float(v))
             else:
-                if len(x) == 0: #For example if calculation is still running
-                    x = [-1]
-                for v in x:
-                    val[i].append(float(v))
+                if np.isscalar(x):
+                    Msg.Error(2, "Scalars can not be indexed")
+                elif type(x) is np.matrix:
+                    if len(SplitArrayIdx) == 2:
+                        if SplitArrayIdx[0] == -1 and SplitArrayIdx[1] != -1:
+                            x = x[:, SplitArrayIdx[1]]
+                        elif SplitArrayIdx[0] != -1 and SplitArrayIdx[1] == -1:
+                            x = x[SplitArrayIdx[0], :].T
+                        elif SplitArrayIdx[0] != -1 and SplitArrayIdx[1] != -1:
+                            x = [ x[SplitArrayIdx[0],SplitArrayIdx[1]] ]
+                        else:
+                            Msg.Error(2, "Invalid indexing format " + ArrayIdx)
+                        if len(x) == 0: #For example if calculation is still running
+                            x = [-1]
+                        for v in x:
+                            val[i].append(float(v))
+                    else:
+                        Msg.Error(2, "Invalid indices count for matrix indexing")
+                else:
+                    if len(SplitArrayIdx) == 1:
+                        val[i].append(float(x[SplitArrayIdx[0]]))
+                    else:
+                        Msg.Error(2, "Indexing failed")
+
     else:
         msg = str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + ArgsStr
         if StopOnIncompleteResultFiles:
