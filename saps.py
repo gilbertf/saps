@@ -163,6 +163,8 @@ def ArgsToStr(Args, Sep="_", Comb="="):
     l = []
     for Arg in Args.items():
         l.append(Comb.join(Arg))
+    if len(l) == 0:
+        l.append("NoParameters")
     return Sep.join(l)
             
 def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
