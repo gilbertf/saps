@@ -26,11 +26,14 @@ public:
 	friend T& operator<<(T &f, param const& p) {
 		#define customcast(x) if (p.type == typeid(x).name()) {f << * (x*) p.value;}
 			customcast(int)
-			else customcast(cmat)
-			else customcast(bvec)
-			else customcast(string)
 			else customcast(double)
-			else customcast(Array<vec>)
+			else customcast(string)
+			else customcast(mat)
+			else customcast(bmat)
+			else customcast(cmat)
+			else customcast(vec)
+			else customcast(bvec)
+			else customcast(cvec)
 		#undef customcast
 		else {
 			it_error("Unsupported type: " + p.type);
