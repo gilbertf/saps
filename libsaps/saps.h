@@ -43,7 +43,7 @@ public:
 	template <typename T>
 	void reg(string name, T* v, bool is_in = false) {
 		if (this->NameUsed(name)) {
-			it_error("Duplicate cmd parameter");
+			it_error("Duplicate variable name " + name);
 		}
 		if (is_in) {
 			bool success = pars->get(*v, name);

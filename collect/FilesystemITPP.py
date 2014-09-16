@@ -145,6 +145,7 @@ for Args in ListArgs:
 
     else:
         msg = str(Complete*100) + " % complete, estimating " + ReadableTime((1-Complete)*Duration) + " min further to wait for " + ArgsStr
+        print("Compl", Complete)
         if StopOnIncompleteResultFiles:
             Msg.Error(2, msg)
         else:
