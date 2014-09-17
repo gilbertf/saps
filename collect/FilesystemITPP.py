@@ -93,7 +93,10 @@ for Args in ListArgs:
                         if SplitArrayIdx[Idx] == "":
                             SplitArrayIdx[Idx] = -1
                         else:
-                            SplitArrayIdx[Idx] = int(SplitArrayIdx[Idx])  
+                            try:
+                                SplitArrayIdx[Idx] = int(SplitArrayIdx[Idx])  
+                            except:
+                                Msg.Error(2, "Invalid indexing with: " + str(ArrayIdx))
                 else:
                     Msg.Error(2, "Invalid index: " + ArrayIdx)
 

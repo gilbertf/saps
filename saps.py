@@ -484,7 +484,52 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 
         def SplitComma(s):
             return s.replace(", ",",").split(",")
+        
+        def ConstructValueIndices(Value, Indices):
+            for i in range(len(Indices)):
+                if type(Indices[i]) is float: #ExpandValues puts floats
+                    Indices[i] = int(Indices[i])
+            Indices = [str(e) for e in Indices]
+            return str(Value) + "[" + "#".join(Indices) + "]"
             
+        def ExtractValueAndIndices(a, toInt=False):
+            if type(a) is str:
+                BracketOpen = "["
+                BracketClose = "]"
+                NumBracketsOpen = a.count(BracketOpen)
+                NumBracketsClose = a.count(BracketClose)
+                SplitArrayIdx = None
+                
+                if NumBracketsOpen == 1 and NumBracketsClose == 1:
+                    ArrayIdx = a[a.find(BracketOpen)+1:a.find(BracketClose)]
+                    Msg.Notice(2, "Array index: " + ArrayIdx)
+                    SplitArrayIdx = ArrayIdx.split("#")
+                    if len(SplitArrayIdx) == 1 or len(SplitArrayIdx) == 2:
+                        if toInt:
+                            for Idx in range(len(SplitArrayIdx)):
+                                if SplitArrayIdx[Idx] == "":
+                                    SplitArrayIdx[Idx] = -1
+                                else:
+                                    try:
+                                        SplitArrayIdx[Idx] = int(SplitArrayIdx[Idx])  
+                                    except:
+                                        Msg.Error(2, "Invalid indexing with: " + str(ArrayIdx))
+                    else:
+                        Msg.Error(2, "Invalid index: " + ArrayIdx)
+    
+                    Value = a[:a.find(BracketOpen)]
+                    if len(Value) == 0:
+                        Msg.Error(2, "Failed to extract value")
+                elif NumBracketsOpen == 0 and NumBracketsClose == 0:
+                    Value = a
+                else:
+                    Msg.Error(2, "Invalid indexing brackets in " + a)
+    
+                return [Value, SplitArrayIdx]
+            else:
+                return [a, None]
+                
+                
         def ReplaceParameterByValue(Set, Parameter):
             for s in Set:
                 Value = Set[s]
@@ -492,7 +537,16 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     ReplaceParameterByValue(Value, Parameter)
                 else:
                     if type(Value) is not list:
-                        if Value in Parameter:
+                        [extValue, extIndices] = ExtractValueAndIndices(Value)
+                        if extIndices != None:
+                            Changed = False
+                            for i in range(len(extIndices)):
+                                if extIndices[i] in Parameter:
+                                    Changed = True
+                                    extIndices[i] = Parameter[extIndices[i]]
+                            if Changed:
+                                Set[s] = ConstructValueIndices(extValue, extIndices)
+                        elif Value in Parameter:
                             Set[s] = Parameter[Value]
                     else:
                         Msg.Error(1, "Invalid value type " + str(type(Value)) + " for " + s)
@@ -511,22 +565,21 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             Msg.Error(2, "Program property is missing")
 
         try:
-            Axis = SplitComma(Set.pop("Axis"))
-        except:
-            Msg.Error(2, "Axis property is missing")
-
-        try:
             Plot = Set.pop("Plot")
         except:
             Plot = None
-            
-        #Used in ExpandValue, dropping here
+
         try:
             Parameter = Set.pop("Parameter")
         except:
             Parameter = {}
         ReplaceParameterByValue(Set, Parameter)
 
+        try:
+            Axis = SplitComma(Set.pop("Axis"))
+        except:
+            Msg.Error(2, "Axis property is missing")
+            
         DictAnalyse = Options.ydict()
         for s in Set:
             if "Analyse" in s: #Akzeptiere auch Analysen ohne Eigenname, deshalb kein Leerzeichen
@@ -542,7 +595,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
         Set.sort()
         ListArgs = list()
         ExpandSet(Set, ListArgs)
-
+        
         try:
             DirResults = Options.Config["FilesystemITPP"]["DirResults"]
         except:
