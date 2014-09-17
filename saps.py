@@ -17,6 +17,7 @@ class options():
     ShowNotice = True
     
     Descriptionfile = None
+    DescriptionFiles = list()
     Config = None
     Indent = " " * 2
     
@@ -1054,14 +1055,11 @@ def ParseArgs():
                 else:
                     Msg.Error(0, "Invalid command line option: " + e)
         else:
-            if Options.Descriptionfile is None:
-                if "_" in a:
-                    Msg.Error(0, "Please do not use the _ character in description file names.")
-                Options.Descriptionfile = a
-            else:
-                Msg.Error(0, "You are only allowed to specify one configuration file. I do not understand " + a)
+            if "_" in a:
+                Msg.Error(0, "Please do not use the _ character in description file names.")
+            Options.DescriptionFiles.append(a)
 
-    if Options.Descriptionfile is None:
+    if len(Options.DescriptionFiles) == 0:
         ShowSyntax()
         Msg.Error(0, "Please specifiy a saps configuration file")
 
@@ -1077,27 +1075,29 @@ def main():
     Msg = msg()
     Options.ReadFileConfig("saps.conf")
     ParseArgs()
-    Tree = ReadYaml(Options.Descriptionfile, False)
-    
-    #Remove Groups
-    RemoveGroups(Tree, None, False)
+    for LoopDescriptionfile in Options.DescriptionFiles:
+        Options.Descriptionfile = LoopDescriptionfile
+        Tree = ReadYaml(Options.Descriptionfile, False)
+        
+        #Remove Groups
+        RemoveGroups(Tree, None, False)
 
-    #Move Properties into Figures to prepare ExpandFigure
-    Tree = RestructureTree(Tree, False, False, True, False)
-    
-    ExpandFigures(Tree)
-    
-    #Now move into fuill depth
-    Tree = RestructureTree(Tree, False, False, True, True)
-    
-    if Options.DebugRestructure:
-        print(yaml.dump(Tree, default_flow_style=False))
-    try:
-        os.makedirs(Options.SetDir)
-    except:
-        None
-    
-    ProcessTree(Tree)
+        #Move Properties into Figures to prepare ExpandFigure
+        Tree = RestructureTree(Tree, False, False, True, False)
+        
+        ExpandFigures(Tree)
+        
+        #Now move into fuill depth
+        Tree = RestructureTree(Tree, False, False, True, True)
+        
+        if Options.DebugRestructure:
+            print(yaml.dump(Tree, default_flow_style=False))
+        try:
+            os.makedirs(Options.SetDir)
+        except:
+            None
+        
+        ProcessTree(Tree)
     
 if __name__ == "__main__":
     if sys.version_info >= (3,3):
