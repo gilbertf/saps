@@ -73,9 +73,7 @@ def Cluster(Cmd, DirJob, NameFileJob):
 
 NumCreated = 0
 for Pos, Cmd in enumerate(ListCmd):
-    if Cmd not in ListPrevCmd:
-        NameFileJob = ArgsToStr(ListArgs[Pos])
-        NumCreated = NumCreated + Cluster(Cmd, DirJob, NameFileJob)
-        ListPrevCmd.append(Cmd)
+    NameFileJob = ArgsToStr(ListArgs[Pos])
+    NumCreated = NumCreated + Cluster(Cmd, DirJob, NameFileJob)
     
 Msg.Msg(1, "Simulating", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobs send to pbs.")

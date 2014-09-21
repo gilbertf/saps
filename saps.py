@@ -168,7 +168,7 @@ def ArgsToStr(Args, Sep="_", Comb="="):
         l.append("NoParameters")
     return Sep.join(l)
             
-def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
+def ExecuteWrapper(Program, ListArgs, SimNameFileResultList, ListCmd, DirResults):
     def ReadSignature(NameFile, NamePathFile, FunctionDef):
         f = open(NamePathFile)
         d = f.read()
@@ -215,24 +215,28 @@ def ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults):
             IncPaths = "\'{0}\', \'{1}\'".format(os.path.dirname(Program), os.path.dirname(__file__))
             
         NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
-        if os.path.isfile(NameFileResult):
-            Msg.Notice(2, "Result file exists already, skipping job.")
-            continue
-        if isPy:
-            VarsAppendArgs = ";".join([ "Vars['" + str(Arg) + "'] = " + str(Args[Arg]) for Arg in Args ])
-            Exe = "python3 -c \"import sys\nsys.path.extend([" + IncPaths + "])\nfrom itpp import itsave\nimport " + NameFile + "\nVars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + ")\nVars['Complete'] = 1\n" + VarsAppendArgs + "\ntry:\n    itsave(\'" + NameFileResult + "\', Vars)\nexcept Exception as e:\n    print('" + Options.Indent*2 + "Error: Running python script " + Program + " failed with exception: ' + e)\""
-        elif isM:
-            TmpArgs = Args.copy() #Octave preferes strings in quotation marks
-            for Arg in TmpArgs:
-                if not TmpArgs[Arg].replace(".","").replace("-","").isdigit():
-                    TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
-            Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
+        if NameFileResult not in SimNameFileResultList:
+            Msg.Notice(2, "Simulating " + NameFileResult)
+            SimNameFileResultList.append(NameFileResult)
+            if os.path.isfile(NameFileResult):
+                Msg.Notice(2, "Result file exists already, skipping job.")
+                continue
+            if isPy:
+                VarsAppendArgs = ";".join([ "Vars['" + str(Arg) + "'] = " + str(Args[Arg]) for Arg in Args ])
+                Exe = "python3 -c \"import sys\nsys.path.extend([" + IncPaths + "])\nfrom itpp import itsave\nimport " + NameFile + "\nVars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + ")\nVars['Complete'] = 1\n" + VarsAppendArgs + "\ntry:\n    itsave(\'" + NameFileResult + "\', Vars)\nexcept Exception as e:\n    print('" + Options.Indent*2 + "Error: Running python script " + Program + " failed with exception: ' + e)\""
+            elif isM:
+                TmpArgs = Args.copy() #Octave preferes strings in quotation marks
+                for Arg in TmpArgs:
+                    if not TmpArgs[Arg].replace(".","").replace("-","").isdigit():
+                        TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
+                Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
+            else:
+                TmpArgs = Args.copy()
+                TmpArgs.update({"NameFileResult":NameFileResult})
+                Exe = Program + " " + ArgsToStr(TmpArgs, " ")
+            ListCmd.append(Exe)
         else:
-            TmpArgs = Args.copy()
-            TmpArgs.update({"NameFileResult":NameFileResult})
-            Exe = Program + " " + ArgsToStr(TmpArgs, " ")
-        #print(Exe)
-        ListCmd.append(Exe) 
+            Msg.Notice(2, "Skipping duplicate simulation of " + NameFileResult)
     
 def ConstructFullPath(NameFile, DirSaps):
     if DirSaps:
@@ -604,12 +608,16 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
         DirResults = os.path.expanduser(DirResults)
     
         if Options.Delete:
+            global DeleteNameFileResultList
             for Args in ListArgs:
                 NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
-
-                if os.path.isfile(NameFileResult):
-                        os.remove(NameFileResult)
-                        Msg.Notice(1, "Deleting result file " + NameFileResult)
+                if NameFileResult not in DeleteNameFileResultList:
+                    DeleteNameFileResultList.append(NameFileResult)
+                    if os.path.isfile(NameFileResult):
+                            os.remove(NameFileResult)
+                            Msg.Notice(2, "Deleting result file " + NameFileResult)
+                else:
+                    Msg.Notice(2, "Skipping duplicat delete of " + NameFileResult)
            
         if Options.Simulate:
             if Options.SimulateInstantaneous:
@@ -626,11 +634,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 os.makedirs(ResultsProgram)
                 
             #Simulate
-            global ListPrevCmd
+            global SimNameFileResultList
             ListCmd = list()
-            ExecuteWrapper(Program, ListArgs, ListPrevCmd, ListCmd, DirResults)
+            ExecuteWrapper(Program, ListArgs, SimNameFileResultList, ListCmd, DirResults)
 
-            Env = dict(ListCmd=ListCmd, ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg, ListPrevCmd=ListPrevCmd)
+            Env = dict(ListCmd=ListCmd, ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg)
             RunFileCode(os.path.join("simulate", Simulate), True, Env)          
             
         if Options.Collect or Options.View or Options.Plot:
@@ -1068,8 +1076,9 @@ def ParseArgs():
         Msg.Error(0, "Please specify at least one action.")
     
 def main():
-    global Options, Msg, ListPrevCmd
-    ListPrevCmd = []
+    global Options, Msg, SimNameFileResultList, DeleteNameFileResultList
+    SimNameFileResultList = []
+    DeleteNameFileResultList = []
     
     Options = options()
     Msg = msg()
