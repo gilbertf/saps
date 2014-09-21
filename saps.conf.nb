@@ -6,10 +6,10 @@ Saps:
   #Plot configuration
   DirPlot: ~/Dissertation/saps/plots
   Plot2X: True
-  Plot2EpsLatex: True
+  Plot2EpsLatex: False
   Plot2EpsLatexShow: True
   PdfViewer: acroread
-  Plot2Tikz: True
+  Plot2Tikz: False
   
   #Debug
   DebugRestructure: False
@@ -19,7 +19,7 @@ Saps:
   DebugPlot: False
 
   #Msg configuration
-  ShowNotice: False
+  ShowNotice: True
   ShowWarning: True
   RoundDigits: 13
 
