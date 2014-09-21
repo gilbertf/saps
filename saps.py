@@ -143,10 +143,8 @@ class msg():
             self.Msg(i, "Warning:", " ".join(m), Fore.RED)
     
     def Error(self, i, *m):
-            
         self.Msg(i, "Error:", " ".join(m), Fore.RED)
         exit()
-        
         
 import re
 
@@ -168,7 +166,7 @@ def ArgsToStr(Args, Sep="_", Comb="="):
         l.append("NoParameters")
     return Sep.join(l)
             
-def ExecuteWrapper(Program, ListArgs, SimNameFileResultList, ListCmd, DirResults):
+def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
     def ReadSignature(NameFile, NamePathFile, FunctionDef):
         f = open(NamePathFile)
         d = f.read()
@@ -205,7 +203,8 @@ def ExecuteWrapper(Program, ListArgs, SimNameFileResultList, ListCmd, DirResults
             Msg.Error(2, "Return signature can not be found in " + Program)
         else:
             ReturnSignature = ReturnSignature.replace(" ","").replace("[","").replace("]","").replace("=","").split(",")
-
+    
+    global SimNameFileResultList
     for Args in ListArgs:
         if isPy or isM:
             SapsSignature = set(Args.keys())
@@ -215,6 +214,7 @@ def ExecuteWrapper(Program, ListArgs, SimNameFileResultList, ListCmd, DirResults
             IncPaths = "\'{0}\', \'{1}\'".format(os.path.dirname(Program), os.path.dirname(__file__))
             
         NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
+        
         if NameFileResult not in SimNameFileResultList:
             Msg.Notice(2, "Simulating " + NameFileResult)
             SimNameFileResultList.append(NameFileResult)
@@ -275,7 +275,6 @@ def ReadYaml(NameFile, DirSaps):
         raise
         Msg.Error(0, "Unable to read yaml file " + CompleteNameFile)
 
-    
 def RunFileCode(NameFile, DirSaps, Env):
     CompleteNameFile = ConstructFullPath(NameFile, DirSaps)
     try:
@@ -469,7 +468,6 @@ def RestructureTree(Tree, inFigure, inSet, inRoot, RunRecursive):
             return(FiguresSets)
             
 
-    
 def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlotOpt = [], ViewMode = False):          
     def RemoveLatexChars(s):
         return s.replace('{','').replace('}','').replace('_','').replace('$','').replace('\\','').replace('textrm','')
@@ -634,9 +632,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 os.makedirs(ResultsProgram)
                 
             #Simulate
-            global SimNameFileResultList
             ListCmd = list()
-            ExecuteWrapper(Program, ListArgs, SimNameFileResultList, ListCmd, DirResults)
+            ExecuteWrapper(Program, ListArgs, ListCmd, DirResults)
 
             Env = dict(ListCmd=ListCmd, ListArgs=ListArgs, Program=Program, Options=Options, Msg=Msg)
             RunFileCode(os.path.join("simulate", Simulate), True, Env)          

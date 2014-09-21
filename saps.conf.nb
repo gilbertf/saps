@@ -19,7 +19,7 @@ Saps:
   DebugPlot: False
 
   #Msg configuration
-  ShowNotice: True
+  ShowNotice: False
   ShowWarning: True
   RoundDigits: 13
 
