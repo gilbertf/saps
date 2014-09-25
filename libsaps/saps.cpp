@@ -1,7 +1,7 @@
 #include "saps.h"
 #include "param.h"
 
-saps::saps(int argc, char** argv) {
+saps::saps(int argc, char** argv, bool SaveOnExit) {
 	ArgNames = new string[argc];
 	ArgUsed = new bool[argc];
 
@@ -28,10 +28,14 @@ saps::saps(int argc, char** argv) {
 	this->reg<string>("NameFileResult", &NameFileResult, true);
 
 	itf = new it_file(NameFileResult);
+
+	this->SaveOnExit = SaveOnExit;
 }
 
 saps::~saps() {
-	this->write_file();
+	if (SaveOnExit) {
+		this->write_file();
+	}
 
 	delete pars;
 

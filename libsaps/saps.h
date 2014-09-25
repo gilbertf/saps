@@ -17,6 +17,7 @@ using namespace itpp;
 
 class saps {
 private:
+	bool SaveOnExit;
 	bool* ArgUsed;
 	int ArgCnt;
 	string* ArgNames;
@@ -34,7 +35,7 @@ private:
 	bool NameUsed(string name);
 
 public:
-	saps(int argc, char** argv);
+	saps(int argc, char** argv, bool SaveOnExit = true);
 	~saps();
 
 	void write_file();
