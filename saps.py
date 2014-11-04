@@ -874,7 +874,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             elif t.startswith("Figure "):
                 LatexNameFigure = t.split("Figure ")[1]
                 NameFigure = RemoveLatexChars(LatexNameFigure)
-                print("\nFigure:", Fore.BLUE + NameFigure + Fore.RESET)
+                print("Figure:", Fore.BLUE + NameFigure + Fore.RESET)
 
                 if Options.Collect:
                     try:
