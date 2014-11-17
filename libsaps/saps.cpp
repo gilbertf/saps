@@ -41,7 +41,7 @@ saps::~saps() {
 	delete in;
 	delete out;
 
-	itf->close();
+
 	delete itf;
 	delete[] ArgUsed;
 	delete[] ArgNames;
