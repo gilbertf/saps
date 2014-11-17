@@ -40,9 +40,12 @@ if NameFile == None:
     ShowSyntax()
     
 Data = itload(NameFile)
+if Data == "defekt":
+    print("Invalid itpp data file. STOP!")
+    exit()
 for d in Data:
     if NameFilter == [] or d in NameFilter:
         print(d)
         if ShowValues:
             print(Data[d])
-            print("")
+            print()

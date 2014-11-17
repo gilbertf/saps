@@ -37,6 +37,7 @@ private:
 public:
 	saps(int argc, char** argv, bool SaveOnExit = true);
 	~saps();
+	void DoSaveOnExit();
 
 	void write_file();
 	void write_out(ostream &o) const;

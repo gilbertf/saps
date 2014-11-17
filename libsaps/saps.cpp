@@ -33,9 +33,7 @@ saps::saps(int argc, char** argv, bool SaveOnExit) {
 }
 
 saps::~saps() {
-	if (SaveOnExit) {
-		this->write_file();
-	}
+	DoSaveOnExit();
 
 	delete pars;
 
@@ -72,6 +70,7 @@ void saps::write_file() {
 	this->CheckComplete();
 	write_file(this->in);
 	write_file(this->out);
+	*(this->itf) << flush; //otherwise, data gets lost in some cases
 }
 
 void saps::write_file(vector<param*> *paramvec) {
@@ -114,4 +113,11 @@ bool saps::NameUsed(string name) {
 ostream& operator<<(std::ostream& o, saps const& s) {
 	s.write_out(o);
 	return o;
+}
+
+void saps::DoSaveOnExit() {
+	if (SaveOnExit) {
+		this->write_file();
+		SaveOnExit = false;
+	}
 }
