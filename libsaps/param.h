@@ -27,7 +27,7 @@ public:
 		#define customcast(x) if (p.type == typeid(x).name()) {f << * (x*) p.value;}
 			customcast(int)
 			else customcast(double)
-			else customcast(string)
+			//else customcast(string)
 			else customcast(mat)
 			else customcast(bmat)
 			else customcast(cmat)
@@ -36,7 +36,7 @@ public:
 			else customcast(cvec)
 		#undef customcast
 		else {
-			it_error("Unsupported type: " + p.type);
+			it_warning("Unsupported type " + p.type + " of " + p.name);
 		}
 
 		return f;
