@@ -374,6 +374,21 @@ def ExpandFigures(Tree):
                 ExpandValueNameFigure(Tree, Tree[t], NameFigure)
                 del Tree[t]
 
+def ParseIncludes(Tree):
+    if type(Tree) == Options.ydict:
+        for t in Tree:
+            if t == "Include":
+                x = ReadYaml(Tree[t] + ".saps", False)
+                for e in x:
+                    if e in Tree:
+                        Msg.Error(2, "Double entry", e, "found when including", Tree[t]+".saps")
+                    else:
+                        Tree[e] = x[e]
+                del Tree[t]
+            else:
+                Tree[t] = ParseIncludes(Tree[t])
+    return Tree
+
 def RemoveGroups(Tree, Parent, InGroup):
     if type(Tree) == Options.ydict:
         for t in Tree:
@@ -1084,7 +1099,9 @@ def main():
     for LoopDescriptionfile in Options.DescriptionFiles:
         Options.Descriptionfile = LoopDescriptionfile
         Tree = ReadYaml(Options.Descriptionfile, False)
-        
+
+        Tree = ParseIncludes(Tree)
+
         #Remove Groups
         RemoveGroups(Tree, None, False)
 
