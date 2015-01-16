@@ -1,3 +1,4 @@
+import math as m
 ValuesOut = [[]]
 
 if len(ValuesIn) == 1:
@@ -14,6 +15,9 @@ if len(ValuesIn) == 1:
             Cnt = Cnt + 1
         if "Substract" in Analyse:
             ValuesOut[0].append(v-float(Analyse["Substract"]))
+            Cnt = Cnt + 1
+        if "PowBase" in Analyse:
+            ValuesOut[0].append(m.pow(float(Analyse["PowBase"]),v))
             Cnt = Cnt + 1
         if Cnt != 1:
             Msg.Error(2, "Please specify one mathematical operation")

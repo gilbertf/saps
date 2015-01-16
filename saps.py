@@ -156,6 +156,8 @@ def ListToNiceStr(List):
     return Str
 
 def ConstructNameFileResult(DirResults, Program, ArgStr):
+    if len(ArgStr) > 255:
+        Msg.Error(0, "NameFileResult is too long for most filesystems.")
     return os.path.join(DirResults, os.path.basename(Program), ArgStr)
 
 def ArgsToStr(Args, Sep="_", Comb="="):
