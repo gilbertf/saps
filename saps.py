@@ -1003,7 +1003,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         if ret != 0:
                             Msg.Error(1,"Running gnuplot failed")
 
-                        LatexCmd = "cd "+ DirPlot + "; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null"
+                        LatexCmd = "cd "+ DirPlot + "; sed -i 's/usepackage{color}/usepackage{color}\\n\\\\usepackage{units}/g' " + NameFilePdfFigure + ".tex; pdflatex -shell-escape " + NameFilePdfFigure + ".tex > /dev/null"
                         if Options.DebugPlot:
                             print(Options.Indent*2 + "LatexCmd: " + str(LatexCmd))
                         os.system(LatexCmd)
