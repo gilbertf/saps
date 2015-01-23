@@ -433,6 +433,14 @@ reference "sec:Programs"
 \begin_layout Itemize
 
 \family typewriter
+Include
+\family default
+ specifies other .saps definitions to be included in the description tree.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
 SapsOpt
 \family default
  specify the behaviour of the saps script
@@ -468,6 +476,14 @@ notitle
 view
 \family default
  can be used to view the results instead of plotting
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+size
+\family default
+ defines the size of the plot
 \end_layout
 
 \end_deeper
