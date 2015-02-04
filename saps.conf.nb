@@ -13,7 +13,7 @@ Saps:
   
   #Debug
   DebugRestructure: False
-  DebugSimulate: False
+  DebugSimulate: True
   DebugCollect: False
   DebugAnalyse: False
   DebugPlot: False
