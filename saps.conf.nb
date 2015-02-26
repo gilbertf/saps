@@ -6,8 +6,8 @@ Saps:
   #Plot configuration
   DirPlot: ~/Dissertation/saps/plots
   Plot2X: True
-  Plot2EpsLatex: False
-  Plot2EpsLatexShow: True
+  Plot2EpsLatex: True
+  Plot2EpsLatexShow: False
   PdfViewer: acroread
   Plot2Tikz: False
   

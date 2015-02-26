@@ -2,17 +2,26 @@
 import os
 from itpp import itload
 import sys
+import numpy as np
+import scipy.io
 
 def ShowSyntax():
     print("Syntax: itshow.py <NameFile> (-l) (-sVarName)")
     print("   -l           List all variable names")
     print("   -sVarName    Show value of variable VarName")
+    print("   -eVarName    Export value of variable VarName to export.mat")
+    print("   -fFileName   Export filename")
     exit()
-    
+
+#np.set_printoptions(threshold=np.nan)
+
 ShowNames = True
 ShowValues = True
+ExportValues = True
 NameFile = None
 NameFilter = []
+ExportFilter = []
+ExportFilename = "export.mat"
 
 Args = sys.argv
 
@@ -26,6 +35,18 @@ for Arg in Args[1:]:
             ShowSyntax()
         else:
             NameFilter.append(Arg[2:])
+    elif Arg.startswith("-e"):
+        VarName = Arg[2:]
+        if len(VarName) == 0:
+            print("Invalid variable name")
+            ShowSyntax()
+        else:
+            ExportFilter.append(Arg[2:])
+    elif Arg.startswith("-f"):
+        ExportFileName = Arg[2:]
+        if len(ExportFileName) == 0:
+            print("Invalid export filename")
+            ShowSyntax()
     else:
         if NameFile == None:
             NameFile = Arg
@@ -43,9 +64,12 @@ Data = itload(NameFile)
 if Data == "defekt":
     print("Invalid itpp data file. STOP!")
     exit()
+
 for d in Data:
     if NameFilter == [] or d in NameFilter:
         print(d)
         if ShowValues:
             print(Data[d])
             print()
+    if d in ExportFilter:
+        scipy.io.savemat(ExportFileName, mdict={d : Data[d]})
