@@ -231,7 +231,7 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 for Arg in TmpArgs:
                     if not TmpArgs[Arg].replace(".","").replace("-","").isdigit():
                         TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
-                Exe = "octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
+                Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
             else:
                 TmpArgs = Args.copy()
                 TmpArgs.update({"NameFileResult":NameFileResult})
@@ -975,7 +975,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     if Options.Plot2X:
                         print(Options.Indent*2 + "Plotting to X11 using Gnuplot")
                         
-                        CurListPlotOpt = ["terminal wxt size " + ScreenSize] + ListPlotOpt
+                        CurListPlotOpt = ["terminal x11 size " + ScreenSize] + ListPlotOpt
 
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
                         if Options.DebugPlot:
