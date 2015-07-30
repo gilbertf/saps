@@ -16,7 +16,6 @@ if NumSteps != len(ValuesIn[0])/StepLen:
 #V = np.reshape(ValuesIn, [StepLen, NumSteps])
 V = np.reshape(ValuesIn, [NumSteps, StepLen])
 
-
 W = np.mean(V, axis=Axis)
 
 ValuesOut = [W]
