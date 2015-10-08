@@ -6,3 +6,7 @@ TARGET_LINK_LIBRARIES(testsaps itpp saps)
 
 enable_testing()
 add_test(testsaps_runs testsaps NameFileResult=/tmp/testitpp Hi=Hallo)
+
+
+install (TARGETS saps DESTINATION lib)
+install (FILES saps.h param.h DESTINATION include)

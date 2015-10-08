@@ -1,19 +1,19 @@
 #Main programs options
 Saps:
   #Collect
-  DirSet: ~/Dissertation/saps/sets
+  DirSet: ~/Doktor.git/saps/sets
 
   #Plot configuration
-  DirPlot: ~/Dissertation/saps/plots
+  DirPlot: ~/Doktor.git/saps/plots
   Plot2X: True
   Plot2EpsLatex: True
   Plot2EpsLatexShow: False
   PdfViewer: acroread
-  Plot2Tikz: False
+  Plot2Tikz: True
   
   #Debug
   DebugRestructure: False
-  DebugSimulate: True
+  DebugSimulate: False
   DebugCollect: False
   DebugAnalyse: False
   DebugPlot: False
@@ -31,13 +31,13 @@ Collect: FilesystemITPP.py
 
 #Module configuration
 FilesystemITPP:
-  DirResults: ~/Dissertation/results
+  DirResults: ~/Doktor.git/results
   StopOnDefectResultFiles: False
   StopOnIncompleteResultFiles: False
 
 FilesystemCluster:
-  DirJob: ~/Dissertation/saps/cluster/jobs/waiting
+  DirJob: ~/Doktor.git/saps/cluster/jobs/waiting
 
 PbsCluster:
-  DirJob: ~/Dissertation/saps/cluster/jobs/waiting
-  DirLog: ~/Dissertation/saps/cluster/logs
+  DirJob: ~/Doktor.git/saps/cluster/jobs/waiting
+  DirLog: ~/Doktor.git/saps/cluster/logs
