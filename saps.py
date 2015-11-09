@@ -33,6 +33,7 @@ class options():
     Plot2Tikz = False
     
     SimulateInstantaneous = False
+    Valgrind = False
     
     #Actions
     Simulate = False
@@ -236,6 +237,8 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 TmpArgs = Args.copy()
                 TmpArgs.update({"NameFileResult":NameFileResult})
                 Exe = Program + " " + ArgsToStr(TmpArgs, " ")
+                if Options.Valgrind:
+                   Exe = "valgrind --leak-check=full " + Exe
             ListCmd.append(Exe)
         else:
             Msg.Notice(2, "Skipping duplicate simulation of " + NameFileResult)
@@ -1040,6 +1043,7 @@ def ShowSyntax():
     print("\t-v\t--view\t\tView")
     print("\t-p\t--plot\t\tPlot")
     print("\t-i\t--instant\tInstant simulation")
+    print("\t\t--valgrind\tInvoke valgrind")
     print("\t\t--delete\tDelete result files\n")
 
 def ParseArgs():
@@ -1059,6 +1063,8 @@ def ParseArgs():
                 Options.Delete = True
             elif e == "instant":
                 Options.SimulateInstantaneous = True
+            elif e == "valgrind":
+                Options.Valgrind = True
             else:
                 Msg.Error(0, "Invalid command line option: " + e)
                     
@@ -1088,6 +1094,9 @@ def ParseArgs():
     if (Options.Simulate + Options.Collect + Options.Plot + Options.View + Options.Delete) == False:
         ShowSyntax()
         Msg.Error(0, "Please specify at least one action.")
+
+    if not Options.SimulateInstantaneous and Options.Valgrind:
+        Msg.Error(0, "Valgrind is only allowd in interactive mode")
     
 def main():
     global Options, Msg, SimNameFileResultList, DeleteNameFileResultList
