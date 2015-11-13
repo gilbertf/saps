@@ -34,6 +34,7 @@ class options():
     
     SimulateInstantaneous = False
     Valgrind = False
+    ddd = False
     
     #Actions
     Simulate = False
@@ -239,6 +240,8 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 Exe = Program + " " + ArgsToStr(TmpArgs, " ")
                 if Options.Valgrind:
                    Exe = "valgrind --leak-check=full " + Exe
+                if Options.ddd:
+                   Exe = "ddd --args " + Exe
             ListCmd.append(Exe)
         else:
             Msg.Notice(2, "Skipping duplicate simulation of " + NameFileResult)
@@ -978,7 +981,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     if Options.Plot2X:
                         print(Options.Indent*2 + "Plotting to X11 using Gnuplot")
                         
-                        CurListPlotOpt = ["terminal x11 size " + ScreenSize] + ListPlotOpt
+                        CurListPlotOpt = ["terminal qt size " + ScreenSize] + ListPlotOpt
 
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
                         if Options.DebugPlot:
@@ -1044,6 +1047,7 @@ def ShowSyntax():
     print("\t-p\t--plot\t\tPlot")
     print("\t-i\t--instant\tInstant simulation")
     print("\t\t--valgrind\tInvoke valgrind")
+    print("\t\t--ddd\tInvoke ddd")
     print("\t\t--delete\tDelete result files\n")
 
 def ParseArgs():
@@ -1065,6 +1069,8 @@ def ParseArgs():
                 Options.SimulateInstantaneous = True
             elif e == "valgrind":
                 Options.Valgrind = True
+            elif e == "ddd":
+                Options.ddd = True
             else:
                 Msg.Error(0, "Invalid command line option: " + e)
                     
@@ -1097,6 +1103,9 @@ def ParseArgs():
 
     if not Options.SimulateInstantaneous and Options.Valgrind:
         Msg.Error(0, "Valgrind is only allowd in interactive mode")
+
+    if not Options.SimulateInstantaneous and Options.ddd:
+        Msg.Error(0, "ddd is only allowd in interactive mode")
     
 def main():
     global Options, Msg, SimNameFileResultList, DeleteNameFileResultList
