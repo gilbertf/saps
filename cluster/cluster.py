@@ -24,7 +24,7 @@ elif hostname == "lilalaptop":
     cores = 1
 elif hostname == "megatron":
     cores = 5
-elif hostname == "ictnb":
+elif hostname == "nb071.tf.uni-kiel.de":
     SleepTime = 0.1
     cores = 4
 elif hostname == "asterix":
