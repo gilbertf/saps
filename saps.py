@@ -983,7 +983,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         
                         CurListPlotOpt = ["terminal qt size " + ScreenSize] + ListPlotOpt
 
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "\""
+                        PlotCmd = "gnuplot -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "; pause mouse close; exit" + "\"" + "&"
                         if Options.DebugPlot:
                             print(Options.Indent*2 + "PlotCmd: " + str(PlotCmd))
                         ret = os.system(PlotCmd)
@@ -1002,7 +1002,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         CurListPlotOpt = ["terminal epslatex color standalone solid size " + PaperSize, "output \"" + NameFilePdfFigure + ".tex\""] + ListPlotOpt
                         print(Options.Indent*2 + "Plotting to pdfs using Gnuplot+Latex")
 
-                        PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
+                        PlotCmd = "gnuplot -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
                         if Options.DebugPlot:
                             print(Options.Indent*2 + "PlotCmd: " + str(PlotCmd))
                         ret = os.system(PlotCmd)
