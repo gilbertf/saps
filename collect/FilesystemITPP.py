@@ -127,10 +127,18 @@ for Args in ListArgs:
                 elif type(x) is np.matrix:
                     if len(SplitArrayIdx) == 2:
                         if SplitArrayIdx[0] == -1 and SplitArrayIdx[1] != -1:
+                            if x.shape[1] <= SplitArrayIdx[1]:
+                                Msg.Error(2, "Invalid array index (:, " + str(SplitArrayIdx[1]) + ")")
                             x = x[:, SplitArrayIdx[1]]
                         elif SplitArrayIdx[0] != -1 and SplitArrayIdx[1] == -1:
+                            if x.shape[0] <= SplitArrayIdx[0]:
+                                Msg.Error(2, "Invalid array index (" + str(SplitArrayIdx[0]) + ", :)")
                             x = x[SplitArrayIdx[0], :].T
                         elif SplitArrayIdx[0] != -1 and SplitArrayIdx[1] != -1:
+                            if x.shape[0] <= SplitArrayIdx[0]:
+                                Msg.Error(2, "Invalid array index (" + str(SplitArrayIdx[0]) + ", :)")
+                            if x.shape[1] <= SplitArrayIdx[1]:
+                                Msg.Error(2, "Invalid array index (:, " + str(SplitArrayIdx[1]) + ")")
                             x = [ x[SplitArrayIdx[0],SplitArrayIdx[1]] ]
                         else:
                             Msg.Error(2, "Invalid indexing format " + ArrayIdx)
