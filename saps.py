@@ -8,6 +8,7 @@ import copy
 from collections import OrderedDict
 import numpy as np
 from colorama import Fore
+import hashlib
 
 class options():
     global Msg
@@ -158,6 +159,9 @@ def ListToNiceStr(List):
     return Str
 
 def ConstructNameFileResult(DirResults, Program, ArgStr):
+    HashNameFileResult = True
+    if HashNameFileResult:
+        ArgStr = hashlib.sha224(bytes(ArgStr, 'utf8')).hexdigest()
     if len(ArgStr) > 255:
         Msg.Error(0, "NameFileResult", ArgStr, "is too long for most filesystems with", str(len(ArgStr)), "letters.")
     return os.path.join(DirResults, os.path.basename(Program), ArgStr)
