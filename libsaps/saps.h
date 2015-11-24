@@ -42,6 +42,10 @@ public:
 	void write_file();
 	void write_out(ostream &o) const;
 
+	bool exist(string name) {
+		return pars->exist(name);
+	}
+
 	template <typename T>
 	void reg(string name, T* v, bool is_in = false) {
 		if (this->NameUsed(name)) {
