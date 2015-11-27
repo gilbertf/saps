@@ -213,7 +213,7 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
             Difference = set(FunctionSignature) - SapsSignature
             if Difference != set():
                 Msg.Error(2, "The following program parameters are not specified in " + Options.Descriptionfile + ": " + ListToNiceStr(Difference))
-            IncPaths = "\'{0}\', \'{1}\'".format(os.path.dirname(Program), os.path.dirname(__file__))
+            IncPaths = "\'{0}\',\'{1}\'".format(os.path.dirname(Program), os.path.dirname(__file__))
             
         NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
         
@@ -231,7 +231,8 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 for Arg in TmpArgs:
                     if not TmpArgs[Arg].replace(".","").replace("-","").isdigit():
                         TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
-                Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
+                #Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
+                Exe = "cd " + os.path.dirname(Program) + "; matlab -nodisplay -nosplash -nodesktop -nojvm -r \"" + ArgsToStr(TmpArgs, ";") + ";Complete=1;addpath(" + IncPaths + ");[" + ",".join(ReturnSignature) + "]=" + NameFile + "(" + ",".join(FunctionSignature) + ");itsave(\'" + NameFileResult + "\',Complete," + ",".join(ReturnSignature) + "," + ",".join(FunctionSignature) +  ");exit\""
             else:
                 TmpArgs = Args.copy()
                 TmpArgs.update({"NameFileResult":NameFileResult})
@@ -1125,7 +1126,7 @@ def main():
         ProcessTree(Tree)
     
 if __name__ == "__main__":
-    if sys.version_info >= (3,3):
+    if sys.version_info >= (3,2):
          main()
     else:
-         print("Invalid python version, at least 3.3 is required")
+         print("Invalid python version, at least 3.2 is required")
