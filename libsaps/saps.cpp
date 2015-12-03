@@ -27,7 +27,12 @@ saps::saps(int argc, char** argv, bool SaveOnExit) {
 
 	this->reg<string>("NameFileResult", &NameFileResult, true);
 
-	itf = new it_file(NameFileResult);
+	if (NameFileResult.compare("-1") == 0) {
+		DoNotSave = true;
+	} else {
+		DoNotSave = false;
+		itf = new it_file(NameFileResult);
+	}
 
 	this->SaveOnExit = SaveOnExit;
 }
@@ -67,10 +72,12 @@ void saps::clean(vector<param*> *paramvec) {
 }
 
 void saps::write_file() {
-	this->CheckComplete();
-	write_file(this->in);
-	write_file(this->out);
-	*(this->itf) << flush; //otherwise, data gets lost in some cases
+	if (!DoNotSave) {
+		this->CheckComplete();
+		write_file(this->in);
+		write_file(this->out);
+		*(this->itf) << flush; //otherwise, data gets lost in some cases
+	}
 }
 
 void saps::write_file(vector<param*> *paramvec) {
