@@ -18,6 +18,7 @@ using namespace itpp;
 class saps {
 private:
 	bool SaveOnExit;
+	bool DoNotSave;
 	bool* ArgUsed;
 	int ArgCnt;
 	string* ArgNames;
