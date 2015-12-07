@@ -35,6 +35,7 @@ class options():
     
     SimulateInstantaneous = False
     Valgrind = False
+    Matlab = False
     ddd = False
     
     #Actions
@@ -237,8 +238,10 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 for Arg in TmpArgs:
                     if not TmpArgs[Arg].replace(".","").replace("-","").isdigit():
                         TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
-                #Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
-                Exe = "cd " + os.path.dirname(Program) + "; matlab -nodisplay -nosplash -nodesktop -nojvm -r \"" + ArgsToStr(TmpArgs, ";") + ";Complete=1;addpath(" + IncPaths + ");[" + ",".join(ReturnSignature) + "]=" + NameFile + "(" + ",".join(FunctionSignature) + ");itsave(\'" + NameFileResult + "\',Complete," + ",".join(ReturnSignature) + "," + ",".join(FunctionSignature) +  ");exit\""
+                if Options.Matlab:
+                    Exe = "cd " + os.path.dirname(Program) + "; matlab -nodisplay -nosplash -nodesktop -nojvm -r \"" + ArgsToStr(TmpArgs, ";") + ";Complete=1;addpath(" + IncPaths + ");[" + ",".join(ReturnSignature) + "]=" + NameFile + "(" + ",".join(FunctionSignature) + ");itsave(\'" + NameFileResult + "\',Complete," + ",".join(ReturnSignature) + "," + ",".join(FunctionSignature) +  ");exit\""
+                else:
+                    Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
             else:
                 TmpArgs = Args.copy()
                 TmpArgs.update({"NameFileResult":NameFileResult})
@@ -1051,6 +1054,7 @@ def ShowSyntax():
     print("\t-v\t--view\t\tView")
     print("\t-p\t--plot\t\tPlot")
     print("\t-i\t--instant\tInstant simulation")
+    print("\t\ŧ--matlab\tUse evil software package")
     print("\t\t--valgrind\tInvoke valgrind")
     print("\t\t--ddd\tInvoke ddd")
     print("\t\t--delete\tDelete result files\n")
@@ -1074,6 +1078,8 @@ def ParseArgs():
                 Options.SimulateInstantaneous = True
             elif e == "valgrind":
                 Options.Valgrind = True
+            elif e == "matlab":
+                Options.Matlab = True
             elif e == "ddd":
                 Options.ddd = True
             else:
