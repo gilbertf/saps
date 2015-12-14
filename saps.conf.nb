@@ -6,6 +6,7 @@ Saps:
   #Plot configuration
   DirPlot: ~/Doktor.git/saps/plots
   Plot2X: True
+  Plot2XTerm: x11
   Plot2EpsLatex: True
   Plot2EpsLatexShow: False
   PdfViewer: acroread

@@ -28,6 +28,7 @@ class options():
     DebugPlot = False
 
     Plot2X = False
+    Plot2XTerm = "qt"
     Plot2EpsLatex = False
     Plot2EpsLatexShow = False
     PdfViewer = "acroread"
@@ -92,6 +93,11 @@ class options():
         #Plot configuration           
         try:
             self.Plot2X = int(self.Config["Saps"]["Plot2X"])
+        except:
+            None
+
+        try:
+            self.Plot2XTerm = self.Config["Saps"]["Plot2XTerm"]
         except:
             None
 
@@ -989,7 +995,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     if Options.Plot2X:
                         print(Options.Indent*2 + "Plotting to X11 using Gnuplot")
                         
-                        CurListPlotOpt = ["terminal qt size " + ScreenSize] + ListPlotOpt
+                        CurListPlotOpt = ["terminal " + Options.Plot2XTerm + " size " + ScreenSize] + ListPlotOpt
 
                         PlotCmd = "gnuplot -e \"" + "".join([ "set " + EscapeGnuplot(RemoveLatexChars(str(PlotOpt))) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(RemoveLatexChars(str(Plot))) for Plot in ListPlot]) + "; pause mouse close; exit" + "\"" + "&"
                         if Options.DebugPlot:
