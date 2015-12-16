@@ -44,6 +44,7 @@ class options():
     Plot = False
     Collect = False
     Delete = False
+    Wait = False
 
     ydict = dict
     
@@ -1058,6 +1059,7 @@ def ShowSyntax():
     print("\t\t--valgrind\tInvoke valgrind")
     print("\t\t--ddd\tInvoke ddd")
     print("\t\t--delete\tDelete result files\n")
+    print("\t-w\t--wait\tWait inbetween simulation runs (only in instant mode)\n")
 
 def ParseArgs():
     global Options
@@ -1082,6 +1084,8 @@ def ParseArgs():
                 Options.Matlab = True
             elif e == "ddd":
                 Options.ddd = True
+            elif e == "wait":
+                Options.Wait = True
             else:
                 Msg.Error(0, "Invalid command line option: " + e)
                     
@@ -1097,6 +1101,8 @@ def ParseArgs():
                     Options.View = True
                 elif e == "i":
                     Options.SimulateInstantaneous = True
+                elif e == "w":
+                    Options.Wait = True
                 else:
                     Msg.Error(0, "Invalid command line option: " + e)
         else:
@@ -1115,8 +1121,11 @@ def ParseArgs():
     if not Options.SimulateInstantaneous and Options.Valgrind:
         Msg.Error(0, "Valgrind is only allowd in interactive mode")
 
+    if Options.Wait and not Options.SimulateInstantaneous:
+        Msg.Error(0, "Wait is only possible in instant mode")
+
     if not Options.SimulateInstantaneous and Options.ddd:
-        Msg.Error(0, "ddd is only allowd in interactive mode")
+        Msg.Error(0, "ddd is only allowd in instant mode")
     
 def main():
     global Options, Msg, SimNameFileResultList, DeleteNameFileResultList
