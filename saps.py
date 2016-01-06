@@ -161,7 +161,7 @@ def ListToNiceStr(List):
         Str = Str[0:Idx] + " and " + Str[Idx+2:]
     return Str
 
-def ConstructNameFileResult(DirResults, Program, ArgStr):
+def ConstructNameFileResult(DirResults, Program, ArgStr, Options):
     if Options.HashArgs:
         ArgStr = hashlib.sha224(bytes(ArgStr, 'utf8')).hexdigest()
     if len(ArgStr) > 255:
@@ -223,7 +223,7 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 Msg.Error(2, "The following program parameters are not specified in " + Options.Descriptionfile + ": " + ListToNiceStr(Difference))
             IncPaths = "\'{0}\',\'{1}\'".format(os.path.dirname(Program), os.path.dirname(__file__))
             
-        NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
+        NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args), Options)
         
         if NameFileResult not in SimNameFileResultList:
             Msg.Notice(2, "Simulating " + NameFileResult)
@@ -640,7 +640,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
         if Options.Delete:
             global DeleteNameFileResultList
             for Args in ListArgs:
-                NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
+                NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args), Options)
                 if NameFileResult not in DeleteNameFileResultList:
                     DeleteNameFileResultList.append(NameFileResult)
                     if os.path.isfile(NameFileResult):

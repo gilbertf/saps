@@ -47,7 +47,7 @@ for i in range(NumAxis):
     val.append([])
 for Args in ListArgs:
     ArgsStr = ArgsToStr(Args)
-    NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsStr)
+    NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsStr, Options)
     if DebugCollect:
         print(Options.Indent*2 + "NameFileResult: " + NameFileResult)
     if not os.path.isfile(NameFileResult):
