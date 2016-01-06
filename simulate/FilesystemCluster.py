@@ -1,5 +1,6 @@
 import os
 import random
+import hashlib
 from saps import ArgsToStr
 
 def WriteJobfile(Cmd, DirJob, NameFileJob):
@@ -29,6 +30,9 @@ except:
 NumCreated = 0
 for Pos, Cmd in enumerate(ListCmd):
     NameFileJob = ArgsToStr(ListArgs[Pos])
+    if Options.HashArgs:
+        NameFileJob = hashlib.sha224(bytes(NameFileJob, 'utf8')).hexdigest()
+
     NumCreated = NumCreated + WriteJobfile(Cmd, DirJob, NameFileJob)
     
 Msg.Msg(1, "Simulating", str(NumCreated) + "/" + str(len(ListArgs)) + " new jobfiles created.")

@@ -21,7 +21,8 @@ class options():
     DescriptionFiles = list()
     Config = None
     Indent = " " * 2
-    
+    HashArgs = True
+
     DebugRestructure = False
     DebugCollect = False
     DebugAnalyse = False
@@ -161,8 +162,7 @@ def ListToNiceStr(List):
     return Str
 
 def ConstructNameFileResult(DirResults, Program, ArgStr):
-    HashNameFileResult = True
-    if HashNameFileResult:
+    if Options.HashArgs:
         ArgStr = hashlib.sha224(bytes(ArgStr, 'utf8')).hexdigest()
     if len(ArgStr) > 255:
         Msg.Error(0, "NameFileResult", ArgStr, "is too long for most filesystems with", str(len(ArgStr)), "letters.")
