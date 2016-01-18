@@ -317,7 +317,9 @@ def ParseFloatRange(s):
         cnt = math.ceil((delta/inc)+1)
         l = list()
         for i in range(0,int(cnt)):
-            l.append(Num2Str(start + i*inc))
+            v = start + i*inc
+            if v <= stop:
+              l.append(Num2Str(v))
         return l
         
     ### ParseFloatRange ###
