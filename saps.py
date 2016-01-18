@@ -21,7 +21,8 @@ class options():
     DescriptionFiles = list()
     Config = None
     Indent = " " * 2
-    
+    HashArgs = True
+
     DebugRestructure = False
     DebugCollect = False
     DebugAnalyse = False
@@ -45,6 +46,7 @@ class options():
     Plot = False
     Collect = False
     Delete = False
+    Wait = False
 
     ydict = dict
     
@@ -165,9 +167,8 @@ def ListToNiceStr(List):
         Str = Str[0:Idx] + " and " + Str[Idx+2:]
     return Str
 
-def ConstructNameFileResult(DirResults, Program, ArgStr):
-    HashNameFileResult = True
-    if HashNameFileResult:
+def ConstructNameFileResult(DirResults, Program, ArgStr, Options):
+    if Options.HashArgs:
         ArgStr = hashlib.sha224(bytes(ArgStr, 'utf8')).hexdigest()
     if len(ArgStr) > 255:
         Msg.Error(0, "NameFileResult", ArgStr, "is too long for most filesystems with", str(len(ArgStr)), "letters.")
@@ -228,7 +229,7 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 Msg.Error(2, "The following program parameters are not specified in " + Options.Descriptionfile + ": " + ListToNiceStr(Difference))
             IncPaths = "\'{0}\',\'{1}\'".format(os.path.dirname(Program), os.path.dirname(__file__))
             
-        NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
+        NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args), Options)
         
         if NameFileResult not in SimNameFileResultList:
             Msg.Notice(2, "Simulating " + NameFileResult)
@@ -322,7 +323,9 @@ def ParseFloatRange(s):
         cnt = math.ceil((delta/inc)+1)
         l = list()
         for i in range(0,int(cnt)):
-            l.append(Num2Str(start + i*inc))
+            v = start + i*inc
+            if v <= stop:
+              l.append(Num2Str(v))
         return l
         
     ### ParseFloatRange ###
@@ -645,7 +648,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
         if Options.Delete:
             global DeleteNameFileResultList
             for Args in ListArgs:
-                NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args))
+                NameFileResult = ConstructNameFileResult(DirResults, Program, ArgsToStr(Args), Options)
                 if NameFileResult not in DeleteNameFileResultList:
                     DeleteNameFileResultList.append(NameFileResult)
                     if os.path.isfile(NameFileResult):
@@ -1064,6 +1067,7 @@ def ShowSyntax():
     print("\t\t--valgrind\tInvoke valgrind")
     print("\t\t--ddd\tInvoke ddd")
     print("\t\t--delete\tDelete result files\n")
+    print("\t-w\t--wait\tWait inbetween simulation runs (only in instant mode)\n")
 
 def ParseArgs():
     global Options
@@ -1088,6 +1092,8 @@ def ParseArgs():
                 Options.Matlab = True
             elif e == "ddd":
                 Options.ddd = True
+            elif e == "wait":
+                Options.Wait = True
             else:
                 Msg.Error(0, "Invalid command line option: " + e)
                     
@@ -1103,6 +1109,8 @@ def ParseArgs():
                     Options.View = True
                 elif e == "i":
                     Options.SimulateInstantaneous = True
+                elif e == "w":
+                    Options.Wait = True
                 else:
                     Msg.Error(0, "Invalid command line option: " + e)
         else:
@@ -1121,8 +1129,11 @@ def ParseArgs():
     if not Options.SimulateInstantaneous and Options.Valgrind:
         Msg.Error(0, "Valgrind is only allowd in interactive mode")
 
+    if Options.Wait and not Options.SimulateInstantaneous:
+        Msg.Error(0, "Wait is only possible in instant mode")
+
     if not Options.SimulateInstantaneous and Options.ddd:
-        Msg.Error(0, "ddd is only allowd in interactive mode")
+        Msg.Error(0, "ddd is only allowd in instant mode")
     
 def main():
     global Options, Msg, SimNameFileResultList, DeleteNameFileResultList
