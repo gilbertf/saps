@@ -592,7 +592,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         elif Value in Parameter:
                             Set[s] = Parameter[Value]
                     else:
-                        Msg.Error(1, "Invalid value type " + str(type(Value)) + " for " + s)
+                        Msg.Error(1, "Invalid value " + str(Value) + " of type " + str(type(Value)) + " for " + s)
                         
         ### ParseSet ###
         global Options
