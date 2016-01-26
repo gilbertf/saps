@@ -37,6 +37,7 @@ class options():
     
     SimulateInstantaneous = False
     Valgrind = False
+    Callgrind = False
     Matlab = False
     ddd = False
     
@@ -254,7 +255,9 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 TmpArgs.update({"NameFileResult":NameFileResult})
                 Exe = Program + " " + ArgsToStr(TmpArgs, " ")
                 if Options.Valgrind:
-                   Exe = "valgrind --leak-check=full " + Exe
+                   Exe = "valgrind --leak-check=full --show-leak-kinds=all " + Exe
+                if Options.Callgrind:
+                   Exe = "valgrind --tool=callgrind " + Exe
                 if Options.ddd:
                    Exe = "ddd --args " + Exe
             ListCmd.append(Exe)
@@ -1088,6 +1091,8 @@ def ParseArgs():
                 Options.SimulateInstantaneous = True
             elif e == "valgrind":
                 Options.Valgrind = True
+            elif e == "callgrind":
+                Options.Callgrind = True
             elif e == "matlab":
                 Options.Matlab = True
             elif e == "ddd":
@@ -1128,6 +1133,12 @@ def ParseArgs():
 
     if not Options.SimulateInstantaneous and Options.Valgrind:
         Msg.Error(0, "Valgrind is only allowd in interactive mode")
+
+    if not Options.SimulateInstantaneous and Options.Callgrind:
+        Msg.Error(0, "Callgrind is only allowd in interactive mode")
+
+    if Options.Callgrind and Options.Valgrind:
+        Msg.Error(0, "Please run valgrind or callgrind but not both the same time")
 
     if Options.Wait and not Options.SimulateInstantaneous:
         Msg.Error(0, "Wait is only possible in instant mode")
