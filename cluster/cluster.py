@@ -31,7 +31,7 @@ elif hostname == "asterix":
     cores = 1
 elif hostname == "lore":
     cores = 8
-elif hostname == "dell-desktop.tf.uni-kiel.de":
+elif hostname == "dev.tf.uni-kiel.de":
     cores = 7
 else:
     print "No valid host: " + hostname
