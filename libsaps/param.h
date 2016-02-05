@@ -33,9 +33,11 @@ public:
 			else customcast(vec)
 			else customcast(bvec)
 			else customcast(cvec)
+			else customcast(ivec)
+			else customcast(imat)
 		#undef customcast
 		else {
-			it_warning("Unsupported type " + p.type + " of " + p.name);
+			it_error("Unsupported type " + p.type + " of " + p.name);
 		}
 
 		return f;
