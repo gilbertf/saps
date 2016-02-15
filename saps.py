@@ -407,10 +407,13 @@ def ParseIncludes(Tree):
         for t in Tree:
             if t == "Include":
                 includelist = list()
-                if type(Tree[t]) == list or type(Tree[t]) == str:
+                if type(Tree[t]) == list:
                     includelist.extend(Tree[t])
+                elif  type(Tree[t]) == str:
+                    includelist.append(Tree[t])
                 else:
                     Msr.Error(0, "Invalid type for include ", str(Tree[t]))
+                    
                 del Tree[t]
                 for include in includelist:
                     x = ReadYaml(include + ".saps", False)
