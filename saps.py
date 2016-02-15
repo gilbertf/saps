@@ -406,14 +406,19 @@ def ParseIncludes(Tree):
     if type(Tree) == Options.ydict:
         for t in Tree:
             if t == "Include":
-                x = ReadYaml(Tree[t] + ".saps", False)
+                includelist = list()
+                if type(Tree[t]) == list or type(Tree[t]) == str:
+                    includelist.extend(Tree[t])
+                else:
+                    Msr.Error(0, "Invalid type for include ", str(Tree[t]))
                 del Tree[t]
-
-                for e in x:
-                    if e in Tree:
-                        Msg.Error(2, "Double entry", e, "found when including", Tree[t]+".saps")
-                    else:
-                        Tree[e] = x[e]
+                for include in includelist:
+                    x = ReadYaml(include + ".saps", False)
+                    for e in x:
+                        if e in Tree:
+                            Msg.Error(2, "Double entry", e, "found when including", include + ".saps")
+                        else:
+                            Tree[e] = x[e]
             else:
                 Tree[t] = ParseIncludes(Tree[t])
     return Tree
