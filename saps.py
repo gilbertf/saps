@@ -407,12 +407,13 @@ def ParseIncludes(Tree):
         for t in Tree:
             if t == "Include":
                 x = ReadYaml(Tree[t] + ".saps", False)
+                del Tree[t]
+
                 for e in x:
                     if e in Tree:
                         Msg.Error(2, "Double entry", e, "found when including", Tree[t]+".saps")
                     else:
                         Tree[e] = x[e]
-                del Tree[t]
             else:
                 Tree[t] = ParseIncludes(Tree[t])
     return Tree
