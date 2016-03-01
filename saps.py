@@ -239,6 +239,9 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 Msg.Notice(2, "Result file exists already, skipping job.")
                 continue
             if isPy:
+                for Arg in Args:
+                    if type(Arg) == str:
+                        Args[Arg] = "'" + Args[Arg] + "'"
                 VarsAppendArgs = ";".join([ "Vars['" + str(Arg) + "'] = " + str(Args[Arg]) for Arg in Args ])
                 Exe = "python3 -c \"import sys\nsys.path.extend([" + IncPaths + "])\nfrom itpp import itsave\nimport " + NameFile + "\nVars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + ")\nVars['Complete'] = 1\n" + VarsAppendArgs + "\ntry:\n    itsave(\'" + NameFileResult + "\', Vars)\nexcept Exception as e:\n    print('" + Options.Indent*2 + "Error: Running python script " + Program + " failed with exception: ' + e)\""
             elif isM:
@@ -346,8 +349,11 @@ def ParseFloatRange(s):
     return l 
 
 def ExtractValues(s, DoExtract): #Always returns list of strs to make handling easier
-    if type(s) == str and DoExtract:
-        return(ParseFloatRange(s))
+    if type(s) == str:
+        if " " in s:
+            Msg.Error(2,"Spaces are not allowed in string variable " + s) #Ansonsten probleme mit python parser
+        if DoExtract:
+            return(ParseFloatRange(s))
     else:
         return([Num2Str(s)])
             
@@ -925,6 +931,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 ExpandValue(Tree[t], NameFigure, NameSet, ListPlot, ViewMode)
             elif t.startswith("Figure "):
                 LatexNameFigure = t.split("Figure ")[1]
+                LatexNameFigure = LatexNameFigure.replace('_', '')
                 NameFigure = RemoveLatexChars(LatexNameFigure)
                 print("Figure:", Fore.BLUE + NameFigure + Fore.RESET)
 

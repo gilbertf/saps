@@ -99,6 +99,9 @@ def WriteVar(f, v, NameVar):
         CntElem = 1
         Dim = 0
         TypVar = str(v.dtype)
+    elif type(v) == str:
+        print("Warning, skipping string value: ", v)
+        return
     else:
         raise Exception("Type " + str(type(v)) + " is not supported")
     
