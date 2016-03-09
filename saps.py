@@ -338,14 +338,17 @@ def ParseFloatRange(s):
     l = list()
     for t in s.split('|'):
         u = t.split('..')
-        if len(u) == 1:
-            l = l + [ Num2Str(u[0]) ]
-        elif len(u) == 2:
-            l = l + FloatRange(float(u[0]),float(u[1]))
-        elif len(u) == 3:
-            l = l + FloatRange(float(u[0]),float(u[2]),float(u[1]))
-        else:
-            Msg.Error(2,"Syntax error in " + t)
+        try:
+          if len(u) == 1:
+              l = l + [ Num2Str(u[0]) ]
+          elif len(u) == 2:
+              l = l + FloatRange(float(u[0]),float(u[1]))
+          elif len(u) == 3:
+              l = l + FloatRange(float(u[0]),float(u[2]),float(u[1]))
+          else:
+              Msg.Error(2,"Syntax error in " + t)
+        except ValueError:
+          Msg.Error(2, "Value error while parsing " + str(t))
     return l 
 
 def ExtractValues(s, DoExtract): #Always returns list of strs to make handling easier
