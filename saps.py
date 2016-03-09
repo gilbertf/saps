@@ -569,7 +569,6 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 NumBracketsOpen = a.count(BracketOpen)
                 NumBracketsClose = a.count(BracketClose)
                 SplitArrayIdx = None
-                
                 if NumBracketsOpen == 1 and NumBracketsClose == 1:
                     ArrayIdx = a[a.find(BracketOpen)+1:a.find(BracketClose)]
                     Msg.Notice(2, "Array index: " + ArrayIdx)
@@ -599,7 +598,21 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             else:
                 return [a, None]
                 
-                
+        def ReplaceParameterByValueInRanges(s, Parameter):
+           if type(s) == str:
+                l = s.split("|")
+                for i in range(len(l)):
+                    if l[i] in Parameter:
+                       l[i] = str(Parameter[l[i]])
+                    if type(l[i]) == str:
+                        m = l[i].split("..")
+                        for j in range(len(m)):
+                            if m[j] in Parameter:
+                               m[j] = str(Parameter[m[j]])
+                        l[i] = "..".join(m)
+                s = "|".join(l)
+           return s
+                        
         def ReplaceParameterByValue(Set, Parameter):
             for s in Set:
                 Value = Set[s]
@@ -618,6 +631,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                                 Set[s] = ConstructValueIndices(extValue, extIndices)
                         elif Value in Parameter:
                             Set[s] = Parameter[Value]
+                        Set[s] = ReplaceParameterByValueInRanges(Set[s], Parameter)
                     else:
                         Msg.Error(1, "Invalid value " + str(Value) + " of type " + str(type(Value)) + " for " + s)
                         
