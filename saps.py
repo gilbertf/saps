@@ -499,6 +499,12 @@ def RestructureTree(Tree, inFigure, inSet, inRoot, RunRecursive):
         #Check for correct structure
         if inFigure and not hasSet:
             Msg.Error(0, "A figure has to contain at least one \"Set <name>:\" definition.")
+        if inRoot and hasSet:
+            Msg.Error(0, "Sets are only allowed inside figures")
+        if inSet and hasSet:
+            Msg.Error(0, "Nested sets are not allowed")
+        if inFigure and hasFigure:
+            Msg.Error(0, "Nested figures are not allowed")
         if inRoot and not hasFigure:
             Msg.Error(0, "You have to specify at least one \"Figure <name>:\" block.")
             
