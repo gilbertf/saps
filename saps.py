@@ -357,6 +357,8 @@ def ExtractValues(s, DoExtract): #Always returns list of strs to make handling e
             Msg.Error(2,"Spaces are not allowed in string variable " + s) #Ansonsten probleme mit python parser
         if DoExtract:
             return(ParseFloatRange(s))
+        else:
+            return s
     else:
         return([Num2Str(s)])
             
@@ -389,7 +391,6 @@ def ExpandFigures(Tree):
                 Msg.Error(2, "The value of " + VarName + " is undefined.")
 
             ExpandedValues = ExtractValues(VarValue, DoExtract)
-            
             for ExpandedValue in ExpandedValues:
                 TmpNameFigure = NameFigure[:a] + str(ExpandedValue) + NameFigure[a+b+2:]
                 TmpFigure = copy.deepcopy(Figure) #Weil wir in ParseSet auch an Unterstrukturen, etwa Analyse Ersetzungen vornehmen
@@ -916,6 +917,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
             
             ExpandedValues = ExtractValues(VarValue, DoExtract)
+            if ExpandedValues == None:
+                Msg.Error(2, "Ah " + str(ExpandedValues)+ VarValue)
             
             for ExpandedValue in ExpandedValues:
                 TmpNameSet = NameSet[:a] + str(ExpandedValue) + NameSet[a+b+2:]
