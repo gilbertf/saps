@@ -1,0 +1,44 @@
+#Main programs options
+Saps:
+  #Collect
+  DirSet: ~/Doktor.git/saps/sets
+
+  #Plot configuration
+  DirPlot: ~/Doktor.git/saps/plots
+  Plot2X: True
+  Plot2XTerm: qt
+  Plot2EpsLatex: True
+  Plot2EpsLatexShow: False
+  PdfViewer: acroread
+  Plot2Tikz: True
+  
+  #Debug
+  DebugRestructure: False
+  DebugSimulate: False
+  DebugCollect: False
+  DebugAnalyse: False
+  DebugPlot: False
+
+  #Msg configuration
+  ShowNotice: False
+  ShowWarning: True
+  RoundDigits: 13
+
+#Module selection
+Simulate: FilesystemCluster.py
+#Simulate: RunOnline.py
+#Simulate: PbsCluster.py
+Collect: FilesystemITPP.py
+
+#Module configuration
+FilesystemITPP:
+  DirResults: ~/Doktor.git/results
+  StopOnDefectResultFiles: False
+  StopOnIncompleteResultFiles: False
+
+FilesystemCluster:
+  DirJob: ~/Doktor.git/saps/cluster/jobs/waiting
+
+PbsCluster:
+  DirJob: ~/Doktor.git/saps/cluster/jobs/waiting
+  DirLog: ~/Doktor.git/saps/cluster/logs
