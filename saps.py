@@ -429,7 +429,11 @@ def ParseIncludes(Tree):
                     x = ReadYaml(include + ".saps", False)
                     for e in x:
                         if e in Tree:
-                            Msg.Error(2, "Double entry", e, "found when including", include + ".saps")
+                            if e == "Parameter":
+                                Tree[e].update(x[e])
+                                Msg.Warning(2, "Joining parameters: " + str(Tree[e]))
+                            else:
+                                Msg.Error(2, "Double entry", e, "found when including", include + ".saps")
                         else:
                             Tree[e] = x[e]
             else:
