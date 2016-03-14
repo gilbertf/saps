@@ -13,8 +13,8 @@ Saps:
   Plot2Tikz: True
   
   #Debug
-  DebugRestructure: False
-  DebugSimulate: False
+  DebugRestructure: True
+  DebugSimulate: True
   DebugCollect: False
   DebugAnalyse: False
   DebugPlot: False
