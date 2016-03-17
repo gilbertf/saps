@@ -285,6 +285,8 @@ def ReadYaml(NameFile, DirSaps):
             Tree = yaml.load(data)
         except OrderedYaml.DuplicateKeyError as e:
             Msg.Error(0, "Duplicate enty. Please remove one of \"" + e.key + "\"")
+        except yaml.parser.ParserError as e:
+            Msg.Error(0, "Yaml Parser error " + str(e))
         return(Tree)
     except FileNotFoundError:
         Msg.Error(0, "The description file " + CompleteNameFile + " does not exist.")
