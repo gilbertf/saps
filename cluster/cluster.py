@@ -13,7 +13,7 @@ elif hostname == "pries":
 elif hostname == "gaarden":
     cores = 8
 elif hostname == "mettenhof":
-    cores = 15
+    cores = 14
 elif hostname == "bonnie":
     cores = 6
 elif hostname == "clyde":

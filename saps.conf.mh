@@ -25,7 +25,7 @@ Collect: FilesystemITPP.py
 
 #Module configuration
 FilesystemITPP:
-  DirResults: ~/Doktor.git/saps/results
+  DirResults: ~/Doktor.git/results
   StopOnDefectResultFiles: True
   StopOnIncompleteResultFiles: False
 
