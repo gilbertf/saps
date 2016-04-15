@@ -3,7 +3,7 @@ import os, time, socket
 import shlex, subprocess
 
 cores = 1
-SleepTime = 1
+SleepTime = 0.05
 
 hostname = socket.gethostname()
 if hostname == "wik":
@@ -13,7 +13,9 @@ elif hostname == "pries":
 elif hostname == "gaarden":
     cores = 8
 elif hostname == "mettenhof":
-    cores = 14
+    cores = 15
+elif hostname == "hammer":
+    cores = 6
 elif hostname == "bonnie":
     cores = 6
 elif hostname == "clyde":
