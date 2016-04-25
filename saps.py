@@ -999,7 +999,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
                     PlotType = None
                     Size = "9.5,6"
-                    
+                    Font = "-1"
                     for s in ListSapsOpt:
                         if s == "notitle":
                             TitleIsSet = True
@@ -1008,6 +1008,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                             Options.View = True
                         elif "size " in s:
                             Size = s[5:]
+                        elif "font" in s:
+                            Font = s[5:]
                         elif s == "3d" or s == "2d":
                             if PlotType is None:
                                 if s == "3d":
@@ -1023,7 +1025,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     RatioSize = float(Size[0])/float(Size[1])
                     PaperSize = Size[0] + "cm," + Size[1] + "cm"
                     ScreenSize = "1000," + str(1000/RatioSize) 
-                            
+                    
                     if PlotType is None:
                         Msg.Notice(2, "No PlotType was set in SapsOpt, default value 2d is used")
                         PlotType = "plot"
@@ -1067,7 +1069,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         except:
                             None
                         NameFilePdfFigure = os.path.join(DirPlot, EscapedNameFigure)
-                        CurListPlotOpt = ["terminal epslatex color standalone solid size " + PaperSize, "output \"" + NameFilePdfFigure + ".tex\""] + ListPlotOpt
+
+                        TerminalOpts = " size " + PaperSize
+                        if Font != "-1":
+                            TerminalOpts = TerminalOpts + " font " + Font
+                      
+                        CurListPlotOpt = ["terminal epslatex color standalone solid" + TerminalOpts, "output \"" + NameFilePdfFigure + ".tex\""] + ListPlotOpt
                         print(Options.Indent*2 + "Plotting to pdfs using Gnuplot+Latex")
 
                         PlotCmd = "gnuplot -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
@@ -1095,7 +1102,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                             None
                         NameFileTikzFigure = os.path.join(DirPlot, EscapedNameFigure)
 
-                        CurListPlotOpt = ["terminal tikz size " + PaperSize, "output \"" + NameFileTikzFigure + ".tikz\""] + ListPlotOpt
+                        TerminalOpts = " size " + PaperSize
+                        if Font != "-1":
+                            TerminalOpts = TerminalOpts + " font " + Font
+                      
+                        CurListPlotOpt = ["terminal tikz" + TerminalOpts, "output \"" + NameFileTikzFigure + ".tikz\""] + ListPlotOpt
                         print(Options.Indent*2 + "Plotting to tikz using Gnuplot")
 
                         PlotCmd = "gnuplot -persist -e \"" + "".join([ "set " + EscapeGnuplot(str(PlotOpt)) + ";" for PlotOpt in CurListPlotOpt]) + PlotType + " " + ", ".join([EscapeGnuplot(str(Plot)) for Plot in ListPlot]) + "\""                      
