@@ -1,7 +1,6 @@
 .project
 .pydevproject
 __pycache__
-saps.conf
 *.pyc
 plots
 sets

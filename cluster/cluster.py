@@ -20,6 +20,8 @@ elif hostname == "bonnie":
     cores = 6
 elif hostname == "clyde":
     cores = 6
+elif hostname == "russee":
+    cores = 8
 elif hostname == "ictibmt42":
     cores = 1
 elif hostname == "lilalaptop":
