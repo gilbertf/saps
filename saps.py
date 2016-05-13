@@ -942,7 +942,12 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             ExpandedValues = ExtractValues(VarValue, DoExtract)
             if ExpandedValues == None:
                 Msg.Error(2, "Ah " + str(ExpandedValues)+ VarValue)
-            
+         
+            if type(ExpandedValues) is not list:
+                ExpandedValues2 = list()
+                ExpandedValues2.append(ExpandedValues)
+                ExpandedValues = ExpandedValues2
+
             for ExpandedValue in ExpandedValues:
                 TmpNameSet = NameSet[:a] + str(ExpandedValue) + NameSet[a+b+2:]
                 TmpTree = copy.deepcopy(Tree) #Weil wir in ParseSet auch an Unterstrukturen, etwa Analyse Ersetzungen vornehmen
