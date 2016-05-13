@@ -157,7 +157,7 @@ class msg():
     
     def Error(self, i, *m):
         self.Msg(i, "Error:", " ".join(m), Fore.RED)
-        exit()
+        sys.exit()
         
 import re
 
@@ -378,12 +378,20 @@ def ExpandFigures(Tree):
                 DoExtract = True
 
             try:
+                if type(Tree["Parameter"]) is not str:
+                    Msg.Error(2, "Only list type parameters are valid")
+            except:
+                None
+
+            try:
                 if VarName in Figure:
                     VarValue = Figure[VarName]
                     isParameter = False
                 elif "Parameter" in Figure and VarName in Figure["Parameter"]:
                     VarValue = Figure["Parameter"][VarName]
                     isParameter = True
+                else:
+                    Msg.Error(2, "Strange, we got to here...")
             except:
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
 
@@ -664,6 +672,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             Parameter = Set.pop("Parameter")
         except:
             Parameter = {}
+
         ReplaceParameterByValue(Set, Parameter)
 
         try:
@@ -911,7 +920,13 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             if len(VarName) > 1 and VarName[0] == "!" :
                 VarName = VarName[1:]
                 DoExtract = True
-            
+
+            try:
+                if type(Tree["Parameter"]) is not str:
+                    Msg.Error(2, "Only list type parameters are valid")
+            except:
+                None
+
             try:
                 if VarName in Tree:
                     VarValue = Tree[VarName]
@@ -919,6 +934,8 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 elif VarName in Tree["Parameter"]:
                     VarValue = Tree["Parameter"][VarName]
                     isParameter = True
+                else:
+                    Msg.Error(2, "Strange, we got to here...")
             except:
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
             
