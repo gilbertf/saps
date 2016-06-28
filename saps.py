@@ -379,7 +379,7 @@ def ExpandFigures(Tree):
 
             try:
                 if type(Tree["Parameter"]) is not str:
-                    Msg.Error(2, "Only list type parameters are valid")
+                    Msg.Error(2, "Only list type parameters are valid. Got" + Tree["Parameter"] + " of type " + type(Tree["Parameter"]))
             except:
                 None
 
@@ -923,7 +923,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
             try:
                 if type(Tree["Parameter"]) is not str:
-                    Msg.Error(2, "Only list type parameters are valid")
+                    Msg.Error(2, "Only list type parameters are valid. Got" + Tree["Parameter"] + " of type " + type(Tree["Parameter"]))
             except:
                 None
 
