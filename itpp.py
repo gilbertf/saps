@@ -224,7 +224,7 @@ def itload(in_file):
         elif 'string' == var_type:
             length = unpack('Q', f.read(8))[0]
             fmt = str(length)+'c'
-            out[var_name] = f.read(length).decode("UTF-8")
+            out[var_name] = f.read(length).decode("latin-1")
         # --- svec ---
         elif 'svec' == var_type:
             length = unpack('Q', f.read(8))[0]
