@@ -21,6 +21,7 @@ ExportValues = True
 NameFile = None
 NameFilter = []
 ExportFilter = []
+ExportTxtFilter = []
 ExportFilename = "export.mat"
 
 Args = sys.argv
@@ -42,6 +43,13 @@ for Arg in Args[1:]:
             ShowSyntax()
         else:
             ExportFilter.append(Arg[2:])
+    elif Arg.startswith("-g"):
+        VarName = Arg[2:]
+        if len(VarName) == 0:
+            print("Invalid variable name")
+            ShowSyntax()
+        else:
+            ExportTxtFilter.append(Arg[2:])
     elif Arg.startswith("-f"):
         ExportFileName = Arg[2:]
         if len(ExportFileName) == 0:
@@ -73,3 +81,9 @@ for d in Data:
             print()
     if d in ExportFilter:
         scipy.io.savemat(ExportFileName, mdict={d : Data[d]})
+    if d in ExportTxtFilter:
+        f = open(ExportFileName, 'w')
+        print(type(Data[d]))
+        for l in list(Data[d]):
+            f.write(str(l), "\n")
+        f.close()
