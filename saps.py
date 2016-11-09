@@ -377,11 +377,9 @@ def ExpandFigures(Tree):
                 VarName = VarName[1:]
                 DoExtract = True
 
-            try:
-                if type(Tree["Parameter"]) is not str:
-                    Msg.Error(2, "Only list type parameters are valid. Got" + Tree["Parameter"] + " of type " + type(Tree["Parameter"]))
-            except:
-                None
+            if "Parameter" in Tree:
+                if type(Tree["Parameter"]) is not OrderedDict:
+                    Msg.Error(2, "Only orderedDict type parameters are valid. Got" + str(Tree["Parameter"]) + " of type " + str(type(Tree["Parameter"])))
 
             try:
                 if VarName in Figure:
@@ -881,7 +879,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             data = SetFile.read().split("\n")
             SetFile.close()
             if len(data) < 3:
-                Msg.Warning(2, "Empty set file, skipping.")
+                Msg.Warning(2, "Empty set file " + NameFileSet + ", skipping.")
                 return      
 
         if Options.View or (ViewMode and (Options.View or Options.Plot)):
@@ -921,11 +919,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 VarName = VarName[1:]
                 DoExtract = True
 
-            try:
-                if type(Tree["Parameter"]) is not str:
-                    Msg.Error(2, "Only list type parameters are valid. Got" + Tree["Parameter"] + " of type " + type(Tree["Parameter"]))
-            except:
-                None
+            if "Parameter" in Tree:
+                if type(Tree["Parameter"]) is not OrderedDict:
+                    Msg.Error(2, "Only orderedDict type parameters are valid. Got" + str(Tree["Parameter"]) + " of type " + str(type(Tree["Parameter"])))
 
             try:
                 if VarName in Tree:
