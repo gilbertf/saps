@@ -250,7 +250,7 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                     if not TmpArgs[Arg].replace(".","").replace("-","").isdigit():
                         TmpArgs[Arg]="\'" + TmpArgs[Arg] + "\'"
                 if Options.Matlab:
-                    Exe = "cd " + os.path.dirname(Program) + "; matlab -nodisplay -nosplash -nodesktop -nojvm -r \"" + ArgsToStr(TmpArgs, ";") + ";Complete=1;addpath(" + IncPaths + ");[" + ",".join(ReturnSignature) + "]=" + NameFile + "(" + ",".join(FunctionSignature) + ");itsave(\'" + NameFileResult + "\',Complete," + ",".join(ReturnSignature) + "," + ",".join(FunctionSignature) +  ");exit\""
+                    Exe = "cd " + os.path.dirname(Program) + "; matlab -nosplash -nodesktop -nojvm -r \"" + ArgsToStr(TmpArgs, ";") + ";Complete=1;addpath(" + IncPaths + ");[" + ",".join(ReturnSignature) + "]=" + NameFile + "(" + ",".join(FunctionSignature) + ");itsave(\'" + NameFileResult + "\',Complete," + ",".join(ReturnSignature) + "," + ",".join(FunctionSignature) +  ");exit\""
                 else:
                     Exe = "cd " + os.path.dirname(Program) + "; octave -q --eval \"" + ArgsToStr(TmpArgs, ";") + "; Complete = 1; addpath(" + IncPaths + "); [" + ", ".join(ReturnSignature) + "] = " + NameFile + "(" + ", ".join(FunctionSignature) + "); itsave(\'" + NameFileResult + "\', Complete, " + ", ".join(ReturnSignature) + ", " + ", ".join(FunctionSignature) +  ")\""
             else:
