@@ -239,9 +239,9 @@ def ExecuteWrapper(Program, ListArgs, ListCmd, DirResults):
                 Msg.Notice(2, "Result file exists already, skipping job.")
                 continue
             if isPy:
-                for Arg in Args:
-                    if type(Arg) == str:
-                        Args[Arg] = "'" + Args[Arg] + "'"
+                #for Arg in Args:
+                    #if type(Arg) == str:
+                    #    Args[Arg] = "'" + Args[Arg] + "'"
                 VarsAppendArgs = ";".join([ "Vars['" + str(Arg) + "'] = " + str(Args[Arg]) for Arg in Args ])
                 Exe = "python3 -c \"import sys\nsys.path.extend([" + IncPaths + "])\nfrom itpp import itsave\nimport " + NameFile + "\nVars = " + NameFile + "." + NameFile + "(" + ArgsToStr(Args, ", ") + ")\nVars['Complete'] = 1\n" + VarsAppendArgs + "\ntry:\n    itsave(\'" + NameFileResult + "\', Vars)\nexcept Exception as e:\n    print('" + Options.Indent*2 + "Error: Running python script " + Program + " failed with exception: ' + e)\""
             elif isM:
@@ -1065,6 +1065,13 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         print(Options.Indent*2 + "ListSapsOpt: " + str(ListSapsOpt))
                         print(Options.Indent*2 + "ListPlot: " + str(ListPlot))
 
+                    for PlotOpt in ListPlotOpt:
+                        if type(PlotOpt) is not str:
+                            Msg.Error(2, "Invalid ListPlotOpt entry: " + str(PlotOpt))
+
+                    for SapsOpt in ListSapsOpt:
+                        if type(SapsOpt) is not str:
+                            Msg.Error(2, "Invalid ListSapsOpt entry: " + str(SapsOpt))
                     
                     if Options.Plot2X:
                         print(Options.Indent*2 + "Plotting to X11 using Gnuplot")
