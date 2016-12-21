@@ -275,6 +275,8 @@ def ConstructFullPath(NameFile, DirSaps):
     return CompleteNameFile
 
 def ReadYaml(NameFile, DirSaps):
+    if not NameFile.endswith(".saps"):
+        Msg.Error(0, "Invalid description file extension, we expect .saps", NameFile)
     global Msg     
     CompleteNameFile = os.path.expanduser(ConstructFullPath(NameFile, DirSaps))
     try:
@@ -1237,7 +1239,7 @@ def main():
     
     Options = options()
     Msg = msg()
-    Options.ReadFileConfig("saps.conf")
+    Options.ReadFileConfig("config.saps")
     ParseArgs()
     for LoopDescriptionfile in Options.DescriptionFiles:
         Options.Descriptionfile = LoopDescriptionfile
