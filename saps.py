@@ -683,7 +683,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
         DictAnalyse = Options.ydict()
         for s in Set:
             if "Analyse" in s: #Akzeptiere auch Analysen ohne Eigenname, deshalb kein Leerzeichen
-                DictAnalyse[s] = Set.pop(s)
+                DictAnalyse[s] = copy.deepcopy(Set[s])
+
+        for s in DictAnalyse:
+            del Set[s]
 
         #Check that parameters do not contain "forbidden" stuff
         for s in Set:
