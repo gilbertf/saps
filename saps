@@ -1157,9 +1157,9 @@ def ShowSyntax():
     print("\t-i\t--instant\tInstant simulation")
     print("\t\t--matlab\tUse evil software package")
     print("\t\t--valgrind\tInvoke valgrind")
-    print("\t\t--ddd\tInvoke ddd")
+    print("\t\t--ddd\t\tInvoke ddd")
     print("\t\t--delete\tDelete result files\n")
-    print("\t-w\t--wait\tWait inbetween simulation runs (only in instant mode)\n")
+    print("\t-w\t--wait\t\tWait inbetween simulation runs (only in instant mode)\n")
 
 def ParseArgs():
     global Options
