@@ -1155,7 +1155,7 @@ def ShowSyntax():
     print("\t-v\t--view\t\tView")
     print("\t-p\t--plot\t\tPlot")
     print("\t-i\t--instant\tInstant simulation")
-    print("\t\ŧ--matlab\tUse evil software package")
+    print("\t\t--matlab\tUse evil software package")
     print("\t\t--valgrind\tInvoke valgrind")
     print("\t\t--ddd\tInvoke ddd")
     print("\t\t--delete\tDelete result files\n")
