@@ -275,9 +275,9 @@ def ConstructFullPath(NameFile, DirSaps):
     return CompleteNameFile
 
 def ReadYaml(NameFile, DirSaps):
+    global Msg     
     if not NameFile.endswith(".saps"):
         Msg.Error(0, "Invalid description file extension, we expect .saps", NameFile)
-    global Msg     
     CompleteNameFile = os.path.expanduser(ConstructFullPath(NameFile, DirSaps))
     try:
         CompleteFile = open(CompleteNameFile, 'r')
