@@ -414,7 +414,7 @@ def ExpandFigures(Tree):
             Tree["Figure "+ NameFigure] = Figure
             
     if type(Tree) == Options.ydict:
-        for t in Tree:
+        for t in Tree.copy():
             if t.startswith("Figure ") and "%" in t:
                 NameFigure = t.split("Figure ")[1]
                 if NameFigure.count("%") % 2 != 0:
@@ -452,7 +452,7 @@ def ParseIncludes(Tree):
 
 def RemoveGroups(Tree, Parent, InGroup):
     if type(Tree) == Options.ydict:
-        for t in Tree:
+        for t in Tree.copy():
             if t.startswith("Group"):
                 RemoveGroups(Tree[t], Tree, True)
                 del Tree[t]
@@ -681,12 +681,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             Msg.Error(2, "Axis property is missing")
             
         DictAnalyse = Options.ydict()
-        for s in Set:
+        for s in Set.copy():
             if "Analyse" in s: #Akzeptiere auch Analysen ohne Eigenname, deshalb kein Leerzeichen
                 DictAnalyse[s] = Set[s]
-
-        for s in DictAnalyse:
-            del Set[s]
+                del Set[s]
 
         #Check that parameters do not contain "forbidden" stuff
         for s in Set:
