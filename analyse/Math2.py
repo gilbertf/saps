@@ -8,6 +8,8 @@ if len(ValuesIn) == 2:
     if "Operator" in Analyse:
         if Analyse["Operator"] is "/":
             ValuesOut[0] = np.divide(ValuesIn[0], ValuesIn[1])
+        elif Analyse["Operator"] is "+":
+            ValuesOut[0] = np.add(ValuesIn[0], ValuesIn[1])
         else:
             Msg.Error(2, "Invalid operator ", Analyse["Operator"])
 

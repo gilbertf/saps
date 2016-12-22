@@ -1,0 +1,22 @@
+_saps() 
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    longopts="--simulate --collect --view --plot --instant --matlab --valgrind --ddd --delete --wait"
+    shortopts="-s -c -v -p -i -w -si -sicp -sicv -cv -cp"
+
+    if [[ ${cur} == --* ]] ; then
+        COMPREPLY=( $(compgen -W "${longopts}" -- ${cur}) )
+        return 0
+    elif [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${shortopts}" -- ${cur}) )
+        return 0
+    else
+        local sapsfiles=`ls -1 *.saps 2>/dev/null`
+        COMPREPLY=( $(compgen -W "${sapsfiles}" -- ${cur}) )
+        return 0
+    fi
+}
+complete -F _saps saps
