@@ -825,7 +825,17 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     print(Options.Indent*3 + "AxisIn: " + str(AxisIn) + "\n" + Options.Indent*3 + "ValuesIn: " + str(ValuesIn))
 
                 Env = dict(ValuesIn=ValuesIn, AxisIn=AxisIn, AxisOut=AxisOutAnalyse, Options=Options, Msg=Msg, Analyse=Analyse)
-                RunFileCode(os.path.join("analyse", FunctionAnalyse + ".py"), True, Env)
+                LocalAnalyseFileName = os.getcwd() + "/" + FunctionAnalyse + ".py"
+                ScriptDir = os.path.dirname(os.path.realpath(__file__))
+                GlobalAnalyseFileName = ScriptDir + "/" + os.path.join("analyse", FunctionAnalyse + ".py")
+                if os.path.isfile(LocalAnalyseFileName):
+                    AnalyseFileName = LocalAnalyseFileName
+                elif os.path.isfile(GlobalAnalyseFileName):
+                    AnalyseFileName = GlobalAnalyseFileName
+                else:
+                    Msg.Error(3, "No valid analyse script with name " + FunctionAnalyse + ".py found in " + ScriptDir + " and " + os.getcwd() + "." )
+
+                RunFileCode(AnalyseFileName, True, Env)
                 
                 #Put analyse results back to file
                 try:
@@ -861,8 +871,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             #Check for Nan
             for v in Values:
                 for s in v:
-                    if np.isnan(s):
-                        Msg.Warning(2, "Nan values are not allowed!")
+                    if type(s) is not str:
+                        if np.isnan(s):
+                            Msg.Warning(2, "Nan values are not allowed!")
                         
             #Save results to Setfiles
             zValues = zip(*Values[::1])
