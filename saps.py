@@ -9,6 +9,7 @@ from collections import OrderedDict
 import numpy as np
 from colorama import Fore
 import hashlib
+import shutil
 
 class options():
     global Msg
@@ -790,7 +791,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             for Analyse in DictAnalyse:
                 Pos = Analyse.find(" ")
                 if Pos == -1:
-                    NameAnalyse = "Unnames analysis"
+                    NameAnalyse = "Unnamed analysis"
                 else:
                     NameAnalyse = Analyse[Pos+1:]
 
@@ -816,7 +817,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         Msg.Error(3, "Analyse AxisIn definition " + str(axis) + " is invalid. Available are: " + str(CollectAxis))
                     idx = CollectAxis.index(axis)
                     if len(CollectValues[idx]) == 0:
-                        Msg.Error(3, "Axis " + axis + " does not contain any data")
+                        Msg.Warning(3, "Axis " + axis + " does not contain any data")
                     AxisIn.append(CollectAxis[idx])
                     ValuesIn.append(CollectValues[idx])
                     
@@ -1266,6 +1267,11 @@ def main():
         except:
             None
         
+        if Options.Plot:
+            BaseDirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile)
+            if os.path.isdir(BaseDirPlot):
+                shutil.rmtree(BaseDirPlot)
+
         ProcessTree(Tree)
     
 if __name__ == "__main__":
