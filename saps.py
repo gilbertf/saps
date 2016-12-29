@@ -133,7 +133,7 @@ class options():
         
         #Collect configuration
         try:
-            self.SetDir = os.path.expanduser(self.Config["Saps"]["DirSet"])
+            self.DirSet = os.path.expanduser(self.Config["Saps"]["DirSet"])
         except:
             Msg.Error(1, "Saps -> DirSet has to be defined in configfile.")
             
@@ -738,7 +738,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             RunFileCode(os.path.join("simulate", Simulate), True, Env)          
             
         if Options.Collect or Options.View or Options.Plot:
-            NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet).replace('/','')) #Slashes in Setname indicate subdirs
+            NameFileSet = os.path.join(Options.DirSet, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet).replace('/','')) #Slashes in Setname indicate subdirs
 
         #Liste der zu sammelnden "Axen" zusammenstellen
         if Options.Collect:
@@ -1002,11 +1002,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
                 if Options.Collect:
                     try:
-                        os.removedirs("/".join([Options.SetDir, Options.Descriptionfile, NameFigure]))
+                        os.removedirs("/".join([Options.DirSet, Options.Descriptionfile, NameFigure]))
                     except:
                         None
                     try:
-                        os.makedirs("/".join([Options.SetDir, Options.Descriptionfile, NameFigure]))
+                        os.makedirs("/".join([Options.DirSet, Options.Descriptionfile, NameFigure]))
                     except:
                         None
 
@@ -1273,8 +1273,14 @@ def main():
         
         if Options.DebugRestructure:
             print(yaml.dump(Tree, default_flow_style=False))
+
+        if Options.Collect:
+            BaseDirSet = os.path.join(Options.DirSet, Options.Descriptionfile)
+            if os.path.isdir(BaseDirSet):
+                shutil.rmtree(BaseDirSet)
+
         try:
-            os.makedirs(Options.SetDir)
+            os.makedirs(Options.DirSet)
         except:
             None
         
