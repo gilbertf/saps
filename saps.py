@@ -35,7 +35,9 @@ class options():
     Plot2EpsLatexShow = False
     PdfViewer = "acroread"
     Plot2Tikz = False
-    
+
+    ShowIncomplete = False
+
     SimulateInstantaneous = False
     Valgrind = False
     Callgrind = False
@@ -122,6 +124,11 @@ class options():
             
         try:
             self.Plot2Tikz = int(self.Config["Saps"]["Plot2Tikz"])
+        except:
+            None
+
+        try:
+            self.ShowIncomplete = int(self.Config["Saps"]["ShowIncomplete"])
         except:
             None    
             
@@ -392,7 +399,7 @@ def ExpandFigures(Tree):
                     VarValue = Figure["Parameter"][VarName]
                     isParameter = True
                 else:
-                    Msg.Error(2, "Strange, we got to here...")
+                    raise Exception()
             except:
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
 
@@ -946,7 +953,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     VarValue = Tree["Parameter"][VarName]
                     isParameter = True
                 else:
-                    Msg.Error(2, "Strange, we got to here...")
+                    raise Exception()
             except:
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
             

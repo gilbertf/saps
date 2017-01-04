@@ -11,6 +11,7 @@ Saps:
   Plot2EpsLatexShow: False
   PdfViewer: acroread
   Plot2Tikz: True
+  ShowIncomplete: False
   
   #Debug
   DebugRestructure: False
