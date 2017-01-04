@@ -541,6 +541,13 @@ def RestructureTree(Tree, inFigure, inSet, inRoot, RunRecursive):
                     for p in Properties:
                         if not p in FiguresSets[fs]:
                             FiguresSets[fs][p] = Properties[p]
+                        elif p == "Parameter":
+                            for e in Properties[p]:
+                                if e not in FiguresSets[fs][p]:
+                                    FiguresSets[fs][p][e] = Properties[p][e]
+                                    print(FiguresSets[fs][p])
+                                else:
+                                    Msg.Warning(0, "Dupplicate Parameter value " + str(e) + ".")
                         else:
                             Msg.Warning(0, "More specific value " + str(FiguresSets[fs][p]) + " for " + p + " overwrites " + str(Properties[p]) + ".")
                     if RunRecursive:
