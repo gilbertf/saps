@@ -939,10 +939,19 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
     def ExpandValue(Tree, NameFigure, NameSet, ListPlot, ViewMode = False):
         global Msg
         if "%" in NameSet:
-            a = NameSet.find("%")
-            b = NameSet[a+1:].find("%")
-            VarName = NameSet[a+1:a+b+1]
-            
+            start = NameSet.find("%")
+            end = NameSet[start+1:].find("%")
+            VarName = NameSet[start+1:start+end+1]
+
+            if VarName.endswith(", d"):
+                VarName = VarName[:-3]
+                ExpandAsInt = True
+            elif VarName.endswith(",d"):
+                VarName = VarName[:-2]
+                ExpandAsInt = True
+            else:
+                ExpandAsInt = False
+
             DoExtract = False
             if len(VarName) > 1 and VarName[0] == "!" :
                 VarName = VarName[1:]
@@ -974,7 +983,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 ExpandedValues = ExpandedValues2
 
             for ExpandedValue in ExpandedValues:
-                TmpNameSet = NameSet[:a] + str(ExpandedValue) + NameSet[a+b+2:]
+                if ExpandAsInt:
+                    strExpandedValue = str(int(ExpandedValue))
+                else:
+                    strExpandedValue = str(ExpandedValue)
+                TmpNameSet = NameSet[:start] + strExpandedValue + NameSet[start+end+2:]
                 TmpTree = copy.deepcopy(Tree) #Weil wir in ParseSet auch an Unterstrukturen, etwa Analyse Ersetzungen vornehmen
                 
                 if isParameter is False:
