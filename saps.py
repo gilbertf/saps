@@ -933,7 +933,10 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         First = False
                     Plot = " ".join(Plot)
                 s = s + Plot
-            s = s + " title " + "\"" + NameSet + "\" "
+            if NameSet.endswith(", notitle"):
+                s = s + " notitle "
+            else:
+                s = s + " title " + "\"" + NameSet + "\" "
             ListPlot.append(s)
 
     def ExpandValue(Tree, NameFigure, NameSet, ListPlot, ViewMode = False):
