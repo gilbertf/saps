@@ -9,6 +9,7 @@ from collections import OrderedDict
 import numpy as np
 from colorama import Fore
 import hashlib
+import shutil
 
 class options():
     global Msg
@@ -34,7 +35,9 @@ class options():
     Plot2EpsLatexShow = False
     PdfViewer = "acroread"
     Plot2Tikz = False
-    
+
+    ShowIncomplete = False
+
     SimulateInstantaneous = False
     Valgrind = False
     Callgrind = False
@@ -122,6 +125,11 @@ class options():
         try:
             self.Plot2Tikz = int(self.Config["Saps"]["Plot2Tikz"])
         except:
+            None
+
+        try:
+            self.ShowIncomplete = int(self.Config["Saps"]["ShowIncomplete"])
+        except:
             None    
             
         if self.Plot2EpsLatex or self.Plot2Tikz:
@@ -132,7 +140,7 @@ class options():
         
         #Collect configuration
         try:
-            self.SetDir = os.path.expanduser(self.Config["Saps"]["DirSet"])
+            self.DirSet = os.path.expanduser(self.Config["Saps"]["DirSet"])
         except:
             Msg.Error(1, "Saps -> DirSet has to be defined in configfile.")
             
@@ -391,7 +399,7 @@ def ExpandFigures(Tree):
                     VarValue = Figure["Parameter"][VarName]
                     isParameter = True
                 else:
-                    Msg.Error(2, "Strange, we got to here...")
+                    raise Exception()
             except:
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
 
@@ -533,6 +541,13 @@ def RestructureTree(Tree, inFigure, inSet, inRoot, RunRecursive):
                     for p in Properties:
                         if not p in FiguresSets[fs]:
                             FiguresSets[fs][p] = Properties[p]
+                        elif p == "Parameter":
+                            for e in Properties[p]:
+                                if e not in FiguresSets[fs][p]:
+                                    FiguresSets[fs][p][e] = Properties[p][e]
+                                    print(FiguresSets[fs][p])
+                                else:
+                                    Msg.Warning(0, "Dupplicate Parameter value " + str(e) + ".")
                         else:
                             Msg.Warning(0, "More specific value " + str(FiguresSets[fs][p]) + " for " + p + " overwrites " + str(Properties[p]) + ".")
                     if RunRecursive:
@@ -737,7 +752,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             RunFileCode(os.path.join("simulate", Simulate), True, Env)          
             
         if Options.Collect or Options.View or Options.Plot:
-            NameFileSet = os.path.join(Options.SetDir, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet).replace('/','')) #Slashes in Setname indicate subdirs
+            NameFileSet = os.path.join(Options.DirSet, Options.Descriptionfile, NameFigure, RemoveLatexChars(NameSet).replace('/','')) #Slashes in Setname indicate subdirs
 
         #Liste der zu sammelnden "Axen" zusammenstellen
         if Options.Collect:
@@ -790,7 +805,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             for Analyse in DictAnalyse:
                 Pos = Analyse.find(" ")
                 if Pos == -1:
-                    NameAnalyse = "Unnames analysis"
+                    NameAnalyse = "Unnamed analysis"
                 else:
                     NameAnalyse = Analyse[Pos+1:]
 
@@ -816,7 +831,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         Msg.Error(3, "Analyse AxisIn definition " + str(axis) + " is invalid. Available are: " + str(CollectAxis))
                     idx = CollectAxis.index(axis)
                     if len(CollectValues[idx]) == 0:
-                        Msg.Error(3, "Axis " + axis + " does not contain any data")
+                        Msg.Warning(3, "Axis " + axis + " does not contain any data")
                     AxisIn.append(CollectAxis[idx])
                     ValuesIn.append(CollectValues[idx])
                     
@@ -824,7 +839,17 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     print(Options.Indent*3 + "AxisIn: " + str(AxisIn) + "\n" + Options.Indent*3 + "ValuesIn: " + str(ValuesIn))
 
                 Env = dict(ValuesIn=ValuesIn, AxisIn=AxisIn, AxisOut=AxisOutAnalyse, Options=Options, Msg=Msg, Analyse=Analyse)
-                RunFileCode(os.path.join("analyse", FunctionAnalyse + ".py"), True, Env)
+                LocalAnalyseFileName = os.getcwd() + "/" + FunctionAnalyse + ".py"
+                ScriptDir = os.path.dirname(os.path.realpath(__file__))
+                GlobalAnalyseFileName = ScriptDir + "/" + os.path.join("analyse", FunctionAnalyse + ".py")
+                if os.path.isfile(LocalAnalyseFileName):
+                    AnalyseFileName = LocalAnalyseFileName
+                elif os.path.isfile(GlobalAnalyseFileName):
+                    AnalyseFileName = GlobalAnalyseFileName
+                else:
+                    Msg.Error(3, "No valid analyse script with name " + FunctionAnalyse + ".py found in " + ScriptDir + " and " + os.getcwd() + "." )
+
+                RunFileCode(AnalyseFileName, True, Env)
                 
                 #Put analyse results back to file
                 try:
@@ -860,8 +885,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
             #Check for Nan
             for v in Values:
                 for s in v:
-                    if np.isnan(s):
-                        Msg.Warning(2, "Nan values are not allowed!")
+                    if type(s) is not str:
+                        if np.isnan(s):
+                            Msg.Warning(2, "Nan values are not allowed!")
                         
             #Save results to Setfiles
             zValues = zip(*Values[::1])
@@ -907,16 +933,28 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                         First = False
                     Plot = " ".join(Plot)
                 s = s + Plot
-            s = s + " title " + "\"" + NameSet + "\" "
+            if NameSet.endswith(", notitle"):
+                s = s + " notitle "
+            else:
+                s = s + " title " + "\"" + NameSet + "\" "
             ListPlot.append(s)
 
     def ExpandValue(Tree, NameFigure, NameSet, ListPlot, ViewMode = False):
         global Msg
         if "%" in NameSet:
-            a = NameSet.find("%")
-            b = NameSet[a+1:].find("%")
-            VarName = NameSet[a+1:a+b+1]
-            
+            start = NameSet.find("%")
+            end = NameSet[start+1:].find("%")
+            VarName = NameSet[start+1:start+end+1]
+
+            if VarName.endswith(", d"):
+                VarName = VarName[:-3]
+                ExpandAsInt = True
+            elif VarName.endswith(",d"):
+                VarName = VarName[:-2]
+                ExpandAsInt = True
+            else:
+                ExpandAsInt = False
+
             DoExtract = False
             if len(VarName) > 1 and VarName[0] == "!" :
                 VarName = VarName[1:]
@@ -934,7 +972,7 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                     VarValue = Tree["Parameter"][VarName]
                     isParameter = True
                 else:
-                    Msg.Error(2, "Strange, we got to here...")
+                    raise Exception()
             except:
                 Msg.Error(2, "The variable " + VarName + " could not be found.")
             
@@ -948,7 +986,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 ExpandedValues = ExpandedValues2
 
             for ExpandedValue in ExpandedValues:
-                TmpNameSet = NameSet[:a] + str(ExpandedValue) + NameSet[a+b+2:]
+                if ExpandAsInt:
+                    strExpandedValue = str(int(ExpandedValue))
+                else:
+                    strExpandedValue = str(ExpandedValue)
+                TmpNameSet = NameSet[:start] + strExpandedValue + NameSet[start+end+2:]
                 TmpTree = copy.deepcopy(Tree) #Weil wir in ParseSet auch an Unterstrukturen, etwa Analyse Ersetzungen vornehmen
                 
                 if isParameter is False:
@@ -990,11 +1032,11 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
 
                 if Options.Collect:
                     try:
-                        os.removedirs("/".join([Options.SetDir, Options.Descriptionfile, NameFigure]))
+                        os.removedirs("/".join([Options.DirSet, Options.Descriptionfile, NameFigure]))
                     except:
                         None
                     try:
-                        os.makedirs("/".join([Options.SetDir, Options.Descriptionfile, NameFigure]))
+                        os.makedirs("/".join([Options.DirSet, Options.Descriptionfile, NameFigure]))
                     except:
                         None
 
@@ -1261,11 +1303,22 @@ def main():
         
         if Options.DebugRestructure:
             print(yaml.dump(Tree, default_flow_style=False))
+
+        if Options.Collect:
+            BaseDirSet = os.path.join(Options.DirSet, Options.Descriptionfile)
+            if os.path.isdir(BaseDirSet):
+                shutil.rmtree(BaseDirSet)
+
         try:
-            os.makedirs(Options.SetDir)
+            os.makedirs(Options.DirSet)
         except:
             None
         
+        if Options.Plot:
+            BaseDirPlot = os.path.join(Options.DirPlot, Options.Descriptionfile)
+            if os.path.isdir(BaseDirPlot):
+                shutil.rmtree(BaseDirPlot)
+
         ProcessTree(Tree)
     
 if __name__ == "__main__":
