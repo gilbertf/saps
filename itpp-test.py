@@ -19,5 +19,4 @@ d["A"] = A
 itsave("test.it", d)
 
 X = itload("test.it")
-print(X)
 print(X["A"])
