@@ -65,6 +65,7 @@ def TermString(s):
     return (s+"\0").encode("ascii")
     
 def WriteVar(f, v, NameVar):
+    print(f,v,NameVar)
     if type(v) == int:
         v = np.int32(v)
     elif type(v) == float:
@@ -85,7 +86,9 @@ def WriteVar(f, v, NameVar):
             TypVar = itpptyp[str(v.dtype)]
         except KeyError:
             raise Exception("Variable type " + str(v.dtype) + " is not supported")
-        
+        print(TypVar)
+     
+        print(Dim)
         if Dim == 1:
             CntElem = NumElem[0]
             TypVar = TypVar + "vec"
@@ -122,7 +125,7 @@ def WriteVar(f, v, NameVar):
     for d in range(Dim):
         f.write(np.uint64(NumElem[d]))
         
-    for e in v.flat:
+    for e in v.T.flat:
         f.write(e)
         
 def itsave(out_file, vars):
