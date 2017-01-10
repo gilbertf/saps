@@ -85,8 +85,8 @@ for Args in ListArgs:
             if NumBracketsOpen == 1 and NumBracketsClose == 1:
                 ArrayIdx = a[a.find(BracketOpen)+1:a.find(BracketClose)]
                 Msg.Notice(2, "Array index: " + ArrayIdx)
-                #if not "#" in ArrayIdx:
-                #    Msg.Error(2, "Seperator for array indexing required in " + ArrayIdx)
+                if not "#" in ArrayIdx:
+                    Msg.Error(2, "Seperator for array indexing required in " + ArrayIdx)
                 SplitArrayIdx = ArrayIdx.split("#")
                 if len(SplitArrayIdx) == 1 or len(SplitArrayIdx) == 2:
                     for Idx in range(len(SplitArrayIdx)):
@@ -114,8 +114,8 @@ for Args in ListArgs:
             if SplitArrayIdx is None:
                 if np.isscalar(x):
                     val[i].append(float(x))
-                #elif type(x) is np.matrix:
-                #    Msg.Error(2, "Matrix is not supported without using indexing brackets")
+                elif type(x) is np.matrix:
+                    Msg.Error(2, "Matrix is not supported without using indexing brackets")
                 else:
                     if len(x) == 0: #For example if calculation is still running
                         x = [-1]
