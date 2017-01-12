@@ -114,7 +114,7 @@ for Args in ListArgs:
             if SplitArrayIdx is None:
                 if np.isscalar(x):
                     val[i].append(float(x))
-                elif type(x) is np.matrix:
+                elif type(x) is np.matrix and (x.size > 1 and x.ndim > 1 and (x.ndim == 2 and (x.shape[0] != 1 and x.shape[1] != 1))):
                     Msg.Error(2, "Matrix is not supported without using indexing brackets")
                 else:
                     if len(x) == 0: #For example if calculation is still running
