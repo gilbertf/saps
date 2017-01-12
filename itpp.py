@@ -84,7 +84,7 @@ def WriteVar(f, v, NameVar):
         try:
             TypVar = itpptyp[str(v.dtype)]
         except KeyError:
-            raise Exception("Variable type " + str(v.dtype) + " is not supported")
+            raise Exception("Variable type " + str(v.dtype) + " of variable " + NameVar + " is not supported")
      
         if Dim == 1:
             CntElem = NumElem[0]
@@ -93,7 +93,7 @@ def WriteVar(f, v, NameVar):
             CntElem = NumElem[0]*NumElem[1]
             TypVar = TypVar + "mat"
         else:
-            raise Exception("unsupported dimensionality")
+            raise Exception("unsupported dimensionality for variable " + NameVar)
   
     elif type(v) in [np.int8, np.int16, np.int32, np.float32, np.float64]:
         CntElem = 1
