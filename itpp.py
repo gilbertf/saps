@@ -103,7 +103,7 @@ def WriteVar(f, v, NameVar):
         print("Warning, skipping string value: ", v)
         return
     else:
-        raise Exception("Type " + str(type(v)) + " is not supported")
+        raise Exception("Type " + str(type(v)) + " of variable " + NameVar + " is not supported")
     
     Desc = ""
     
