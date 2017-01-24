@@ -432,7 +432,7 @@ def ExpandFigures(Tree):
 
 def ParseIncludes(Tree):
     if type(Tree) == Options.ydict:
-        for t in Tree:
+        for t in Tree.copy():
             if t == "Include":
                 includelist = list()
                 if type(Tree[t]) == list:
