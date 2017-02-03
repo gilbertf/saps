@@ -3,6 +3,9 @@ for v in ValuesIn[1:]:
     if Len != len(v):
         Msg.Error(3, "Not all vectors are of equal length")
 
+if Len == 0:
+        Msg.Error(3, "Empty vector")
+
 if "Start" in Analyse:
     if "Stop" in Analyse:
         Start = float(Analyse["Start"])
