@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass report
 \use_default_options true
 \maintain_unincluded_children false
@@ -9,16 +11,16 @@
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
-\font_math auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -174,7 +176,7 @@ target "http://itpp.sourceforge.net"
 ) if you want to use the binary program interface (see 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:ProgramsBinary"
+reference "subsec:ProgramsBinary"
 
 \end_inset
 
@@ -276,12 +278,12 @@ saps -scp gauss.saps
 \begin_inset Newline newline
 \end_inset
 
-The additional option --delete can be used to wipe all results defined with
+The additional option –delete can be used to wipe all results defined with
  the saps file given.
  Use this command with care, since it might also delete results used in
  other definition files.
  To quickly test a simulation program there is also the commandline option
- --instant/-i that triggers local simulation with output to the terminal.
+ –instant/-i that triggers local simulation with output to the terminal.
 \end_layout
 
 \begin_layout Chapter
@@ -366,7 +368,7 @@ Group <Name of group>:
  
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Program-parameters"
+reference "subsec:Program-parameters"
 
 \end_inset
 
@@ -390,11 +392,31 @@ The names of above statements can be parameterized by putting program parameter
  the values are extended as descibed in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Program-parameters"
+reference "subsec:Program-parameters"
 
 \end_inset
 
 .
+ Adding 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+, d
+\begin_inset Quotes erd
+\end_inset
+
+ forces an conversion of parameters to integer representation.
+ In case of 
+\begin_inset Quotes eld
+\end_inset
+
+, notitle
+\begin_inset Quotes erd
+\end_inset
+
+ at the end of a set name removes the entry from the legend.
 \end_layout
 
 \begin_layout Section
@@ -448,6 +470,10 @@ SapsOpt
 
 \begin_layout Itemize
 e behaviour of the saps script
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -506,13 +532,17 @@ target "http://www.gnuplot.info/docs_4.6/gnuplot.pdf"
 
 ) as set commands that apply to all sets of one figure.
  Some examples:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <row>
@@ -740,13 +770,17 @@ Plot
 \family default
  can be used to modify the appearance of a single dataset.
  Examples:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="2" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -817,6 +851,12 @@ Axis
 
 \family typewriter
 Analyse <Name of analyse>:
+\family default
+
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -858,13 +898,17 @@ Some predefined functions:
 Index
 \family default
  generates a index vector of the length of the input vector.
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="15text%">
 <column alignment="center" valignment="top" width="30text%">
 <row>
@@ -959,13 +1003,17 @@ Index
 AxisIn
 \family default
 .
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="15text%">
 <column alignment="center" valignment="top" width="30text%">
 <row>
@@ -1078,13 +1126,17 @@ FitScalarToVector:
 \family default
 The shorter of both inputs vector is repeated to match the length of the
  longer vector 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="15text%">
 <column alignment="center" valignment="top" width="30text%">
 <row>
@@ -1192,13 +1244,17 @@ Last
 Repeat
 \family default
  specifies the index in the vector when repeated slicing is necessary.
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="15text%">
 <column alignment="center" valignment="top" width="30text%">
 <row>
@@ -1352,13 +1408,17 @@ Integrate
 \family default
  a vector using the composite trapezoidal rule.
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="15text%">
 <column alignment="center" valignment="top" width="30text%">
 <row>
@@ -1446,13 +1506,17 @@ StepIntegrate
 \family default
  stepwise integrates a vector using the composite trapezoidal rule.
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="15text%">
 <column alignment="center" valignment="top" width="30text%">
 <row>
@@ -1564,13 +1628,17 @@ StepLen
 Math
 \family default
  can apply one simple math operation
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="15text%">
 <column alignment="center" valignment="top" width="30text%">
 <row>
@@ -1681,7 +1749,7 @@ Add (Substract, Multiply or Divide)
 Program parameters
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Program-parameters"
+name "subsec:Program-parameters"
 
 \end_inset
 
@@ -1777,7 +1845,7 @@ filename "/home/gilbert/Dissertation/saps/examples/gauss.m"
 Binary
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:ProgramsBinary"
+name "subsec:ProgramsBinary"
 
 \end_inset
 
