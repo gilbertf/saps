@@ -12,6 +12,10 @@ if len(ValuesIn) == 1:
     Max = 1
     if "Max" in Analyse:
         Max = float(Analyse["Max"])
-    ValuesOut[0] = np.array(ValuesIn[0]) / (np.max(ValuesIn[0]) / Max)
+    if "Ref" in Analyse:
+        Ref = float(Analyse["Ref"])
+    else:
+        Ref = np.max(ValuesIn[0])
+    ValuesOut[0] = np.array(ValuesIn[0]) / (Ref / Max)
 else:
     Msg.Error(2, "We expect one input variables")
