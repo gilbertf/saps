@@ -576,7 +576,9 @@ def ProcessTree(Tree, NameFigure = "", ListPlot = [], ListSapsOpt = [], ListPlot
                 s = Set[0]
                 V = ExtractValues(s[1], True)
                 for v in V:
-                    reccmd = cmd.copy() 
+                    reccmd = cmd.copy()
+                    if type(v) is str: #Escape str variables for python
+                        v = "'" + v + "'"
                     reccmd[s[0]] = str(v)
                     ExpandSet(Set[1:], ListArgs, reccmd)
             else:
