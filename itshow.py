@@ -9,7 +9,8 @@ def ShowSyntax():
     print("Syntax: itshow.py <NameFile> (-l) (-sVarName)")
     print("   -l           List all variable names")
     print("   -sVarName    Show value of variable VarName")
-    print("   -eVarName    Export value of variable VarName to export.mat")
+    print("   -eVarName    Export value of variable VarName in matlab format")
+    print("   -gVarName    Export value of variable VarName in text format")
     print("   -fFileName   Export filename")
     exit()
 
@@ -82,8 +83,4 @@ for d in Data:
     if d in ExportFilter:
         scipy.io.savemat(ExportFileName, mdict={d : Data[d]})
     if d in ExportTxtFilter:
-        f = open(ExportFileName, 'w')
-        print(type(Data[d]))
-        for l in list(Data[d]):
-            f.write(str(l), "\n")
-        f.close()
+        np.savetxt(ExportFileName, Data[d])
