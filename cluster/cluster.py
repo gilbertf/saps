@@ -77,7 +77,8 @@ while 1:
                     #print "Starting job " + job + ": " + cmd
                     args = shlex.split(cmd)
                     try:
-                        p[c] = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE, preexec_fn=lambda : os.nice(10))
+                        #p[c] = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE, preexec_fn=lambda : os.nice(10))
+                        p[c] = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                     except:
                         print "Unable to execute: " + str(args)
                         exit()
