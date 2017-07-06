@@ -15,7 +15,7 @@ elif hostname == "gaarden":
 elif hostname == "mettenhof":
     cores = 15
 elif hostname == "hammer":
-    cores = 6
+    cores = 8
 elif hostname == "bonnie":
     cores = 6
 elif hostname == "clyde":
@@ -23,7 +23,7 @@ elif hostname == "clyde":
 elif hostname == "gfnb":
     cores = 3
 elif hostname == "russee":
-    cores = 12
+    cores = 24
 elif hostname == "hassee":
     cores = 26
 elif hostname == "ictibmt42":
