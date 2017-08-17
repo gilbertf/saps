@@ -76,8 +76,10 @@ if Data == "defekt":
 
 for d in Data:
     if NameFilter == [] or d in NameFilter:
-        print(d)
-        if ShowValues:
+        if not ShowValues:
+            print(d)
+        else:
+            print(d, " (", str(type(Data[d])), ")", str(np.shape(Data[d])))
             print(Data[d])
             print()
     if d in ExportFilter:
