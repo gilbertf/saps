@@ -50,6 +50,8 @@ from numpy import float64
 from numpy import complex64
 from numpy import complex128
 
+import collections
+
 def __fgetstr(fid):
     s = ""
     while 1:
@@ -126,8 +128,8 @@ def WriteVar(f, v, NameVar):
         f.write(e)
         
 def itsave(out_file, vars):
-    if type(vars) != dict:
-        print("Expecting variables as dict")
+    if type(vars) != dict and type(vars) != collections.OrderedDict:
+        print("Expecting variables as dict/OrderedDict")
         exit()
     try:
         f = open(out_file, 'wb')
@@ -168,7 +170,8 @@ def itload(in_file):
         print("Only IT++ file version 3 is supported by this function!")
         exit()
 
-    out = dict()#use a dictionary to output all tuples read from it file
+    out = collections.OrderedDict()
+    #out = dict()#use a dictionary to output all tuples read from it file
 
     while 1:
         #save current file position
