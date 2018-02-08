@@ -23,7 +23,7 @@ elif hostname == "clyde":
 elif hostname == "gfnb":
     cores = 3
 elif hostname == "russee":
-    cores = 24
+    cores = 32
 elif hostname == "hassee":
     cores = 26
 elif hostname == "ictibmt42":
