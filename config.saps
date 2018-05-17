@@ -4,7 +4,7 @@ Saps:
   DirSet: ~/Doktor.git/saps/sets
 
   #Plot configuration
-  DirPlot: ~/Doktor.git/saps/plots
+  DirPlot: ~/Doktor.git/plots
   Plot2X: True
   Plot2XTerm: qt
   Plot2EpsLatex: True
