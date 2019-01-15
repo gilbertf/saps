@@ -1,11 +1,16 @@
 import numpy as np
 
 def ReadData(Filename, Cols, Rows, Delimiter):
+    deli = None
     if Delimiter == "Strichpunkt":
         deli = ";"
-    elif Delimiter == "Leerzeichen":
-        deli = " "
-    a = np.loadtxt(Filename, ndmin=2, delimiter = deli)
+    elif Delimiter == "Tab":
+        deli = "\t"
+    if deli == None:
+        a = np.loadtxt(Filename, ndmin=2)
+    else:
+        a = np.loadtxt(Filename, ndmin=2,delimiter = deli)
+    print(a)
     Out=dict()
     Out["data"] = a
     if Cols != -1 and Rows == -1:

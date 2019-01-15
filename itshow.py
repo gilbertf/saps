@@ -6,8 +6,9 @@ import numpy as np
 import scipy.io
 
 def ShowSyntax():
-    print("Syntax: itshow.py <NameFile> (-l) (-sVarName)")
+    print("Syntax: itshow.py <NameFile> (-l) (-a) (-sVarName)")
     print("   -l           List all variable names")
+    print("   -a           Print full arrays")
     print("   -sVarName    Show value of variable VarName")
     print("   -eVarName    Export value of variable VarName in matlab format")
     print("   -gVarName    Export value of variable VarName in text format")
@@ -30,6 +31,8 @@ Args = sys.argv
 for Arg in Args[1:]:
     if Arg == "-l":
         ShowValues = False
+    elif Arg == "-a":
+        np.set_printoptions(threshold=np.nan)
     elif Arg.startswith("-s"):
         VarName = Arg[2:]
         if len(VarName) == 0:
