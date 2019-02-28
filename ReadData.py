@@ -4,6 +4,8 @@ def ReadData(Filename, Cols, Rows, Delimiter):
     deli = None
     if Delimiter == "Strichpunkt":
         deli = ";"
+    if Delimiter == "Komma":
+        deli = ","
     elif Delimiter == "Tab":
         deli = "\t"
     if deli == None:
