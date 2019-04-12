@@ -292,7 +292,7 @@ def ReadYaml(NameFile, DirSaps):
         data = CompleteFile.read()
         CompleteFile.close()
         try:
-            Tree = yaml.load(data)
+            Tree = yaml.load(data, Loader=yaml.UnsafeLoader)
         except OrderedYaml.DuplicateKeyError as e:
             Msg.Error(0, "Duplicate enty. Please remove one of \"" + e.key + "\"")
         except yaml.parser.ParserError as e:
