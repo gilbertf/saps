@@ -512,6 +512,8 @@ def RestructureTree(Tree, inFigure, inSet, inRoot, RunRecursive):
             elif t.startswith("Figure") or t.startswith("Set"):
                 Msg.Error(2, t + " without a name is not permitted")
             elif t == "PlotOpt" or t == "SapsOpt":
+                if Tree[t] == None:
+                    Msg.Error(0, "Empty " + t + " is not allowed.")
                 if inSet:
                     Msg.Error(0, "Using " + t + " inside of set definitions is not allowed.")
 
